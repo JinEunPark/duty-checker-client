@@ -1,5 +1,6 @@
-import 'package:duty_checker/guardian/presentation/page/guardian_landing_page.dart';
-import 'package:duty_checker/guardian/presentation/page/sign_up_page.dart';
+import 'package:duty_checker/guardian/presentation/page/guardian_home_page.dart';
+import 'package:duty_checker/guardian/presentation/page/landing_page.dart';
+import 'package:duty_checker/guardian/presentation/page/guardian_sign_up_page.dart';
 import 'package:duty_checker/self/presentation/page/self_sign_up_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -19,9 +20,13 @@ final router = GoRouter(
       path: '/sign-up/:mode',
       builder: (context, state) {
         final mode = state.pathParameters['mode']!;
-        if (mode == 'self') return const SelfSignUpPage();
-        return SignUpPage(mode: mode); // 보호자 모드 (추후 구현)
+        if (mode == 'guardian') return const GuardianSignUpPage();
+        return const SelfSignUpPage();
       },
+    ),
+    GoRoute(
+      path: '/guardian/home',
+      builder: (context, state) => const GuardianHomePage(),
     ),
   ],
 );
