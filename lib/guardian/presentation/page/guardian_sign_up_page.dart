@@ -17,11 +17,16 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
   final _scrollController = ScrollController();
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _passwordConfirmController = TextEditingController();
   final _codeFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
 
   bool _phoneCompleted = false;
   bool _codeCompleted = false;
   bool _showVerification = false;
+  bool _showPassword = false;
+  bool _passwordCompleted = false;
 
   final _codeInputKey = GlobalKey();
 
@@ -30,7 +35,10 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     _scrollController.dispose();
     _phoneController.dispose();
     _codeController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmController.dispose();
     _codeFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -57,10 +65,33 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     });
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   void _onCodeSubmit() {
     if (_codeController.text.length < 6) return;
     setState(() {
       _codeCompleted = true;
+      _showPassword = true;
+    });
+    _passwordFocusNode.requestFocus();
+    _scrollToBottom();
+  }
+
+  void _onPasswordSubmit() {
+    final pw = _passwordController.text;
+    final confirm = _passwordConfirmController.text;
+    if (pw.length < 6 || pw != confirm) return;
+    setState(() {
+      _passwordCompleted = true;
     });
   }
 
@@ -120,7 +151,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                           // 스텝 1: 전화번호 입력
                           _StepItem(
                             isCompleted: _phoneCompleted,
-                            isLast: !_showVerification,
+                            isLast: !_showVerification && !_showPassword,
                             title: '전화번호 입력',
                             description: '보호자 본인의 전화번호를 입력해주세요',
                             content: _PhoneStepContent(
@@ -138,7 +169,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                             _AnimatedStep(
                               child: _StepItem(
                                 isCompleted: _codeCompleted,
-                                isLast: true,
+                                isLast: !_showPassword,
                                 title: '인증번호 입력',
                                 description:
                                     '${_phoneController.text}로 전송된 인증번호를 입력해주세요',
@@ -154,6 +185,27 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                                     : null,
                               ),
                             ),
+
+                          // 스텝 3: 비밀번호 설정 (애니메이션 등장)
+                          if (_showPassword)
+                            _AnimatedStep(
+                              child: _StepItem(
+                                isCompleted: _passwordCompleted,
+                                isLast: true,
+                                title: '비밀번호 설정',
+                                description: '로그인에 사용할 비밀번호를 설정해주세요',
+                                content: _PasswordStepContent(
+                                  controller: _passwordController,
+                                  confirmController: _passwordConfirmController,
+                                  focusNode: _passwordFocusNode,
+                                  isCompleted: _passwordCompleted,
+                                  onSubmit: _onPasswordSubmit,
+                                ),
+                                statusMessage: _passwordCompleted
+                                    ? const _StatusMessage(text: '비밀번호가 설정되었습니다')
+                                    : null,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -165,7 +217,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                 child: _CompleteButton(
-                  enabled: _codeCompleted,
+                  enabled: _passwordCompleted,
                   onTap: () => context.go('/guardian/home'),
                 ),
               ),
@@ -453,6 +505,125 @@ class _CodeStepContent extends StatelessWidget {
       onChanged: (value) {
         if (value.length == 6) onSubmit();
       },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 스텝 3: 비밀번호 설정
+// ─────────────────────────────────────────────
+class _PasswordStepContent extends StatefulWidget {
+  final TextEditingController controller;
+  final TextEditingController confirmController;
+  final FocusNode focusNode;
+  final bool isCompleted;
+  final VoidCallback onSubmit;
+
+  const _PasswordStepContent({
+    required this.controller,
+    required this.confirmController,
+    required this.focusNode,
+    required this.isCompleted,
+    required this.onSubmit,
+  });
+
+  @override
+  State<_PasswordStepContent> createState() => _PasswordStepContentState();
+}
+
+class _PasswordStepContentState extends State<_PasswordStepContent> {
+  final _confirmFocusNode = FocusNode();
+  bool _showError = false;
+
+  @override
+  void dispose() {
+    _confirmFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _tryAutoSubmit() {
+    final pw = widget.controller.text;
+    final confirm = widget.confirmController.text;
+    if (pw.length < 6 || confirm.length < 6) return;
+    if (pw != confirm) {
+      setState(() => _showError = true);
+      return;
+    }
+    setState(() => _showError = false);
+    widget.onSubmit();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CupertinoTextField(
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          enabled: !widget.isCompleted,
+          obscureText: true,
+          placeholder: '비밀번호 (6자 이상)',
+          placeholderStyle: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textTertiary,
+          ),
+          style: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textPrimary,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.gray100,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          onSubmitted: (_) => _confirmFocusNode.requestFocus(),
+          onChanged: (_) {
+            if (_showError) setState(() => _showError = false);
+          },
+        ),
+        const Gap(10),
+        CupertinoTextField(
+          controller: widget.confirmController,
+          focusNode: _confirmFocusNode,
+          enabled: !widget.isCompleted,
+          obscureText: true,
+          placeholder: '비밀번호 확인',
+          placeholderStyle: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textTertiary,
+          ),
+          style: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textPrimary,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.gray100,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          onChanged: (_) {
+            if (_showError) setState(() => _showError = false);
+            _tryAutoSubmit();
+          },
+        ),
+        if (_showError) ...[
+          const Gap(8),
+          const Text(
+            '비밀번호가 일치하지 않습니다',
+            style: TextStyle(
+              fontFamily: 'Pretendard',
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: AppColors.error,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

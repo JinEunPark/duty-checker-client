@@ -19,16 +19,22 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
   final _scrollController = ScrollController();
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _passwordConfirmController = TextEditingController();
   final _guardianController = TextEditingController();
 
   // 각 스텝 필드의 포커스 노드
   final _codeFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
   final _guardianFocusNode = FocusNode();
 
   bool _phoneCompleted = false;
   bool _codeCompleted = false;
   bool _showVerification = false;
+  bool _showPassword = false;
+  bool _passwordCompleted = false;
   bool _showGuardian = false;
+  bool _isComplete = false;
 
   final List<String> _guardians = [];
 
@@ -51,8 +57,11 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
     _scrollController.dispose();
     _phoneController.dispose();
     _codeController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmController.dispose();
     _guardianController.dispose();
     _codeFocusNode.dispose();
+    _passwordFocusNode.dispose();
     _guardianFocusNode.dispose();
     super.dispose();
   }
@@ -106,14 +115,26 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
     });
   }
 
-  // 인증번호 확인 → 보호자 등록 스텝 등장 후 포커스 이동
+  // 인증번호 확인 → 비밀번호 설정 스텝 등장 후 포커스 이동
   void _onCodeSubmit() {
     if (_codeController.text.length < 6) return;
     setState(() {
       _codeCompleted = true;
+      _showPassword = true;
+    });
+    _passwordFocusNode.requestFocus();
+    _scrollToBottom();
+  }
+
+  // 비밀번호 확인 → 보호자 등록 스텝 등장 후 포커스 이동
+  void _onPasswordSubmit() {
+    final pw = _passwordController.text;
+    final confirm = _passwordConfirmController.text;
+    if (pw.length < 6 || pw != confirm) return;
+    setState(() {
+      _passwordCompleted = true;
       _showGuardian = true;
     });
-    // 포커스를 즉시 이동 → 키보드가 이미 열린 상태 유지
     _guardianFocusNode.requestFocus();
     _scrollToBottom();
   }
@@ -144,9 +165,16 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
     setState(() => _guardians.removeAt(index));
   }
 
+  void _onComplete() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _isComplete = true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
+      // 완료 상태에서는 뒤로가기 방지
+      canPop: !_isComplete,
       // 뒤로가기 (스와이프 포함) 시 키보드 해제
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) FocusManager.instance.primaryFocus?.unfocus();
@@ -160,121 +188,274 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
         border: const Border(
           bottom: BorderSide(color: AppColors.border, width: 0.5),
         ),
-        middle: const Text(
-          '당사자 등록',
-          style: TextStyle(
+        middle: Text(
+          _isComplete ? '설정 완료' : '당사자 등록',
+          style: const TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
         ),
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-            context.pop();
-          },
-          child: const Icon(
-            CupertinoIcons.chevron_left,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        leading: _isComplete
+            ? const SizedBox.shrink()
+            : CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  context.pop();
+                },
+                child: const Icon(
+                  CupertinoIcons.chevron_left,
+                  color: AppColors.textPrimary,
+                ),
+              ),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            // 스텝 목록
-            Expanded(
-              child: ListView(
-                controller: _scrollController,
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
+        child: _isComplete
+            ? _buildCompleteScreen()
+            : _buildStepScreen(),
+      ),
+    ), // CupertinoPageScaffold
+    ); // PopScope
+  }
+
+  Widget _buildCompleteScreen() {
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  // 체크 아이콘
                   Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.gray900.withValues(alpha: 0.08),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      CupertinoIcons.checkmark,
+                      size: 48,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const Gap(24),
+
+                  // 타이틀
+                  const Text(
+                    '설정이 완료되었습니다',
+                    style: AppTextStyles.display1,
+                  ),
+                  const Gap(16),
+
+                  // 설명
+                  Text(
+                    '안부 확인 서비스를 시작합니다\n등록하신 보호자에게 알림이 전송됩니다',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.body2.copyWith(
+                      height: 1.6,
+                    ),
+                  ),
+                  const Gap(40),
+
+                  // 요약 카드
+                  Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.gray900.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
-                        // 스텝 1: 전화번호 입력 (최초 노출)
-                        _StepItem(
-                          isCompleted: _phoneCompleted,
-                          isLast: !_showVerification && !_showGuardian,
-                          title: '전화번호 입력',
-                          description: '안부 확인을 위해 본인 전화번호가 필요합니다',
-                          content: _PhoneStepContent(
-                            controller: _phoneController,
-                            isCompleted: _phoneCompleted,
-                            onSend: _onPhoneSend,
-                          ),
-                          statusMessage: _phoneCompleted
-                              ? const _StatusMessage(text: '인증번호가 전송되었습니다')
-                              : null,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '본인 전화번호',
+                              style: AppTextStyles.body2.copyWith(fontSize: 15),
+                            ),
+                            Text(
+                              _phoneController.text,
+                              style: AppTextStyles.body1Medium.copyWith(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
                         ),
-
-                        // 스텝 2: 인증번호 입력 (애니메이션 등장)
-                        if (_showVerification)
-                          _AnimatedStep(
-                            child: _StepItem(
-                              isCompleted: _codeCompleted,
-                              isLast: !_showGuardian,
-                              title: '인증번호 입력',
-                              description:
-                                  '${_phoneController.text}로 전송된 인증번호를 입력해주세요',
-                              content: _CodeStepContent(
-                                controller: _codeController,
-                                focusNode: _codeFocusNode,
-                                inputKey: _codeInputKey,
-                                isCompleted: _codeCompleted,
-                                onSubmit: _onCodeSubmit,
-                              ),
-                              statusMessage: _codeCompleted
-                                  ? const _StatusMessage(text: '인증이 완료되었습니다')
-                                  : null,
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 16),
+                          height: 1,
+                          color: AppColors.divider,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '보호자',
+                              style: AppTextStyles.body2.copyWith(fontSize: 15),
                             ),
-                          ),
-
-                        // 스텝 3: 보호자 등록 (애니메이션 등장)
-                        if (_showGuardian)
-                          _AnimatedStep(
-                            child: _StepItem(
-                              isCompleted: false,
-                              isLast: true,
-                              title: '보호자 등록',
-                              description:
-                                  '안부 확인이 없을 경우 알림을 받을 보호자를 등록합니다',
-                              content: _GuardianStepContent(
-                                controller: _guardianController,
-                                focusNode: _guardianFocusNode,
-                                guardians: _guardians,
-                                lastGuardianKey: _lastGuardianKey,
-                                onAdd: _addGuardian,
-                                onRemove: _removeGuardian,
+                            Text(
+                              '${_guardians.length}명',
+                              style: AppTextStyles.body1Medium.copyWith(
+                                fontSize: 15,
                               ),
                             ),
-                          ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-
-            // 완료 버튼 (키보드가 올라오면 함께 올라감)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-              child: _CompleteButton(
-                enabled: _codeCompleted && _guardians.isNotEmpty,
-                onTap: () {}, // TODO: 완료 처리
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    ), // CupertinoPageScaffold
-    ); // PopScope
+
+        // 시작하기 버튼
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          child: _CompleteButton(
+            enabled: true,
+            label: '시작하기',
+            onTap: () => context.go('/user/home'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepScreen() {
+    return Column(
+      children: [
+        // 스텝 목록
+        Expanded(
+          child: ListView(
+            controller: _scrollController,
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
+                child: Column(
+                  children: [
+                    // 스텝 1: 전화번호 입력 (최초 노출)
+                    _StepItem(
+                      isCompleted: _phoneCompleted,
+                      isLast: !_showVerification && !_showPassword && !_showGuardian,
+                      title: '전화번호 입력',
+                      description: '안부 확인을 위해 본인 전화번호가 필요합니다',
+                      content: _PhoneStepContent(
+                        controller: _phoneController,
+                        isCompleted: _phoneCompleted,
+                        onSend: _onPhoneSend,
+                      ),
+                      statusMessage: _phoneCompleted
+                          ? const _StatusMessage(text: '인증번호가 전송되었습니다')
+                          : null,
+                    ),
+
+                    // 스텝 2: 인증번호 입력 (애니메이션 등장)
+                    if (_showVerification)
+                      _AnimatedStep(
+                        child: _StepItem(
+                          isCompleted: _codeCompleted,
+                          isLast: !_showPassword && !_showGuardian,
+                          title: '인증번호 입력',
+                          description:
+                              '${_phoneController.text}로 전송된 인증번호를 입력해주세요',
+                          content: _CodeStepContent(
+                            controller: _codeController,
+                            focusNode: _codeFocusNode,
+                            inputKey: _codeInputKey,
+                            isCompleted: _codeCompleted,
+                            onSubmit: _onCodeSubmit,
+                          ),
+                          statusMessage: _codeCompleted
+                              ? const _StatusMessage(text: '인증이 완료되었습니다')
+                              : null,
+                        ),
+                      ),
+
+                    // 스텝 3: 비밀번호 설정 (애니메이션 등장)
+                    if (_showPassword)
+                      _AnimatedStep(
+                        child: _StepItem(
+                          isCompleted: _passwordCompleted,
+                          isLast: !_showGuardian,
+                          title: '비밀번호 설정',
+                          description: '로그인에 사용할 비밀번호를 설정해주세요',
+                          content: _PasswordStepContent(
+                            controller: _passwordController,
+                            confirmController: _passwordConfirmController,
+                            focusNode: _passwordFocusNode,
+                            isCompleted: _passwordCompleted,
+                            onSubmit: _onPasswordSubmit,
+                          ),
+                          statusMessage: _passwordCompleted
+                              ? const _StatusMessage(text: '비밀번호가 설정되었습니다')
+                              : null,
+                        ),
+                      ),
+
+                    // 스텝 4: 보호자 등록 (애니메이션 등장)
+                    if (_showGuardian)
+                      _AnimatedStep(
+                        child: _StepItem(
+                          isCompleted: false,
+                          isLast: true,
+                          title: '보호자 등록',
+                          description:
+                              '안부 확인이 없을 경우 알림을 받을 보호자를 등록합니다',
+                          content: _GuardianStepContent(
+                            controller: _guardianController,
+                            focusNode: _guardianFocusNode,
+                            guardians: _guardians,
+                            lastGuardianKey: _lastGuardianKey,
+                            onAdd: _addGuardian,
+                            onRemove: _removeGuardian,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // 완료 버튼 (키보드가 올라오면 함께 올라감)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          child: _CompleteButton(
+            enabled: _passwordCompleted && _guardians.isNotEmpty,
+            onTap: _onComplete,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -561,7 +742,128 @@ class _CodeStepContent extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-// 스텝 3: 보호자 등록
+// 스텝 3: 비밀번호 설정
+// ─────────────────────────────────────────────
+class _PasswordStepContent extends StatefulWidget {
+  final TextEditingController controller;
+  final TextEditingController confirmController;
+  final FocusNode focusNode;
+  final bool isCompleted;
+  final VoidCallback onSubmit;
+
+  const _PasswordStepContent({
+    required this.controller,
+    required this.confirmController,
+    required this.focusNode,
+    required this.isCompleted,
+    required this.onSubmit,
+  });
+
+  @override
+  State<_PasswordStepContent> createState() => _PasswordStepContentState();
+}
+
+class _PasswordStepContentState extends State<_PasswordStepContent> {
+  final _confirmFocusNode = FocusNode();
+  bool _showError = false;
+
+  @override
+  void dispose() {
+    _confirmFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _tryAutoSubmit() {
+    final pw = widget.controller.text;
+    final confirm = widget.confirmController.text;
+    if (pw.length < 6 || confirm.length < 6) return;
+    if (pw != confirm) {
+      setState(() => _showError = true);
+      return;
+    }
+    setState(() => _showError = false);
+    widget.onSubmit();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CupertinoTextField(
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          enabled: !widget.isCompleted,
+          obscureText: true,
+          placeholder: '비밀번호 (6자 이상)',
+          placeholderStyle: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textTertiary,
+          ),
+          style: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textPrimary,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.gray100,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          // 비밀번호 입력 완료 시 확인 필드로 포커스 이동
+          onSubmitted: (_) => _confirmFocusNode.requestFocus(),
+          onChanged: (_) {
+            if (_showError) setState(() => _showError = false);
+          },
+        ),
+        const Gap(10),
+        CupertinoTextField(
+          controller: widget.confirmController,
+          focusNode: _confirmFocusNode,
+          enabled: !widget.isCompleted,
+          obscureText: true,
+          placeholder: '비밀번호 확인',
+          placeholderStyle: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textTertiary,
+          ),
+          style: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            color: AppColors.textPrimary,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.gray100,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          // 비밀번호 확인 입력 시 자동 일치 검사 → 자동 제출
+          onChanged: (_) {
+            if (_showError) setState(() => _showError = false);
+            _tryAutoSubmit();
+          },
+        ),
+        if (_showError) ...[
+          const Gap(8),
+          const Text(
+            '비밀번호가 일치하지 않습니다',
+            style: TextStyle(
+              fontFamily: 'Pretendard',
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: AppColors.error,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 스텝 4: 보호자 등록
 // ─────────────────────────────────────────────
 class _GuardianStepContent extends StatelessWidget {
   final TextEditingController controller;
@@ -731,8 +1033,13 @@ class _GuardianStepContent extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _CompleteButton extends StatelessWidget {
   final bool enabled;
+  final String label;
   final VoidCallback onTap;
-  const _CompleteButton({required this.enabled, required this.onTap});
+  const _CompleteButton({
+    required this.enabled,
+    required this.onTap,
+    this.label = '완료',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -748,7 +1055,7 @@ class _CompleteButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            '완료',
+            label,
             style: AppTextStyles.body1Medium.copyWith(
               color: enabled ? AppColors.surface : AppColors.gray400,
             ),
