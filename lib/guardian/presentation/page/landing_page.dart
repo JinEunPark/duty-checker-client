@@ -14,7 +14,7 @@ class LandingPage extends ConsumerStatefulWidget {
 }
 
 class _LandingPageState extends ConsumerState<LandingPage> {
-  // 선택된 모드: null(미선택), 'self'(당사자), 'guardian'(보호자)
+  // 선택된 모드: null(미선택), 'user'(당사자), 'guardian'(보호자)
   String? _selectedMode;
 
   @override
@@ -46,8 +46,8 @@ class _LandingPageState extends ConsumerState<LandingPage> {
                 title: '당사자',
                 description: '매일 보내드리는 알림에\n응답해 내 상태를 전달해요',
                 icon: CupertinoIcons.person_fill,
-                isSelected: _selectedMode == 'self',
-                onTap: () => setState(() => _selectedMode = 'self'),
+                isSelected: _selectedMode == 'user',
+                onTap: () => setState(() => _selectedMode = 'user'),
               ),
               const Gap(16),
 
