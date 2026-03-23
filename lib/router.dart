@@ -1,6 +1,7 @@
 import 'package:duty_checker/guardian/presentation/page/guardian_home_page.dart';
 import 'package:duty_checker/guardian/presentation/page/landing_page.dart';
 import 'package:duty_checker/guardian/presentation/page/guardian_sign_up_page.dart';
+import 'package:duty_checker/guardian/presentation/page/user_management_page.dart';
 import 'package:duty_checker/presentation/page/login_page.dart';
 import 'package:duty_checker/user/presentation/page/self_sign_up_page.dart';
 import 'package:duty_checker/user/presentation/page/guardian_management_page.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
-  initialLocation: '/landing',
+  initialLocation: '/login',
   routes: [
     GoRoute(
       path: '/',
@@ -34,6 +35,10 @@ final router = GoRouter(
     GoRoute(
       path: '/guardian/home',
       builder: (context, state) => const GuardianHomePage(),
+    ),
+    GoRoute(
+      path: '/guardian/management',
+      builder: (context, state) => const UserManagementPage(),
     ),
     GoRoute(
       path: '/user/home',

@@ -2,6 +2,7 @@ import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -65,9 +66,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             children: [
               const Spacer(flex: 2),
 
+              // 앱 아이콘
+              Center(
+                child: SvgPicture.asset(
+                  'assets/icons/icon_morse_dark.svg',
+                  width: 100,
+                  height: 100,
+                ),
+              ),
+              const Gap(16),
+              Center(
+                child: Text(
+                  '모스',
+                  style: AppTextStyles.heading1.copyWith(
+                    color: AppColors.primary,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+
+              const Spacer(flex: 2),
+
               // 타이틀
               Text(
-                _isOtherAccount ? '다른 계정으로\n로그인' : '다시 오셨군요',
+                _isOtherAccount ? '다른 계정으로\n로그인' : '안녕하세요',
                 style: AppTextStyles.display1,
               ),
               const Gap(12),
@@ -77,8 +99,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     : '비밀번호를 입력해주세요',
                 style: AppTextStyles.body2,
               ),
-
-              const Spacer(flex: 2),
+              const Gap(28),
 
               // 로그인 카드
               Container(
@@ -189,6 +210,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+              const Gap(12),
+
+              // 회원가입 안내
+              Center(
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => context.go('/landing'),
+                  child: Text.rich(
+                    TextSpan(
+                      text: '계정이 없으신가요? ',
+                      style: const TextStyle(
+                        fontFamily: 'Pretendard',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textTertiary,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '회원가입',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
