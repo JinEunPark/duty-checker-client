@@ -2,7 +2,6 @@ import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 // ─────────────────────────────────────────────
 // 모델
@@ -261,31 +260,6 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
     );
   }
 
-  // ── 로그아웃 ──
-  void _confirmLogout() {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃 하시겠습니까?'),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('취소'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: const Text('로그아웃'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              context.go('/login');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final hasContent =
@@ -314,15 +288,6 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
           child: const Icon(
             CupertinoIcons.chevron_left,
             color: AppColors.textPrimary,
-          ),
-        ),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: _confirmLogout,
-          child: const Icon(
-            CupertinoIcons.square_arrow_right,
-            size: 22,
-            color: AppColors.textSecondary,
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:duty_checker/shared/widget/settings_action_sheet.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,30 +116,6 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
     return '${date.month}월 ${date.day}일 $timeStr';
   }
 
-  void _confirmLogout() {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃 하시겠습니까?'),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('취소'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: const Text('로그아웃'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              context.go('/login');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final hasUsers = _connectedUsers.isNotEmpty;
@@ -165,20 +142,12 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
       children: [
-        // 인사말 + 로그아웃
+        // 인사말 + 설정
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('보호자 홈', style: AppTextStyles.heading1),
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: _confirmLogout,
-              child: const Icon(
-                CupertinoIcons.square_arrow_right,
-                size: 22,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            const SettingsDropdown(currentRole: UserRole.guardian),
           ],
         ),
         const Gap(4),

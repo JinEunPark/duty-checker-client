@@ -1,4 +1,6 @@
+import 'package:duty_checker/shared/widget/settings_action_sheet.dart';
 import 'package:duty_checker/theme.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -76,13 +78,6 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
     });
   }
 
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return '좋은 아침이에요';
-    if (hour < 18) return '좋은 오후예요';
-    return '좋은 저녁이에요';
-  }
-
   String _formatLastCheckTime(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
@@ -124,30 +119,6 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
     return '아직 보호자가 등록되지 않았어요';
   }
 
-  void _confirmLogout() {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃 하시겠습니까?'),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('취소'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: const Text('로그아웃'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.go('/login');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -159,27 +130,19 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
             children: [
               const Gap(24),
 
-              // 인사말 + 로그아웃
+              // 타이틀 + 설정
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(_getGreeting(), style: AppTextStyles.heading1),
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: _confirmLogout,
-                    child: const Icon(
-                      CupertinoIcons.square_arrow_right,
-                      size: 22,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
+                  const Text('안부 전달', style: AppTextStyles.heading1),
+                  const SettingsDropdown(currentRole: UserRole.user),
                 ],
               ),
               const Gap(4),
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '오늘도 안부를 전달해주세요',
+                  '보호자에게 안부를 전달할 수 있어요',
                   style: AppTextStyles.body2,
                 ),
               ),
@@ -193,8 +156,11 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
 
               // 안부 확인 영역
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Align(
+                alignment: const Alignment(0, -0.25),
+                child: SingleChildScrollView(
+                  child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // 펄스 링 + 체크인 버튼
                     GestureDetector(
@@ -207,8 +173,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                       child: ScaleTransition(
                         scale: _scaleAnim,
                         child: SizedBox(
-                          width: 180,
-                          height: 180,
+                          width: 220,
+                          height: 220,
                           child: AnimatedBuilder(
                             animation: _pulseAnim,
                             builder: (context, child) {
@@ -221,8 +187,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                                       scale:
                                           1.0 + (0.03 * _pulseAnim.value),
                                       child: Container(
-                                        width: 172,
-                                        height: 172,
+                                        width: 210,
+                                        height: 210,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           border: Border.all(
@@ -245,8 +211,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
                               curve: Curves.easeOut,
-                              width: 140,
-                              height: 140,
+                              width: 170,
+                              height: 170,
                               decoration: BoxDecoration(
                                 color: _justChecked
                                     ? AppColors.primary
@@ -272,7 +238,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                                       ? CupertinoIcons.checkmark
                                       : CupertinoIcons.heart_fill,
                                   key: ValueKey(_justChecked),
-                                  size: 44,
+                                  size: 52,
                                   color: _justChecked
                                       ? AppColors.surface
                                       : AppColors.primary,
@@ -320,6 +286,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                     ),
                   ],
                 ),
+                ),
+              ),
               ),
 
               // 하단 안내

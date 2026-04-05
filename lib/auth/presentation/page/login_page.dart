@@ -20,6 +20,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordFocusNode = FocusNode();
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -151,7 +152,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               CupertinoTextField(
                                 controller: _passwordController,
                                 focusNode: _passwordFocusNode,
-                                obscureText: true,
+                                obscureText: _obscurePassword,
                                 placeholder: '비밀번호',
                                 placeholderStyle: const TextStyle(
                                   fontFamily: 'Pretendard',
@@ -167,10 +168,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   color: AppColors.gray100,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
+                                padding: const EdgeInsets.only(
+                                  left: 16,
+                                  top: 16,
+                                  bottom: 16,
+                                  right: 6,
                                 ),
+                                suffix: CupertinoButton(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  minimumSize: Size.zero,
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
+                                  child: Icon(
+                                    _obscurePassword
+                                        ? CupertinoIcons.eye_slash
+                                        : CupertinoIcons.eye,
+                                    size: 20,
+                                    color: AppColors.textTertiary,
+                                  ),
+                                ),
+                                suffixMode: OverlayVisibilityMode.always,
                               ),
                               const Gap(16),
 
