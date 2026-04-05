@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,12 +19,14 @@ class FcmService {
 
   Future<void> initialize() async {
     await _requestPermission();
-    await _getToken();
     _listenTokenRefresh();
     _listenForegroundMessages();
     _handleInitialMessage();
     _handleMessageOpenedApp();
     await _setForegroundNotificationOptions();
+
+    // 토큰 발급은 앱 실행을 차단하지 않도록 백그라운드에서 수행
+    _getToken();
   }
 
   /// 알림 권한 요청 (iOS 시스템 다이얼로그 / Android 13+)
@@ -38,8 +41,29 @@ class FcmService {
 
   /// FCM 토큰 발급 및 로그 출력
   Future<void> _getToken() async {
-    final token = await _messaging.getToken();
-    log('🔑 [FCM] 토큰: $token');
+    if (Platform.isIOS) {
+      // iOS에서는 APNS 토큰이 준비될 때까지 대기
+      String? apnsToken;
+      var delay = const Duration(milliseconds: 500);
+      for (var i = 0; i < 5; i++) {
+        apnsToken = await _messaging.getAPNSToken();
+        if (apnsToken != null) break;
+        log('⏳ [FCM] APNS 토큰 대기 중... (${i + 1}/5)');
+        await Future.delayed(delay);
+        delay *= 2;
+      }
+      if (apnsToken == null) {
+        log('⚠️ [FCM] APNS 토큰을 받지 못했습니다. FCM 토큰 발급을 건너뜁니다.');
+        return;
+      }
+      log('✅ [FCM] APNS 토큰 확인 완료');
+    }
+    try {
+      final token = await _messaging.getToken();
+      log('🔑 [FCM] 토큰: $token');
+    } catch (e) {
+      log('❌ [FCM] 토큰 발급 실패: $e');
+    }
   }
 
   /// 토큰 갱신 리스닝

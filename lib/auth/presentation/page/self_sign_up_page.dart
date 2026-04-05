@@ -1,6 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,7 +70,8 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
   // 키보드가 올라올 때 자동으로 스크롤
   @override
   void didChangeMetrics() {
-    final bottomInset = WidgetsBinding.instance.platformDispatcher.views.first.viewInsets.bottom;
+    final bottomInset = WidgetsBinding.instance.platformDispatcher.views.first
+        .viewInsets.bottom;
     if (bottomInset > 100) {
       _scrollToBottom();
     }
@@ -106,7 +108,9 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
       final renderObject = ctx.findRenderObject();
       if (renderObject == null) return;
       final viewport = RenderAbstractViewport.of(renderObject);
-      final offset = viewport.getOffsetToReveal(renderObject, 0.1).offset;
+      final offset = viewport
+          .getOffsetToReveal(renderObject, 0.1)
+          .offset;
       _scrollController.animateTo(
         offset.clamp(0.0, _scrollController.position.maxScrollExtent),
         duration: const Duration(milliseconds: 500),
@@ -167,6 +171,29 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
 
   void _onComplete() {
     FocusManager.instance.primaryFocus?.unfocus();
+    if (_guardians.isEmpty) {
+      showCupertinoDialog<void>(
+        context: context,
+        builder: (ctx) =>
+            CupertinoAlertDialog(
+              title: const Text('보호자 미등록'),
+              content: const Text(
+                  '보호자가 등록되지 않았습니다. \n 추후 보호자 관리 메뉴에서 \n 등록할 수 있습니다.'),
+              actions: [
+                CupertinoDialogAction(child: const Text('돌아가기'),
+                  onPressed: () => Navigator.of(ctx).pop(),),
+                CupertinoDialogAction(child: const Text('계속 진행'),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    setState(() {
+                      _isComplete = true;
+                    });
+                  },
+                ),
+              ],
+            ),
+      );
+    }
     setState(() => _isComplete = true);
   }
 
@@ -180,43 +207,43 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
         if (didPop) FocusManager.instance.primaryFocus?.unfocus();
       },
       child: CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
-      resizeToAvoidBottomInset: true,
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: AppColors.surface,
-        padding: const EdgeInsetsDirectional.only(start: 4),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.border, width: 0.5),
-        ),
-        middle: Text(
-          _isComplete ? '설정 완료' : '당사자 등록',
-          style: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+        backgroundColor: AppColors.background,
+        resizeToAvoidBottomInset: true,
+        navigationBar: CupertinoNavigationBar(
+          backgroundColor: AppColors.surface,
+          padding: const EdgeInsetsDirectional.only(start: 4),
+          border: const Border(
+            bottom: BorderSide(color: AppColors.border, width: 0.5),
+          ),
+          middle: Text(
+            _isComplete ? '설정 완료' : '당사자 등록',
+            style: const TextStyle(
+              fontFamily: 'Pretendard',
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          leading: _isComplete
+              ? const SizedBox.shrink()
+              : CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              context.pop();
+            },
+            child: const Icon(
+              CupertinoIcons.chevron_left,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
-        leading: _isComplete
-            ? const SizedBox.shrink()
-            : CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  context.pop();
-                },
-                child: const Icon(
-                  CupertinoIcons.chevron_left,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-      ),
-      child: SafeArea(
-        child: _isComplete
-            ? _buildCompleteScreen()
-            : _buildStepScreen(),
-      ),
-    ), // CupertinoPageScaffold
+        child: SafeArea(
+          child: _isComplete
+              ? _buildCompleteScreen()
+              : _buildStepScreen(),
+        ),
+      ), // CupertinoPageScaffold
     ); // PopScope
   }
 
@@ -364,7 +391,8 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
                     // 스텝 1: 전화번호 입력 (최초 노출)
                     _StepItem(
                       isCompleted: _phoneCompleted,
-                      isLast: !_showVerification && !_showPassword && !_showGuardian,
+                      isLast: !_showVerification && !_showPassword &&
+                          !_showGuardian,
                       title: '전화번호 입력',
                       description: '안부 확인을 위해 본인 전화번호가 필요합니다',
                       content: _PhoneStepContent(
@@ -385,7 +413,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
                           isLast: !_showPassword && !_showGuardian,
                           title: '인증번호 입력',
                           description:
-                              '${_phoneController.text}로 전송된 인증번호를 입력해주세요',
+                          '${_phoneController.text}로 전송된 인증번호를 입력해주세요',
                           content: _CodeStepContent(
                             controller: _codeController,
                             focusNode: _codeFocusNode,
@@ -428,7 +456,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
                           isLast: true,
                           title: '보호자 등록',
                           description:
-                              '안부 확인이 없을 경우 알림을 받을 보호자를 등록합니다',
+                          '안부 확인이 없을 경우 알림을 받을 보호자를 등록합니다',
                           content: _GuardianStepContent(
                             controller: _guardianController,
                             focusNode: _guardianFocusNode,
@@ -450,7 +478,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
           child: _CompleteButton(
-            enabled: _passwordCompleted && _guardians.isNotEmpty,
+            enabled: _passwordCompleted,
             onTap: _onComplete,
           ),
         ),
@@ -465,6 +493,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
 // ─────────────────────────────────────────────
 class _AnimatedStep extends StatefulWidget {
   final Widget child;
+
   const _AnimatedStep({required this.child});
 
   @override
@@ -543,7 +572,7 @@ class _StepItem extends StatelessWidget {
                     width: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     color:
-                        isCompleted ? AppColors.success : AppColors.gray200,
+                    isCompleted ? AppColors.success : AppColors.gray200,
                   ),
                 ),
             ],
@@ -579,6 +608,7 @@ class _StepItem extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _StepCircle extends StatelessWidget {
   final bool isCompleted;
+
   const _StepCircle({required this.isCompleted});
 
   @override
@@ -592,10 +622,10 @@ class _StepCircle extends StatelessWidget {
       ),
       child: isCompleted
           ? const Icon(
-              CupertinoIcons.checkmark,
-              color: CupertinoColors.white,
-              size: 13,
-            )
+        CupertinoIcons.checkmark,
+        color: CupertinoColors.white,
+        size: 13,
+      )
           : null,
     );
   }
@@ -606,6 +636,7 @@ class _StepCircle extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _StatusMessage extends StatelessWidget {
   final String text;
+
   const _StatusMessage({required this.text});
 
   @override
@@ -681,7 +712,7 @@ class _PhoneStepContent extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color:
-                  isCompleted ? AppColors.textDisabled : AppColors.primary,
+              isCompleted ? AppColors.textDisabled : AppColors.primary,
             ),
           ),
         ),
@@ -914,7 +945,7 @@ class _GuardianStepContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   _PhoneFormatter(),
@@ -955,7 +986,10 @@ class _GuardianStepContent extends StatelessWidget {
         if (guardians.isNotEmpty) ...[
           const Gap(12),
           Column(
-            children: guardians.asMap().entries.map((entry) {
+            children: guardians
+                .asMap()
+                .entries
+                .map((entry) {
               final isLast = entry.key == guardians.length - 1;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -1035,6 +1069,7 @@ class _CompleteButton extends StatelessWidget {
   final bool enabled;
   final String label;
   final VoidCallback onTap;
+
   const _CompleteButton({
     required this.enabled,
     required this.onTap,
@@ -1071,10 +1106,8 @@ class _CompleteButton extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _PhoneFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
+      TextEditingValue newValue,) {
     final digits = newValue.text.replaceAll('-', '');
     final limited = digits.length > 11 ? digits.substring(0, 11) : digits;
 
@@ -1085,7 +1118,8 @@ class _PhoneFormatter extends TextInputFormatter {
       formatted = '${limited.substring(0, 3)}-${limited.substring(3)}';
     } else {
       formatted =
-          '${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited.substring(7)}';
+      '${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited
+          .substring(7)}';
     }
 
     return newValue.copyWith(

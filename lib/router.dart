@@ -1,20 +1,20 @@
 import 'package:duty_checker/guardian/presentation/page/guardian_home_page.dart';
-import 'package:duty_checker/guardian/presentation/page/landing_page.dart';
-import 'package:duty_checker/guardian/presentation/page/guardian_sign_up_page.dart';
+import 'package:duty_checker/auth/presentation/page/landing_page.dart';
+import 'package:duty_checker/auth/presentation/page/guardian_sign_up_page.dart';
 import 'package:duty_checker/guardian/presentation/page/user_management_page.dart';
-import 'package:duty_checker/presentation/page/login_page.dart';
-import 'package:duty_checker/user/presentation/page/self_sign_up_page.dart';
+import 'package:duty_checker/auth/presentation/page/login_page.dart';
+import 'package:duty_checker/auth/presentation/page/self_sign_up_page.dart';
+import 'package:duty_checker/auth/presentation/page/splash_page.dart';
 import 'package:duty_checker/user/presentation/page/guardian_management_page.dart';
 import 'package:duty_checker/user/presentation/page/user_home_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const Placeholder(),
+      builder: (context, state) => const SplashPage(),
     ),
     GoRoute(
       path: '/landing',

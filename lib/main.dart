@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:duty_checker/firebase_options.dart';
 import 'package:duty_checker/router.dart';
 import 'package:duty_checker/shared/fcm_service.dart';
@@ -18,7 +20,11 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   final fcmService = FcmService(FirebaseMessaging.instance);
-  await fcmService.initialize();
+  try {
+    await fcmService.initialize();
+  } catch (e) {
+    log('⚠️ [FCM] 초기화 실패 (앱은 정상 진행): $e');
+  }
 
   final sharedPreferences = await SharedPreferences.getInstance();
 

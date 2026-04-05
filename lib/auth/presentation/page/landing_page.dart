@@ -1,5 +1,5 @@
-import 'package:duty_checker/guardian/presentation/widget/mode_card_widget.dart';
-import 'package:duty_checker/guardian/presentation/widget/next_button_widget.dart';
+import 'package:duty_checker/auth/presentation/widget/mode_card_widget.dart';
+import 'package:duty_checker/auth/presentation/widget/next_button_widget.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +66,35 @@ class _LandingPageState extends ConsumerState<LandingPage> {
               NextButtonWidget(
                 enabled: _selectedMode != null,
                 onTap: () => context.push('/sign-up/$_selectedMode'),
+              ),
+              const Gap(16),
+
+              // 로그인 안내
+              Center(
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => context.go('/login'),
+                  child: Text.rich(
+                    TextSpan(
+                      text: '이미 계정이 있으신가요? ',
+                      style: const TextStyle(
+                        fontFamily: 'Pretendard',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textTertiary,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '로그인',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               const Gap(16),
             ],
