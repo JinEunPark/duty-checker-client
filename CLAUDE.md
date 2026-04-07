@@ -144,6 +144,28 @@ flutter analyze
 
 생성 파일(*.freezed.dart, *.g.dart)의 warning은 무시 가능.
 
+## 테스트 규칙 (필수)
+
+모든 feature 구현 시 테스트를 함께 작성한다. 테스트 작성 시 반드시 `docs/TEST.md`의 규칙을 따른다.
+
+- **테스트 규칙 문서**: `docs/TEST.md` (Mock 패턴, 작성 패턴, 네이밍, 회귀 테스트 규칙)
+- **필수 대상**: DTO Model (fromJson/toDomain), UseCase, ViewModel
+- **제외 대상**: Page/Widget UI, 생성된 코드
+- **Mock 라이브러리**: mocktail (mockito 아님)
+- **회귀 테스트**: 테스트 실패로 버그 발견 시, 해당 버그를 재현하는 테스트 케이스를 추가한 뒤 수정
+
+### 검증 절차
+
+코드 작성 완료 후 반드시:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+flutter analyze
+flutter test
+```
+
+세 단계 모두 통과해야 구현 완료로 간주한다.
+
 ## 주의 사항
 
 - Entity에 `fromJson`/`toJson` 넣지 않기 (Data 레이어 관심사)
