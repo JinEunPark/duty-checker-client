@@ -20,8 +20,10 @@ mixin _$SignUpState {
   bool get isVerifyingCode => throw _privateConstructorUsedError;
   bool get isRegistering => throw _privateConstructorUsedError;
   bool get codeSent => throw _privateConstructorUsedError;
+  DateTime? get codeExpiresAt => throw _privateConstructorUsedError;
   bool get codeVerified => throw _privateConstructorUsedError;
   bool get registered => throw _privateConstructorUsedError;
+  User? get user => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -40,9 +42,13 @@ abstract class $SignUpStateCopyWith<$Res> {
       bool isVerifyingCode,
       bool isRegistering,
       bool codeSent,
+      DateTime? codeExpiresAt,
       bool codeVerified,
       bool registered,
+      User? user,
       String? error});
+
+  $UserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -62,8 +68,10 @@ class _$SignUpStateCopyWithImpl<$Res, $Val extends SignUpState>
     Object? isVerifyingCode = null,
     Object? isRegistering = null,
     Object? codeSent = null,
+    Object? codeExpiresAt = freezed,
     Object? codeVerified = null,
     Object? registered = null,
+    Object? user = freezed,
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
@@ -83,6 +91,10 @@ class _$SignUpStateCopyWithImpl<$Res, $Val extends SignUpState>
           ? _value.codeSent
           : codeSent // ignore: cast_nullable_to_non_nullable
               as bool,
+      codeExpiresAt: freezed == codeExpiresAt
+          ? _value.codeExpiresAt
+          : codeExpiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       codeVerified: null == codeVerified
           ? _value.codeVerified
           : codeVerified // ignore: cast_nullable_to_non_nullable
@@ -91,11 +103,27 @@ class _$SignUpStateCopyWithImpl<$Res, $Val extends SignUpState>
           ? _value.registered
           : registered // ignore: cast_nullable_to_non_nullable
               as bool,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $UserCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $UserCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
   }
 }
 
@@ -112,9 +140,14 @@ abstract class _$$SignUpStateImplCopyWith<$Res>
       bool isVerifyingCode,
       bool isRegistering,
       bool codeSent,
+      DateTime? codeExpiresAt,
       bool codeVerified,
       bool registered,
+      User? user,
       String? error});
+
+  @override
+  $UserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -132,8 +165,10 @@ class __$$SignUpStateImplCopyWithImpl<$Res>
     Object? isVerifyingCode = null,
     Object? isRegistering = null,
     Object? codeSent = null,
+    Object? codeExpiresAt = freezed,
     Object? codeVerified = null,
     Object? registered = null,
+    Object? user = freezed,
     Object? error = freezed,
   }) {
     return _then(_$SignUpStateImpl(
@@ -153,6 +188,10 @@ class __$$SignUpStateImplCopyWithImpl<$Res>
           ? _value.codeSent
           : codeSent // ignore: cast_nullable_to_non_nullable
               as bool,
+      codeExpiresAt: freezed == codeExpiresAt
+          ? _value.codeExpiresAt
+          : codeExpiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       codeVerified: null == codeVerified
           ? _value.codeVerified
           : codeVerified // ignore: cast_nullable_to_non_nullable
@@ -161,6 +200,10 @@ class __$$SignUpStateImplCopyWithImpl<$Res>
           ? _value.registered
           : registered // ignore: cast_nullable_to_non_nullable
               as bool,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -177,8 +220,10 @@ class _$SignUpStateImpl implements _SignUpState {
       this.isVerifyingCode = false,
       this.isRegistering = false,
       this.codeSent = false,
+      this.codeExpiresAt,
       this.codeVerified = false,
       this.registered = false,
+      this.user,
       this.error});
 
   @override
@@ -194,17 +239,21 @@ class _$SignUpStateImpl implements _SignUpState {
   @JsonKey()
   final bool codeSent;
   @override
+  final DateTime? codeExpiresAt;
+  @override
   @JsonKey()
   final bool codeVerified;
   @override
   @JsonKey()
   final bool registered;
   @override
+  final User? user;
+  @override
   final String? error;
 
   @override
   String toString() {
-    return 'SignUpState(isSendingCode: $isSendingCode, isVerifyingCode: $isVerifyingCode, isRegistering: $isRegistering, codeSent: $codeSent, codeVerified: $codeVerified, registered: $registered, error: $error)';
+    return 'SignUpState(isSendingCode: $isSendingCode, isVerifyingCode: $isVerifyingCode, isRegistering: $isRegistering, codeSent: $codeSent, codeExpiresAt: $codeExpiresAt, codeVerified: $codeVerified, registered: $registered, user: $user, error: $error)';
   }
 
   @override
@@ -220,16 +269,28 @@ class _$SignUpStateImpl implements _SignUpState {
                 other.isRegistering == isRegistering) &&
             (identical(other.codeSent, codeSent) ||
                 other.codeSent == codeSent) &&
+            (identical(other.codeExpiresAt, codeExpiresAt) ||
+                other.codeExpiresAt == codeExpiresAt) &&
             (identical(other.codeVerified, codeVerified) ||
                 other.codeVerified == codeVerified) &&
             (identical(other.registered, registered) ||
                 other.registered == registered) &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isSendingCode, isVerifyingCode,
-      isRegistering, codeSent, codeVerified, registered, error);
+  int get hashCode => Object.hash(
+      runtimeType,
+      isSendingCode,
+      isVerifyingCode,
+      isRegistering,
+      codeSent,
+      codeExpiresAt,
+      codeVerified,
+      registered,
+      user,
+      error);
 
   @JsonKey(ignore: true)
   @override
@@ -244,8 +305,10 @@ abstract class _SignUpState implements SignUpState {
       final bool isVerifyingCode,
       final bool isRegistering,
       final bool codeSent,
+      final DateTime? codeExpiresAt,
       final bool codeVerified,
       final bool registered,
+      final User? user,
       final String? error}) = _$SignUpStateImpl;
 
   @override
@@ -257,9 +320,13 @@ abstract class _SignUpState implements SignUpState {
   @override
   bool get codeSent;
   @override
+  DateTime? get codeExpiresAt;
+  @override
   bool get codeVerified;
   @override
   bool get registered;
+  @override
+  User? get user;
   @override
   String? get error;
   @override

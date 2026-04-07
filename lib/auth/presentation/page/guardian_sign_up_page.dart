@@ -1,10 +1,9 @@
 import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
+import 'package:duty_checker/core/widget/sign_up_widgets.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class GuardianSignUpPage extends ConsumerStatefulWidget {
@@ -175,7 +174,6 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
         child: SafeArea(
           child: Column(
             children: [
-              // 스텝 목록
               Expanded(
                 child: ListView(
                   controller: _scrollController,
@@ -189,53 +187,54 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                       padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
                       child: Column(
                         children: [
-                          // 스텝 1: 전화번호 입력
-                          _StepItem(
+                          StepItem(
                             isCompleted: _phoneCompleted,
                             isLast: !_showVerification && !_showPassword,
                             title: '전화번호 입력',
                             description: '보호자 본인의 전화번호를 입력해주세요',
-                            content: _PhoneStepContent(
+                            content: PhoneStepContent(
                               controller: _phoneController,
-                              isCompleted: _phoneCompleted,
+                              isCompleted: _codeCompleted,
+                              codeSent: _phoneCompleted,
                               onSend: _onPhoneSend,
+                              onResend: () {
+                                final digits = _phoneController.text.replaceAll('-', '');
+                                ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
+                              },
                             ),
                             statusMessage: _phoneCompleted
-                                ? const _StatusMessage(text: '인증번호가 전송되었습니다')
+                                ? const StepStatusMessage(text: '인증번호가 전송되었습니다')
                                 : null,
                           ),
-
-                          // 스텝 2: 인증번호 입력 (애니메이션 등장)
                           if (_showVerification)
-                            _AnimatedStep(
-                              child: _StepItem(
+                            AnimatedStep(
+                              child: StepItem(
                                 isCompleted: _codeCompleted,
                                 isLast: !_showPassword,
                                 title: '인증번호 입력',
                                 description:
                                     '${_phoneController.text}로 전송된 인증번호를 입력해주세요',
-                                content: _CodeStepContent(
+                                content: CodeStepContent(
                                   controller: _codeController,
                                   focusNode: _codeFocusNode,
                                   inputKey: _codeInputKey,
                                   isCompleted: _codeCompleted,
                                   onSubmit: _onCodeSubmit,
+                                  expiresAt: ref.watch(signUpViewModelProvider.select((s) => s.codeExpiresAt)),
                                 ),
                                 statusMessage: _codeCompleted
-                                    ? const _StatusMessage(text: '인증이 완료되었습니다')
+                                    ? const StepStatusMessage(text: '인증이 완료되었습니다')
                                     : null,
                               ),
                             ),
-
-                          // 스텝 3: 비밀번호 설정 (애니메이션 등장)
                           if (_showPassword)
-                            _AnimatedStep(
-                              child: _StepItem(
+                            AnimatedStep(
+                              child: StepItem(
                                 isCompleted: _passwordCompleted,
                                 isLast: true,
                                 title: '비밀번호 설정',
                                 description: '로그인에 사용할 비밀번호를 설정해주세요',
-                                content: _PasswordStepContent(
+                                content: PasswordStepContent(
                                   controller: _passwordController,
                                   confirmController: _passwordConfirmController,
                                   focusNode: _passwordFocusNode,
@@ -243,7 +242,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                                   onSubmit: _onPasswordSubmit,
                                 ),
                                 statusMessage: _passwordCompleted
-                                    ? const _StatusMessage(text: '비밀번호가 설정되었습니다')
+                                    ? const StepStatusMessage(text: '비밀번호가 설정되었습니다')
                                     : null,
                               ),
                             ),
@@ -253,480 +252,22 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                   ],
                 ),
               ),
-
-              // 완료 버튼 (키보드가 올라오면 함께 올라감)
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                child: _CompleteButton(
+                child: SignUpCompleteButton(
                   enabled: _passwordCompleted,
-                  onTap: () => context.go('/guardian/home'),
+                  onTap: () {
+                    final user = ref.read(signUpViewModelProvider).user;
+                    context.go(user != null && user.isGuardian
+                        ? '/guardian/home'
+                        : '/user/home');
+                  },
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 슬라이드 + 페이드 애니메이션 래퍼
-// 새 스텝이 추가될 때 아래에서 위로 등장
-// ─────────────────────────────────────────────
-class _AnimatedStep extends StatefulWidget {
-  final Widget child;
-  const _AnimatedStep({required this.child});
-
-  @override
-  State<_AnimatedStep> createState() => _AnimatedStepState();
-}
-
-class _AnimatedStepState extends State<_AnimatedStep>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _opacity;
-  late final Animation<Offset> _slide;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 450),
-    );
-    _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween(
-      begin: const Offset(0, 0.12),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
-    _ctrl.forward();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _opacity,
-      child: SlideTransition(position: _slide, child: widget.child),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 스텝 아이템 (인디케이터 + 콘텐츠)
-// ─────────────────────────────────────────────
-class _StepItem extends StatelessWidget {
-  final bool isCompleted;
-  final bool isLast;
-  final String title;
-  final String description;
-  final Widget content;
-  final Widget? statusMessage;
-
-  const _StepItem({
-    required this.isCompleted,
-    required this.isLast,
-    required this.title,
-    required this.description,
-    required this.content,
-    this.statusMessage,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 왼쪽: 원형 인디케이터 + 연결선
-          Column(
-            children: [
-              _StepCircle(isCompleted: isCompleted),
-              if (!isLast)
-                Expanded(
-                  child: Container(
-                    width: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    color: isCompleted ? AppColors.success : AppColors.gray200,
-                  ),
-                ),
-            ],
-          ),
-          const Gap(16),
-
-          // 오른쪽: 제목, 설명, 입력 폼
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: AppTextStyles.heading3),
-                const Gap(6),
-                Text(description, style: AppTextStyles.body2),
-                const Gap(16),
-                content,
-                if (statusMessage != null) ...[
-                  const Gap(10),
-                  statusMessage!,
-                ],
-                const Gap(28),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 스텝 원형 인디케이터
-// ─────────────────────────────────────────────
-class _StepCircle extends StatelessWidget {
-  final bool isCompleted;
-  const _StepCircle({required this.isCompleted});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 24,
-      height: 24,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isCompleted ? AppColors.success : AppColors.primary,
-      ),
-      child: isCompleted
-          ? const Icon(
-              CupertinoIcons.checkmark,
-              color: CupertinoColors.white,
-              size: 13,
-            )
-          : null,
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 완료 상태 메시지
-// ─────────────────────────────────────────────
-class _StatusMessage extends StatelessWidget {
-  final String text;
-  const _StatusMessage({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(CupertinoIcons.checkmark_alt,
-            color: AppColors.success, size: 16),
-        const Gap(6),
-        Text(
-          text,
-          style: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.success,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 스텝 1: 전화번호 입력
-// ─────────────────────────────────────────────
-class _PhoneStepContent extends StatelessWidget {
-  final TextEditingController controller;
-  final bool isCompleted;
-  final VoidCallback onSend;
-
-  const _PhoneStepContent({
-    required this.controller,
-    required this.isCompleted,
-    required this.onSend,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoTextField(
-      controller: controller,
-      enabled: !isCompleted,
-      keyboardType: TextInputType.phone,
-      placeholder: '010-0000-0000',
-      placeholderStyle: const TextStyle(
-        fontFamily: 'Pretendard',
-        fontSize: 16,
-        color: AppColors.textTertiary,
-      ),
-      style: const TextStyle(
-        fontFamily: 'Pretendard',
-        fontSize: 16,
-        color: AppColors.textPrimary,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.gray100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        _PhoneFormatter(),
-      ],
-      suffix: Padding(
-        padding: const EdgeInsets.only(right: 12),
-        child: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: isCompleted ? null : onSend,
-          child: Text(
-            '전송',
-            style: TextStyle(
-              fontFamily: 'Pretendard',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isCompleted ? AppColors.textDisabled : AppColors.primary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 스텝 2: 인증번호 입력 (6자리 OTP)
-// ─────────────────────────────────────────────
-class _CodeStepContent extends StatelessWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final GlobalKey inputKey;
-  final bool isCompleted;
-  final VoidCallback onSubmit;
-
-  const _CodeStepContent({
-    required this.controller,
-    required this.focusNode,
-    required this.inputKey,
-    required this.isCompleted,
-    required this.onSubmit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoTextField(
-      key: inputKey,
-      controller: controller,
-      focusNode: focusNode,
-      enabled: !isCompleted,
-      keyboardType: TextInputType.number,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontFamily: 'Pretendard',
-        fontSize: 26,
-        fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
-        letterSpacing: 12,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.gray100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(6),
-      ],
-      // 6자리 입력 완료 시 자동 제출
-      onChanged: (value) {
-        if (value.length == 6) onSubmit();
-      },
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 스텝 3: 비밀번호 설정
-// ─────────────────────────────────────────────
-class _PasswordStepContent extends StatefulWidget {
-  final TextEditingController controller;
-  final TextEditingController confirmController;
-  final FocusNode focusNode;
-  final bool isCompleted;
-  final VoidCallback onSubmit;
-
-  const _PasswordStepContent({
-    required this.controller,
-    required this.confirmController,
-    required this.focusNode,
-    required this.isCompleted,
-    required this.onSubmit,
-  });
-
-  @override
-  State<_PasswordStepContent> createState() => _PasswordStepContentState();
-}
-
-class _PasswordStepContentState extends State<_PasswordStepContent> {
-  final _confirmFocusNode = FocusNode();
-  bool _showError = false;
-
-  @override
-  void dispose() {
-    _confirmFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _tryAutoSubmit() {
-    final pw = widget.controller.text;
-    final confirm = widget.confirmController.text;
-    if (pw.length < 6 || confirm.length < 6) return;
-    if (pw != confirm) {
-      setState(() => _showError = true);
-      return;
-    }
-    setState(() => _showError = false);
-    widget.onSubmit();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CupertinoTextField(
-          controller: widget.controller,
-          focusNode: widget.focusNode,
-          enabled: !widget.isCompleted,
-          obscureText: true,
-          placeholder: '비밀번호 (6자 이상)',
-          placeholderStyle: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 16,
-            color: AppColors.textTertiary,
-          ),
-          style: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 16,
-            color: AppColors.textPrimary,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.gray100,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          onSubmitted: (_) => _confirmFocusNode.requestFocus(),
-          onChanged: (_) {
-            if (_showError) setState(() => _showError = false);
-          },
-        ),
-        const Gap(10),
-        CupertinoTextField(
-          controller: widget.confirmController,
-          focusNode: _confirmFocusNode,
-          enabled: !widget.isCompleted,
-          obscureText: true,
-          placeholder: '비밀번호 확인',
-          placeholderStyle: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 16,
-            color: AppColors.textTertiary,
-          ),
-          style: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 16,
-            color: AppColors.textPrimary,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.gray100,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          onChanged: (_) {
-            if (_showError) setState(() => _showError = false);
-            _tryAutoSubmit();
-          },
-        ),
-        if (_showError) ...[
-          const Gap(8),
-          const Text(
-            '비밀번호가 일치하지 않습니다',
-            style: TextStyle(
-              fontFamily: 'Pretendard',
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: AppColors.error,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 완료 버튼
-// ─────────────────────────────────────────────
-class _CompleteButton extends StatelessWidget {
-  final bool enabled;
-  final VoidCallback onTap;
-  const _CompleteButton({required this.enabled, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: double.infinity,
-        height: 54,
-        decoration: BoxDecoration(
-          color: enabled ? AppColors.primary : AppColors.gray200,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Center(
-          child: Text(
-            '완료',
-            style: AppTextStyles.body1Medium.copyWith(
-              color: enabled ? AppColors.surface : AppColors.gray400,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 전화번호 자동 포매터 (010-XXXX-XXXX)
-// ─────────────────────────────────────────────
-class _PhoneFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final digits = newValue.text.replaceAll('-', '');
-    final limited = digits.length > 11 ? digits.substring(0, 11) : digits;
-
-    String formatted;
-    if (limited.length <= 3) {
-      formatted = limited;
-    } else if (limited.length <= 7) {
-      formatted = '${limited.substring(0, 3)}-${limited.substring(3)}';
-    } else {
-      formatted =
-          '${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited.substring(7)}';
-    }
-
-    return newValue.copyWith(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

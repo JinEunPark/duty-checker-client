@@ -13,7 +13,7 @@
 | 전화번호 인증코드 발송 | `POST /v1/auth/send-code` | ✅ 연결됨 |
 | 인증코드 검증 | `POST /v1/auth/verify-code` | ✅ 연결됨 |
 | 회원가입 | `POST /v1/auth/register` (role: SUBJECT) | ✅ 연결됨 |
-| 가입 후 자동 로그인 | `POST /v1/auth/login` | ❌ 미구현 — 가입 완료 후 login API 호출 → 토큰 저장 → 홈 이동 필요 |
+| 가입 후 자동 로그인 | `POST /v1/auth/login` | ✅ 연결됨 — register 성공 후 자동 login → 토큰 저장 → role 기반 홈 이동 |
 | 보호자 전화번호 추가 | `POST /v1/connections` | ❌ 미구현 — 스텝4 보호자 추가가 로컬 리스트만 사용 중 |
 
 **필요한 feature**: auth (기존), connection (신규)
@@ -27,7 +27,7 @@
 | 전화번호 인증코드 발송 | `POST /v1/auth/send-code` | ✅ 연결됨 |
 | 인증코드 검증 | `POST /v1/auth/verify-code` | ✅ 연결됨 |
 | 회원가입 | `POST /v1/auth/register` (role: GUARDIAN) | ✅ 연결됨 |
-| 가입 후 자동 로그인 | `POST /v1/auth/login` | ❌ 미구현 — 가입 완료 후 login API 호출 → 토큰 저장 → 홈 이동 필요 |
+| 가입 후 자동 로그인 | `POST /v1/auth/login` | ✅ 연결됨 — register 성공 후 자동 login → 토큰 저장 → role 기반 홈 이동 |
 
 **필요한 feature**: auth (기존)
 

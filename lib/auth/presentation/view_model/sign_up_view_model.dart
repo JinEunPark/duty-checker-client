@@ -13,8 +13,12 @@ class SignUpViewModel extends _$SignUpViewModel {
     state = state.copyWith(isSendingCode: true, error: null);
     try {
       final useCase = ref.read(sendCodeUseCaseProvider);
-      await useCase(phone: phone);
-      state = state.copyWith(isSendingCode: false, codeSent: true);
+      final expiresAt = await useCase(phone: phone);
+      state = state.copyWith(
+        isSendingCode: false,
+        codeSent: true,
+        codeExpiresAt: expiresAt,
+      );
     } catch (e) {
       state = state.copyWith(isSendingCode: false, error: e.toString());
     }
@@ -41,9 +45,26 @@ class SignUpViewModel extends _$SignUpViewModel {
   }) async {
     state = state.copyWith(isRegistering: true, error: null);
     try {
-      final useCase = ref.read(registerUseCaseProvider);
-      await useCase(phone: phone, password: password, role: role);
-      state = state.copyWith(isRegistering: false, registered: true);
+      final registerUseCase = ref.read(registerUseCaseProvider);
+      await registerUseCase(phone: phone, password: password, role: role);
+
+      // 가입 성공 후 자동 로그인
+      try {
+        final loginUseCase = ref.read(loginUseCaseProvider);
+        final loginResult =
+            await loginUseCase(phone: phone, password: password);
+        state = state.copyWith(
+          isRegistering: false,
+          registered: true,
+          user: loginResult.user,
+        );
+      } catch (_) {
+        state = state.copyWith(
+          isRegistering: false,
+          registered: true,
+          error: '가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인 화면에서 다시 시도해주세요.',
+        );
+      }
     } catch (e) {
       state = state.copyWith(isRegistering: false, error: e.toString());
     }
