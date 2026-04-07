@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,22 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
     super.dispose();
   }
 
+  void _showError(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: const Text('오류'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('확인'),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+        ],
+      ),
+    );
+  }
+
   // 키보드가 올라올 때 자동으로 스크롤
   @override
   void didChangeMetrics() {
@@ -94,6 +111,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
   void _onPhoneSend() {
     final digits = _phoneController.text.replaceAll('-', '');
     if (digits.length < 10) return;
+    ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
     setState(() {
       _phoneCompleted = true;
       _showVerification = true;
@@ -120,8 +138,19 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
   }
 
   // 인증번호 확인 → 비밀번호 설정 스텝 등장 후 포커스 이동
-  void _onCodeSubmit() {
+  Future<void> _onCodeSubmit() async {
     if (_codeController.text.length < 6) return;
+    final digits = _phoneController.text.replaceAll('-', '');
+    await ref.read(signUpViewModelProvider.notifier).verifyCode(
+          phone: digits,
+          code: _codeController.text,
+        );
+    if (!mounted) return;
+    final signUpState = ref.read(signUpViewModelProvider);
+    if (signUpState.error != null) {
+      _showError(signUpState.error!);
+      return;
+    }
     setState(() {
       _codeCompleted = true;
       _showPassword = true;
@@ -131,10 +160,22 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
   }
 
   // 비밀번호 확인 → 보호자 등록 스텝 등장 후 포커스 이동
-  void _onPasswordSubmit() {
+  Future<void> _onPasswordSubmit() async {
     final pw = _passwordController.text;
     final confirm = _passwordConfirmController.text;
     if (pw.length < 6 || pw != confirm) return;
+    final digits = _phoneController.text.replaceAll('-', '');
+    await ref.read(signUpViewModelProvider.notifier).register(
+          phone: digits,
+          password: pw,
+          role: 'SUBJECT',
+        );
+    if (!mounted) return;
+    final signUpState = ref.read(signUpViewModelProvider);
+    if (signUpState.error != null) {
+      _showError(signUpState.error!);
+      return;
+    }
     setState(() {
       _passwordCompleted = true;
       _showGuardian = true;

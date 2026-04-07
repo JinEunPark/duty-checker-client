@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:duty_checker/firebase_options.dart';
 import 'package:duty_checker/router.dart';
-import 'package:duty_checker/shared/fcm_service.dart';
-import 'package:duty_checker/shared/shared_preferences_provider.dart';
+import 'package:duty_checker/core/fcm_service.dart';
+import 'package:duty_checker/core/shared_preferences_provider.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

@@ -1,4 +1,5 @@
-import 'package:duty_checker/shared/shared_preferences_provider.dart';
+import 'package:duty_checker/auth/presentation/view_model/login_view_model.dart';
+import 'package:duty_checker/core/shared_preferences_provider.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -39,14 +40,44 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _onLogin() {
+  Future<void> _onLogin() async {
     final digits = _phoneController.text.replaceAll('-', '');
     if (digits.length < 10) return;
     if (_passwordController.text.isEmpty) return;
-    // 로그인 성공 시 전화번호 저장
+
     ref.read(sharedPreferencesProvider).setString(_lastPhoneKey, _phoneController.text);
-    // TODO: 실제 인증 후 역할별 분기
-    context.go('/user/home');
+
+    await ref.read(loginViewModelProvider.notifier).login(
+          phone: digits,
+          password: _passwordController.text,
+        );
+
+    if (!mounted) return;
+    final state = ref.read(loginViewModelProvider);
+    if (state.error != null) {
+      _showError(state.error!);
+      return;
+    }
+    final user = state.user;
+    if (user != null) {
+      context.go(user.isGuardian ? '/guardian/home' : '/user/home');
+    }
+  }
+
+  void _showError(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: const Text('로그인 실패'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('확인'),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

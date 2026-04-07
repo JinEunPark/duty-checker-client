@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/docs/api_spec.json
 
 # Symbolication related
 app.*.symbols

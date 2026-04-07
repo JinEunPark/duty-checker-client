@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -42,9 +43,26 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     super.dispose();
   }
 
+  void _showError(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: const Text('오류'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('확인'),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _onPhoneSend() {
     final digits = _phoneController.text.replaceAll('-', '');
     if (digits.length < 10) return;
+    ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
     setState(() {
       _phoneCompleted = true;
       _showVerification = true;
@@ -76,8 +94,19 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     });
   }
 
-  void _onCodeSubmit() {
+  Future<void> _onCodeSubmit() async {
     if (_codeController.text.length < 6) return;
+    final digits = _phoneController.text.replaceAll('-', '');
+    await ref.read(signUpViewModelProvider.notifier).verifyCode(
+          phone: digits,
+          code: _codeController.text,
+        );
+    if (!mounted) return;
+    final signUpState = ref.read(signUpViewModelProvider);
+    if (signUpState.error != null) {
+      _showError(signUpState.error!);
+      return;
+    }
     setState(() {
       _codeCompleted = true;
       _showPassword = true;
@@ -86,10 +115,22 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     _scrollToBottom();
   }
 
-  void _onPasswordSubmit() {
+  Future<void> _onPasswordSubmit() async {
     final pw = _passwordController.text;
     final confirm = _passwordConfirmController.text;
     if (pw.length < 6 || pw != confirm) return;
+    final digits = _phoneController.text.replaceAll('-', '');
+    await ref.read(signUpViewModelProvider.notifier).register(
+          phone: digits,
+          password: pw,
+          role: 'GUARDIAN',
+        );
+    if (!mounted) return;
+    final signUpState = ref.read(signUpViewModelProvider);
+    if (signUpState.error != null) {
+      _showError(signUpState.error!);
+      return;
+    }
     setState(() {
       _passwordCompleted = true;
     });

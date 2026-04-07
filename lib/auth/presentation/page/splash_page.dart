@@ -1,16 +1,18 @@
+import 'package:duty_checker/core/network/token_storage.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
+class _SplashPageState extends ConsumerState<SplashPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fadeAnim;
@@ -27,8 +29,8 @@ class _SplashPageState extends State<SplashPage>
 
     Future.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) {
-        // TODO: 로그인 상태 확인 후 분기
-        context.go('/login');
+        final hasToken = ref.read(tokenStorageProvider).hasToken;
+        context.go(hasToken ? '/user/home' : '/login');
       }
     });
   }

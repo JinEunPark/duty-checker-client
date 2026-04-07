@@ -1,4 +1,4 @@
-import 'package:duty_checker/shared/widget/settings_action_sheet.dart';
+import 'package:duty_checker/core/widget/settings_action_sheet.dart';
 import 'package:duty_checker/theme.dart';
 
 import 'package:flutter/cupertino.dart';
