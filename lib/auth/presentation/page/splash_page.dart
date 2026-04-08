@@ -1,3 +1,5 @@
+import 'package:duty_checker/core/fcm/fcm_service.dart';
+import 'package:duty_checker/core/network/dio_provider.dart';
 import 'package:duty_checker/core/network/token_storage.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +32,11 @@ class _SplashPageState extends ConsumerState<SplashPage>
     Future.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) {
         final hasToken = ref.read(tokenStorageProvider).hasToken;
+
+        if (hasToken) {
+          ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
+        }
+
         context.go(hasToken ? '/user/home' : '/login');
       }
     });

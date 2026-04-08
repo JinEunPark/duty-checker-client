@@ -12,7 +12,8 @@ part of 'sign_up_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$SignUpState {
@@ -26,7 +27,9 @@ mixin _$SignUpState {
   User? get user => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SignUpState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SignUpStateCopyWith<SignUpState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -34,19 +37,21 @@ mixin _$SignUpState {
 /// @nodoc
 abstract class $SignUpStateCopyWith<$Res> {
   factory $SignUpStateCopyWith(
-          SignUpState value, $Res Function(SignUpState) then) =
-      _$SignUpStateCopyWithImpl<$Res, SignUpState>;
+    SignUpState value,
+    $Res Function(SignUpState) then,
+  ) = _$SignUpStateCopyWithImpl<$Res, SignUpState>;
   @useResult
-  $Res call(
-      {bool isSendingCode,
-      bool isVerifyingCode,
-      bool isRegistering,
-      bool codeSent,
-      DateTime? codeExpiresAt,
-      bool codeVerified,
-      bool registered,
-      User? user,
-      String? error});
+  $Res call({
+    bool isSendingCode,
+    bool isVerifyingCode,
+    bool isRegistering,
+    bool codeSent,
+    DateTime? codeExpiresAt,
+    bool codeVerified,
+    bool registered,
+    User? user,
+    String? error,
+  });
 
   $UserCopyWith<$Res>? get user;
 }
@@ -61,6 +66,8 @@ class _$SignUpStateCopyWithImpl<$Res, $Val extends SignUpState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SignUpState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -74,46 +81,51 @@ class _$SignUpStateCopyWithImpl<$Res, $Val extends SignUpState>
     Object? user = freezed,
     Object? error = freezed,
   }) {
-    return _then(_value.copyWith(
-      isSendingCode: null == isSendingCode
-          ? _value.isSendingCode
-          : isSendingCode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isVerifyingCode: null == isVerifyingCode
-          ? _value.isVerifyingCode
-          : isVerifyingCode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isRegistering: null == isRegistering
-          ? _value.isRegistering
-          : isRegistering // ignore: cast_nullable_to_non_nullable
-              as bool,
-      codeSent: null == codeSent
-          ? _value.codeSent
-          : codeSent // ignore: cast_nullable_to_non_nullable
-              as bool,
-      codeExpiresAt: freezed == codeExpiresAt
-          ? _value.codeExpiresAt
-          : codeExpiresAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      codeVerified: null == codeVerified
-          ? _value.codeVerified
-          : codeVerified // ignore: cast_nullable_to_non_nullable
-              as bool,
-      registered: null == registered
-          ? _value.registered
-          : registered // ignore: cast_nullable_to_non_nullable
-              as bool,
-      user: freezed == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User?,
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            isSendingCode: null == isSendingCode
+                ? _value.isSendingCode
+                : isSendingCode // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isVerifyingCode: null == isVerifyingCode
+                ? _value.isVerifyingCode
+                : isVerifyingCode // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isRegistering: null == isRegistering
+                ? _value.isRegistering
+                : isRegistering // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            codeSent: null == codeSent
+                ? _value.codeSent
+                : codeSent // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            codeExpiresAt: freezed == codeExpiresAt
+                ? _value.codeExpiresAt
+                : codeExpiresAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            codeVerified: null == codeVerified
+                ? _value.codeVerified
+                : codeVerified // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            registered: null == registered
+                ? _value.registered
+                : registered // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            user: freezed == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as User?,
+            error: freezed == error
+                ? _value.error
+                : error // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 
+  /// Create a copy of SignUpState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $UserCopyWith<$Res>? get user {
@@ -131,20 +143,22 @@ class _$SignUpStateCopyWithImpl<$Res, $Val extends SignUpState>
 abstract class _$$SignUpStateImplCopyWith<$Res>
     implements $SignUpStateCopyWith<$Res> {
   factory _$$SignUpStateImplCopyWith(
-          _$SignUpStateImpl value, $Res Function(_$SignUpStateImpl) then) =
-      __$$SignUpStateImplCopyWithImpl<$Res>;
+    _$SignUpStateImpl value,
+    $Res Function(_$SignUpStateImpl) then,
+  ) = __$$SignUpStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {bool isSendingCode,
-      bool isVerifyingCode,
-      bool isRegistering,
-      bool codeSent,
-      DateTime? codeExpiresAt,
-      bool codeVerified,
-      bool registered,
-      User? user,
-      String? error});
+  $Res call({
+    bool isSendingCode,
+    bool isVerifyingCode,
+    bool isRegistering,
+    bool codeSent,
+    DateTime? codeExpiresAt,
+    bool codeVerified,
+    bool registered,
+    User? user,
+    String? error,
+  });
 
   @override
   $UserCopyWith<$Res>? get user;
@@ -155,9 +169,12 @@ class __$$SignUpStateImplCopyWithImpl<$Res>
     extends _$SignUpStateCopyWithImpl<$Res, _$SignUpStateImpl>
     implements _$$SignUpStateImplCopyWith<$Res> {
   __$$SignUpStateImplCopyWithImpl(
-      _$SignUpStateImpl _value, $Res Function(_$SignUpStateImpl) _then)
-      : super(_value, _then);
+    _$SignUpStateImpl _value,
+    $Res Function(_$SignUpStateImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of SignUpState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -171,60 +188,63 @@ class __$$SignUpStateImplCopyWithImpl<$Res>
     Object? user = freezed,
     Object? error = freezed,
   }) {
-    return _then(_$SignUpStateImpl(
-      isSendingCode: null == isSendingCode
-          ? _value.isSendingCode
-          : isSendingCode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isVerifyingCode: null == isVerifyingCode
-          ? _value.isVerifyingCode
-          : isVerifyingCode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isRegistering: null == isRegistering
-          ? _value.isRegistering
-          : isRegistering // ignore: cast_nullable_to_non_nullable
-              as bool,
-      codeSent: null == codeSent
-          ? _value.codeSent
-          : codeSent // ignore: cast_nullable_to_non_nullable
-              as bool,
-      codeExpiresAt: freezed == codeExpiresAt
-          ? _value.codeExpiresAt
-          : codeExpiresAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      codeVerified: null == codeVerified
-          ? _value.codeVerified
-          : codeVerified // ignore: cast_nullable_to_non_nullable
-              as bool,
-      registered: null == registered
-          ? _value.registered
-          : registered // ignore: cast_nullable_to_non_nullable
-              as bool,
-      user: freezed == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User?,
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$SignUpStateImpl(
+        isSendingCode: null == isSendingCode
+            ? _value.isSendingCode
+            : isSendingCode // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isVerifyingCode: null == isVerifyingCode
+            ? _value.isVerifyingCode
+            : isVerifyingCode // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isRegistering: null == isRegistering
+            ? _value.isRegistering
+            : isRegistering // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        codeSent: null == codeSent
+            ? _value.codeSent
+            : codeSent // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        codeExpiresAt: freezed == codeExpiresAt
+            ? _value.codeExpiresAt
+            : codeExpiresAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        codeVerified: null == codeVerified
+            ? _value.codeVerified
+            : codeVerified // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        registered: null == registered
+            ? _value.registered
+            : registered // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        user: freezed == user
+            ? _value.user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as User?,
+        error: freezed == error
+            ? _value.error
+            : error // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$SignUpStateImpl implements _SignUpState {
-  const _$SignUpStateImpl(
-      {this.isSendingCode = false,
-      this.isVerifyingCode = false,
-      this.isRegistering = false,
-      this.codeSent = false,
-      this.codeExpiresAt,
-      this.codeVerified = false,
-      this.registered = false,
-      this.user,
-      this.error});
+  const _$SignUpStateImpl({
+    this.isSendingCode = false,
+    this.isVerifyingCode = false,
+    this.isRegistering = false,
+    this.codeSent = false,
+    this.codeExpiresAt,
+    this.codeVerified = false,
+    this.registered = false,
+    this.user,
+    this.error,
+  });
 
   @override
   @JsonKey()
@@ -281,18 +301,21 @@ class _$SignUpStateImpl implements _SignUpState {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      isSendingCode,
-      isVerifyingCode,
-      isRegistering,
-      codeSent,
-      codeExpiresAt,
-      codeVerified,
-      registered,
-      user,
-      error);
+    runtimeType,
+    isSendingCode,
+    isVerifyingCode,
+    isRegistering,
+    codeSent,
+    codeExpiresAt,
+    codeVerified,
+    registered,
+    user,
+    error,
+  );
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SignUpState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SignUpStateImplCopyWith<_$SignUpStateImpl> get copyWith =>
@@ -300,16 +323,17 @@ class _$SignUpStateImpl implements _SignUpState {
 }
 
 abstract class _SignUpState implements SignUpState {
-  const factory _SignUpState(
-      {final bool isSendingCode,
-      final bool isVerifyingCode,
-      final bool isRegistering,
-      final bool codeSent,
-      final DateTime? codeExpiresAt,
-      final bool codeVerified,
-      final bool registered,
-      final User? user,
-      final String? error}) = _$SignUpStateImpl;
+  const factory _SignUpState({
+    final bool isSendingCode,
+    final bool isVerifyingCode,
+    final bool isRegistering,
+    final bool codeSent,
+    final DateTime? codeExpiresAt,
+    final bool codeVerified,
+    final bool registered,
+    final User? user,
+    final String? error,
+  }) = _$SignUpStateImpl;
 
   @override
   bool get isSendingCode;
@@ -329,8 +353,11 @@ abstract class _SignUpState implements SignUpState {
   User? get user;
   @override
   String? get error;
+
+  /// Create a copy of SignUpState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SignUpStateImplCopyWith<_$SignUpStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

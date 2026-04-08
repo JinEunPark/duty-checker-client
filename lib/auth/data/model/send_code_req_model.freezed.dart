@@ -12,7 +12,8 @@ part of 'send_code_req_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 SendCodeReqModel _$SendCodeReqModelFromJson(Map<String, dynamic> json) {
   return _SendCodeReqModel.fromJson(json);
@@ -22,8 +23,12 @@ SendCodeReqModel _$SendCodeReqModelFromJson(Map<String, dynamic> json) {
 mixin _$SendCodeReqModel {
   String get phone => throw _privateConstructorUsedError;
 
+  /// Serializes this SendCodeReqModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SendCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SendCodeReqModelCopyWith<SendCodeReqModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -31,8 +36,9 @@ mixin _$SendCodeReqModel {
 /// @nodoc
 abstract class $SendCodeReqModelCopyWith<$Res> {
   factory $SendCodeReqModelCopyWith(
-          SendCodeReqModel value, $Res Function(SendCodeReqModel) then) =
-      _$SendCodeReqModelCopyWithImpl<$Res, SendCodeReqModel>;
+    SendCodeReqModel value,
+    $Res Function(SendCodeReqModel) then,
+  ) = _$SendCodeReqModelCopyWithImpl<$Res, SendCodeReqModel>;
   @useResult
   $Res call({String phone});
 }
@@ -47,26 +53,30 @@ class _$SendCodeReqModelCopyWithImpl<$Res, $Val extends SendCodeReqModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SendCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? phone = null,
-  }) {
-    return _then(_value.copyWith(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+  $Res call({Object? phone = null}) {
+    return _then(
+      _value.copyWith(
+            phone: null == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$SendCodeReqModelImplCopyWith<$Res>
     implements $SendCodeReqModelCopyWith<$Res> {
-  factory _$$SendCodeReqModelImplCopyWith(_$SendCodeReqModelImpl value,
-          $Res Function(_$SendCodeReqModelImpl) then) =
-      __$$SendCodeReqModelImplCopyWithImpl<$Res>;
+  factory _$$SendCodeReqModelImplCopyWith(
+    _$SendCodeReqModelImpl value,
+    $Res Function(_$SendCodeReqModelImpl) then,
+  ) = __$$SendCodeReqModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String phone});
@@ -76,21 +86,24 @@ abstract class _$$SendCodeReqModelImplCopyWith<$Res>
 class __$$SendCodeReqModelImplCopyWithImpl<$Res>
     extends _$SendCodeReqModelCopyWithImpl<$Res, _$SendCodeReqModelImpl>
     implements _$$SendCodeReqModelImplCopyWith<$Res> {
-  __$$SendCodeReqModelImplCopyWithImpl(_$SendCodeReqModelImpl _value,
-      $Res Function(_$SendCodeReqModelImpl) _then)
-      : super(_value, _then);
+  __$$SendCodeReqModelImplCopyWithImpl(
+    _$SendCodeReqModelImpl _value,
+    $Res Function(_$SendCodeReqModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of SendCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? phone = null,
-  }) {
-    return _then(_$SendCodeReqModelImpl(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+  $Res call({Object? phone = null}) {
+    return _then(
+      _$SendCodeReqModelImpl(
+        phone: null == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
   }
 }
 
@@ -118,22 +131,24 @@ class _$SendCodeReqModelImpl implements _SendCodeReqModel {
             (identical(other.phone, phone) || other.phone == phone));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, phone);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SendCodeReqModelImplCopyWith<_$SendCodeReqModelImpl> get copyWith =>
       __$$SendCodeReqModelImplCopyWithImpl<_$SendCodeReqModelImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SendCodeReqModelImplToJson(
-      this,
-    );
+    return _$$SendCodeReqModelImplToJson(this);
   }
 }
 
@@ -146,8 +161,11 @@ abstract class _SendCodeReqModel implements SendCodeReqModel {
 
   @override
   String get phone;
+
+  /// Create a copy of SendCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SendCodeReqModelImplCopyWith<_$SendCodeReqModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

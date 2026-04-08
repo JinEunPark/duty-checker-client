@@ -257,10 +257,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                 child: SignUpCompleteButton(
                   enabled: _passwordCompleted,
                   onTap: () {
-                    final user = ref.read(signUpViewModelProvider).user;
-                    context.go(user != null && user.isGuardian
-                        ? '/guardian/home'
-                        : '/user/home');
+                    context.go('/login');
                   },
                 ),
               ),

@@ -12,7 +12,8 @@ part of 'verify_code_req_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 VerifyCodeReqModel _$VerifyCodeReqModelFromJson(Map<String, dynamic> json) {
   return _VerifyCodeReqModel.fromJson(json);
@@ -23,8 +24,12 @@ mixin _$VerifyCodeReqModel {
   String get phone => throw _privateConstructorUsedError;
   String get verificationCode => throw _privateConstructorUsedError;
 
+  /// Serializes this VerifyCodeReqModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of VerifyCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $VerifyCodeReqModelCopyWith<VerifyCodeReqModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -32,8 +37,9 @@ mixin _$VerifyCodeReqModel {
 /// @nodoc
 abstract class $VerifyCodeReqModelCopyWith<$Res> {
   factory $VerifyCodeReqModelCopyWith(
-          VerifyCodeReqModel value, $Res Function(VerifyCodeReqModel) then) =
-      _$VerifyCodeReqModelCopyWithImpl<$Res, VerifyCodeReqModel>;
+    VerifyCodeReqModel value,
+    $Res Function(VerifyCodeReqModel) then,
+  ) = _$VerifyCodeReqModelCopyWithImpl<$Res, VerifyCodeReqModel>;
   @useResult
   $Res call({String phone, String verificationCode});
 }
@@ -48,31 +54,34 @@ class _$VerifyCodeReqModelCopyWithImpl<$Res, $Val extends VerifyCodeReqModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of VerifyCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? phone = null,
-    Object? verificationCode = null,
-  }) {
-    return _then(_value.copyWith(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      verificationCode: null == verificationCode
-          ? _value.verificationCode
-          : verificationCode // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+  $Res call({Object? phone = null, Object? verificationCode = null}) {
+    return _then(
+      _value.copyWith(
+            phone: null == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String,
+            verificationCode: null == verificationCode
+                ? _value.verificationCode
+                : verificationCode // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$VerifyCodeReqModelImplCopyWith<$Res>
     implements $VerifyCodeReqModelCopyWith<$Res> {
-  factory _$$VerifyCodeReqModelImplCopyWith(_$VerifyCodeReqModelImpl value,
-          $Res Function(_$VerifyCodeReqModelImpl) then) =
-      __$$VerifyCodeReqModelImplCopyWithImpl<$Res>;
+  factory _$$VerifyCodeReqModelImplCopyWith(
+    _$VerifyCodeReqModelImpl value,
+    $Res Function(_$VerifyCodeReqModelImpl) then,
+  ) = __$$VerifyCodeReqModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String phone, String verificationCode});
@@ -82,34 +91,38 @@ abstract class _$$VerifyCodeReqModelImplCopyWith<$Res>
 class __$$VerifyCodeReqModelImplCopyWithImpl<$Res>
     extends _$VerifyCodeReqModelCopyWithImpl<$Res, _$VerifyCodeReqModelImpl>
     implements _$$VerifyCodeReqModelImplCopyWith<$Res> {
-  __$$VerifyCodeReqModelImplCopyWithImpl(_$VerifyCodeReqModelImpl _value,
-      $Res Function(_$VerifyCodeReqModelImpl) _then)
-      : super(_value, _then);
+  __$$VerifyCodeReqModelImplCopyWithImpl(
+    _$VerifyCodeReqModelImpl _value,
+    $Res Function(_$VerifyCodeReqModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of VerifyCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? phone = null,
-    Object? verificationCode = null,
-  }) {
-    return _then(_$VerifyCodeReqModelImpl(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      verificationCode: null == verificationCode
-          ? _value.verificationCode
-          : verificationCode // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+  $Res call({Object? phone = null, Object? verificationCode = null}) {
+    return _then(
+      _$VerifyCodeReqModelImpl(
+        phone: null == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String,
+        verificationCode: null == verificationCode
+            ? _value.verificationCode
+            : verificationCode // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$VerifyCodeReqModelImpl implements _VerifyCodeReqModel {
-  const _$VerifyCodeReqModelImpl(
-      {required this.phone, required this.verificationCode});
+  const _$VerifyCodeReqModelImpl({
+    required this.phone,
+    required this.verificationCode,
+  });
 
   factory _$VerifyCodeReqModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$VerifyCodeReqModelImplFromJson(json);
@@ -134,29 +147,32 @@ class _$VerifyCodeReqModelImpl implements _VerifyCodeReqModel {
                 other.verificationCode == verificationCode));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, phone, verificationCode);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of VerifyCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$VerifyCodeReqModelImplCopyWith<_$VerifyCodeReqModelImpl> get copyWith =>
       __$$VerifyCodeReqModelImplCopyWithImpl<_$VerifyCodeReqModelImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$VerifyCodeReqModelImplToJson(
-      this,
-    );
+    return _$$VerifyCodeReqModelImplToJson(this);
   }
 }
 
 abstract class _VerifyCodeReqModel implements VerifyCodeReqModel {
-  const factory _VerifyCodeReqModel(
-      {required final String phone,
-      required final String verificationCode}) = _$VerifyCodeReqModelImpl;
+  const factory _VerifyCodeReqModel({
+    required final String phone,
+    required final String verificationCode,
+  }) = _$VerifyCodeReqModelImpl;
 
   factory _VerifyCodeReqModel.fromJson(Map<String, dynamic> json) =
       _$VerifyCodeReqModelImpl.fromJson;
@@ -165,8 +181,11 @@ abstract class _VerifyCodeReqModel implements VerifyCodeReqModel {
   String get phone;
   @override
   String get verificationCode;
+
+  /// Create a copy of VerifyCodeReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$VerifyCodeReqModelImplCopyWith<_$VerifyCodeReqModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -1,6 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:duty_checker/core/fcm/device_token_api.dart';
+import 'package:duty_checker/core/fcm/update_device_token_req_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,9 +16,33 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 /// FCM 푸시 알림 서비스
 class FcmService {
-  FcmService(this._messaging);
+  FcmService({required FirebaseMessaging messaging}) : _messaging = messaging;
 
   final FirebaseMessaging _messaging;
+  DeviceTokenApi? _deviceTokenApi;
+
+  /// 로그인 성공 후 호출 — API 설정 및 현재 토큰 즉시 전송
+  Future<void> connectApi(Dio dio) async {
+    _deviceTokenApi = DeviceTokenApi(dio);
+    try {
+      final token = await _messaging.getToken();
+      if (token != null) await _sendTokenToServer(token);
+    } catch (e) {
+      log('❌ [FCM] 토큰 전송 실패: $e');
+    }
+  }
+
+  Future<void> _sendTokenToServer(String token) async {
+    final api = _deviceTokenApi;
+    if (api == null) return;
+
+    try {
+      await api.updateDeviceToken(UpdateDeviceTokenReqModel(fcmToken: token));
+      log('fcm 서버 갱신');
+    } catch (e) {
+      log('fcm token 서버 갱신 실패');
+    }
+  }
 
   Future<void> initialize() async {
     await _requestPermission();
@@ -24,8 +51,6 @@ class FcmService {
     _handleInitialMessage();
     _handleMessageOpenedApp();
     await _setForegroundNotificationOptions();
-
-    // 토큰 발급은 앱 실행을 차단하지 않도록 백그라운드에서 수행
     _getToken();
   }
 
@@ -42,24 +67,22 @@ class FcmService {
   /// FCM 토큰 발급 및 로그 출력
   Future<void> _getToken() async {
     if (Platform.isIOS) {
-      // iOS에서는 APNS 토큰이 준비될 때까지 대기
       String? apnsToken;
       var delay = const Duration(milliseconds: 500);
       for (var i = 0; i < 5; i++) {
         apnsToken = await _messaging.getAPNSToken();
         if (apnsToken != null) break;
-        log('⏳ [FCM] APNS 토큰 대기 중... (${i + 1}/5)');
         await Future.delayed(delay);
         delay *= 2;
       }
       if (apnsToken == null) {
-        log('⚠️ [FCM] APNS 토큰을 받지 못했습니다. FCM 토큰 발급을 건너뜁니다.');
         return;
       }
-      log('✅ [FCM] APNS 토큰 확인 완료');
     }
     try {
       final token = await _messaging.getToken();
+      if (token != null) _sendTokenToServer(token);
+
       log('🔑 [FCM] 토큰: $token');
     } catch (e) {
       log('❌ [FCM] 토큰 발급 실패: $e');
@@ -69,7 +92,7 @@ class FcmService {
   /// 토큰 갱신 리스닝
   void _listenTokenRefresh() {
     _messaging.onTokenRefresh.listen((token) {
-      log('🔄 [FCM] 토큰 갱신: $token');
+      _sendTokenToServer(token);
     });
   }
 
@@ -109,10 +132,6 @@ class FcmService {
   }
 }
 
-/// FcmService 인스턴스를 제공하는 Provider
-///
-/// main.dart에서 앱 시작 시 초기화된 FcmService를
-/// overrideWithValue()로 주입합니다.
 final fcmServiceProvider = Provider<FcmService>(
   (ref) => throw UnimplementedError('main.dart에서 override 필요'),
 );

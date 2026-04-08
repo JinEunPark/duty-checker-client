@@ -12,7 +12,8 @@ part of 'login_req_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 LoginReqModel _$LoginReqModelFromJson(Map<String, dynamic> json) {
   return _LoginReqModel.fromJson(json);
@@ -23,8 +24,12 @@ mixin _$LoginReqModel {
   String get phone => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
 
+  /// Serializes this LoginReqModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of LoginReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LoginReqModelCopyWith<LoginReqModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -32,8 +37,9 @@ mixin _$LoginReqModel {
 /// @nodoc
 abstract class $LoginReqModelCopyWith<$Res> {
   factory $LoginReqModelCopyWith(
-          LoginReqModel value, $Res Function(LoginReqModel) then) =
-      _$LoginReqModelCopyWithImpl<$Res, LoginReqModel>;
+    LoginReqModel value,
+    $Res Function(LoginReqModel) then,
+  ) = _$LoginReqModelCopyWithImpl<$Res, LoginReqModel>;
   @useResult
   $Res call({String phone, String password});
 }
@@ -48,22 +54,24 @@ class _$LoginReqModelCopyWithImpl<$Res, $Val extends LoginReqModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LoginReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? phone = null,
-    Object? password = null,
-  }) {
-    return _then(_value.copyWith(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+  $Res call({Object? phone = null, Object? password = null}) {
+    return _then(
+      _value.copyWith(
+            phone: null == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String,
+            password: null == password
+                ? _value.password
+                : password // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -71,8 +79,9 @@ class _$LoginReqModelCopyWithImpl<$Res, $Val extends LoginReqModel>
 abstract class _$$LoginReqModelImplCopyWith<$Res>
     implements $LoginReqModelCopyWith<$Res> {
   factory _$$LoginReqModelImplCopyWith(
-          _$LoginReqModelImpl value, $Res Function(_$LoginReqModelImpl) then) =
-      __$$LoginReqModelImplCopyWithImpl<$Res>;
+    _$LoginReqModelImpl value,
+    $Res Function(_$LoginReqModelImpl) then,
+  ) = __$$LoginReqModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String phone, String password});
@@ -83,25 +92,27 @@ class __$$LoginReqModelImplCopyWithImpl<$Res>
     extends _$LoginReqModelCopyWithImpl<$Res, _$LoginReqModelImpl>
     implements _$$LoginReqModelImplCopyWith<$Res> {
   __$$LoginReqModelImplCopyWithImpl(
-      _$LoginReqModelImpl _value, $Res Function(_$LoginReqModelImpl) _then)
-      : super(_value, _then);
+    _$LoginReqModelImpl _value,
+    $Res Function(_$LoginReqModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of LoginReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? phone = null,
-    Object? password = null,
-  }) {
-    return _then(_$LoginReqModelImpl(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+  $Res call({Object? phone = null, Object? password = null}) {
+    return _then(
+      _$LoginReqModelImpl(
+        phone: null == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String,
+        password: null == password
+            ? _value.password
+            : password // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
   }
 }
 
@@ -133,11 +144,13 @@ class _$LoginReqModelImpl implements _LoginReqModel {
                 other.password == password));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, phone, password);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LoginReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$LoginReqModelImplCopyWith<_$LoginReqModelImpl> get copyWith =>
@@ -145,16 +158,15 @@ class _$LoginReqModelImpl implements _LoginReqModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LoginReqModelImplToJson(
-      this,
-    );
+    return _$$LoginReqModelImplToJson(this);
   }
 }
 
 abstract class _LoginReqModel implements LoginReqModel {
-  const factory _LoginReqModel(
-      {required final String phone,
-      required final String password}) = _$LoginReqModelImpl;
+  const factory _LoginReqModel({
+    required final String phone,
+    required final String password,
+  }) = _$LoginReqModelImpl;
 
   factory _LoginReqModel.fromJson(Map<String, dynamic> json) =
       _$LoginReqModelImpl.fromJson;
@@ -163,8 +175,11 @@ abstract class _LoginReqModel implements LoginReqModel {
   String get phone;
   @override
   String get password;
+
+  /// Create a copy of LoginReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LoginReqModelImplCopyWith<_$LoginReqModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:duty_checker/firebase_options.dart';
+import 'package:duty_checker/core/fcm/firebase_options.dart';
 import 'package:duty_checker/router.dart';
-import 'package:duty_checker/core/fcm_service.dart';
+import 'package:duty_checker/core/fcm/fcm_service.dart';
 import 'package:duty_checker/core/shared_preferences_provider.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,7 +19,7 @@ void main() async {
   );
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  final fcmService = FcmService(FirebaseMessaging.instance);
+  final fcmService = FcmService(messaging:FirebaseMessaging.instance);
   try {
     await fcmService.initialize();
   } catch (e) {

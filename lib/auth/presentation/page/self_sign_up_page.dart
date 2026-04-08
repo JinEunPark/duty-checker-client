@@ -361,10 +361,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
             enabled: true,
             label: '시작하기',
             onTap: () {
-              final user = ref.read(signUpViewModelProvider).user;
-              context.go(user != null && user.isGuardian
-                  ? '/guardian/home'
-                  : '/user/home');
+              context.go('/login');
             },
           ),
         ),

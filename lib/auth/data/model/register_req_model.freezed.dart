@@ -12,7 +12,8 @@ part of 'register_req_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 RegisterReqModel _$RegisterReqModelFromJson(Map<String, dynamic> json) {
   return _RegisterReqModel.fromJson(json);
@@ -24,8 +25,12 @@ mixin _$RegisterReqModel {
   String get password => throw _privateConstructorUsedError;
   String get role => throw _privateConstructorUsedError;
 
+  /// Serializes this RegisterReqModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of RegisterReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RegisterReqModelCopyWith<RegisterReqModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -33,8 +38,9 @@ mixin _$RegisterReqModel {
 /// @nodoc
 abstract class $RegisterReqModelCopyWith<$Res> {
   factory $RegisterReqModelCopyWith(
-          RegisterReqModel value, $Res Function(RegisterReqModel) then) =
-      _$RegisterReqModelCopyWithImpl<$Res, RegisterReqModel>;
+    RegisterReqModel value,
+    $Res Function(RegisterReqModel) then,
+  ) = _$RegisterReqModelCopyWithImpl<$Res, RegisterReqModel>;
   @useResult
   $Res call({String phone, String password, String role});
 }
@@ -49,6 +55,8 @@ class _$RegisterReqModelCopyWithImpl<$Res, $Val extends RegisterReqModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of RegisterReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -56,29 +64,33 @@ class _$RegisterReqModelCopyWithImpl<$Res, $Val extends RegisterReqModel>
     Object? password = null,
     Object? role = null,
   }) {
-    return _then(_value.copyWith(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            phone: null == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String,
+            password: null == password
+                ? _value.password
+                : password // ignore: cast_nullable_to_non_nullable
+                      as String,
+            role: null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$RegisterReqModelImplCopyWith<$Res>
     implements $RegisterReqModelCopyWith<$Res> {
-  factory _$$RegisterReqModelImplCopyWith(_$RegisterReqModelImpl value,
-          $Res Function(_$RegisterReqModelImpl) then) =
-      __$$RegisterReqModelImplCopyWithImpl<$Res>;
+  factory _$$RegisterReqModelImplCopyWith(
+    _$RegisterReqModelImpl value,
+    $Res Function(_$RegisterReqModelImpl) then,
+  ) = __$$RegisterReqModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String phone, String password, String role});
@@ -88,10 +100,13 @@ abstract class _$$RegisterReqModelImplCopyWith<$Res>
 class __$$RegisterReqModelImplCopyWithImpl<$Res>
     extends _$RegisterReqModelCopyWithImpl<$Res, _$RegisterReqModelImpl>
     implements _$$RegisterReqModelImplCopyWith<$Res> {
-  __$$RegisterReqModelImplCopyWithImpl(_$RegisterReqModelImpl _value,
-      $Res Function(_$RegisterReqModelImpl) _then)
-      : super(_value, _then);
+  __$$RegisterReqModelImplCopyWithImpl(
+    _$RegisterReqModelImpl _value,
+    $Res Function(_$RegisterReqModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of RegisterReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -99,28 +114,33 @@ class __$$RegisterReqModelImplCopyWithImpl<$Res>
     Object? password = null,
     Object? role = null,
   }) {
-    return _then(_$RegisterReqModelImpl(
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+    return _then(
+      _$RegisterReqModelImpl(
+        phone: null == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String,
+        password: null == password
+            ? _value.password
+            : password // ignore: cast_nullable_to_non_nullable
+                  as String,
+        role: null == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$RegisterReqModelImpl implements _RegisterReqModel {
-  const _$RegisterReqModelImpl(
-      {required this.phone, required this.password, required this.role});
+  const _$RegisterReqModelImpl({
+    required this.phone,
+    required this.password,
+    required this.role,
+  });
 
   factory _$RegisterReqModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$RegisterReqModelImplFromJson(json);
@@ -148,30 +168,33 @@ class _$RegisterReqModelImpl implements _RegisterReqModel {
             (identical(other.role, role) || other.role == role));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, phone, password, role);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RegisterReqModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$RegisterReqModelImplCopyWith<_$RegisterReqModelImpl> get copyWith =>
       __$$RegisterReqModelImplCopyWithImpl<_$RegisterReqModelImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RegisterReqModelImplToJson(
-      this,
-    );
+    return _$$RegisterReqModelImplToJson(this);
   }
 }
 
 abstract class _RegisterReqModel implements RegisterReqModel {
-  const factory _RegisterReqModel(
-      {required final String phone,
-      required final String password,
-      required final String role}) = _$RegisterReqModelImpl;
+  const factory _RegisterReqModel({
+    required final String phone,
+    required final String password,
+    required final String role,
+  }) = _$RegisterReqModelImpl;
 
   factory _RegisterReqModel.fromJson(Map<String, dynamic> json) =
       _$RegisterReqModelImpl.fromJson;
@@ -182,8 +205,11 @@ abstract class _RegisterReqModel implements RegisterReqModel {
   String get password;
   @override
   String get role;
+
+  /// Create a copy of RegisterReqModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RegisterReqModelImplCopyWith<_$RegisterReqModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

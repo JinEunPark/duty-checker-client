@@ -16,12 +16,12 @@ _$LoginRespModelImpl _$$LoginRespModelImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$LoginRespModelImplToJson(
-        _$LoginRespModelImpl instance) =>
-    <String, dynamic>{
-      'accessToken': instance.accessToken,
-      'refreshToken': instance.refreshToken,
-      'user': instance.user,
-    };
+  _$LoginRespModelImpl instance,
+) => <String, dynamic>{
+  'accessToken': instance.accessToken,
+  'refreshToken': instance.refreshToken,
+  'user': instance.user,
+};
 
 _$UserInfoModelImpl _$$UserInfoModelImplFromJson(Map<String, dynamic> json) =>
     _$UserInfoModelImpl(

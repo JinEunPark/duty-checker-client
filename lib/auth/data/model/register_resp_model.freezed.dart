@@ -12,7 +12,8 @@ part of 'register_resp_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 RegisterRespModel _$RegisterRespModelFromJson(Map<String, dynamic> json) {
   return _RegisterRespModel.fromJson(json);
@@ -24,8 +25,12 @@ mixin _$RegisterRespModel {
   String? get phone => throw _privateConstructorUsedError;
   String? get role => throw _privateConstructorUsedError;
 
+  /// Serializes this RegisterRespModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of RegisterRespModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RegisterRespModelCopyWith<RegisterRespModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -33,8 +38,9 @@ mixin _$RegisterRespModel {
 /// @nodoc
 abstract class $RegisterRespModelCopyWith<$Res> {
   factory $RegisterRespModelCopyWith(
-          RegisterRespModel value, $Res Function(RegisterRespModel) then) =
-      _$RegisterRespModelCopyWithImpl<$Res, RegisterRespModel>;
+    RegisterRespModel value,
+    $Res Function(RegisterRespModel) then,
+  ) = _$RegisterRespModelCopyWithImpl<$Res, RegisterRespModel>;
   @useResult
   $Res call({int? id, String? phone, String? role});
 }
@@ -49,6 +55,8 @@ class _$RegisterRespModelCopyWithImpl<$Res, $Val extends RegisterRespModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of RegisterRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -56,29 +64,33 @@ class _$RegisterRespModelCopyWithImpl<$Res, $Val extends RegisterRespModel>
     Object? phone = freezed,
     Object? role = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      role: freezed == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: freezed == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            phone: freezed == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$RegisterRespModelImplCopyWith<$Res>
     implements $RegisterRespModelCopyWith<$Res> {
-  factory _$$RegisterRespModelImplCopyWith(_$RegisterRespModelImpl value,
-          $Res Function(_$RegisterRespModelImpl) then) =
-      __$$RegisterRespModelImplCopyWithImpl<$Res>;
+  factory _$$RegisterRespModelImplCopyWith(
+    _$RegisterRespModelImpl value,
+    $Res Function(_$RegisterRespModelImpl) then,
+  ) = __$$RegisterRespModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int? id, String? phone, String? role});
@@ -88,10 +100,13 @@ abstract class _$$RegisterRespModelImplCopyWith<$Res>
 class __$$RegisterRespModelImplCopyWithImpl<$Res>
     extends _$RegisterRespModelCopyWithImpl<$Res, _$RegisterRespModelImpl>
     implements _$$RegisterRespModelImplCopyWith<$Res> {
-  __$$RegisterRespModelImplCopyWithImpl(_$RegisterRespModelImpl _value,
-      $Res Function(_$RegisterRespModelImpl) _then)
-      : super(_value, _then);
+  __$$RegisterRespModelImplCopyWithImpl(
+    _$RegisterRespModelImpl _value,
+    $Res Function(_$RegisterRespModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of RegisterRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -99,20 +114,22 @@ class __$$RegisterRespModelImplCopyWithImpl<$Res>
     Object? phone = freezed,
     Object? role = freezed,
   }) {
-    return _then(_$RegisterRespModelImpl(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      role: freezed == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$RegisterRespModelImpl(
+        id: freezed == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        phone: freezed == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
@@ -146,30 +163,33 @@ class _$RegisterRespModelImpl implements _RegisterRespModel {
             (identical(other.role, role) || other.role == role));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, phone, role);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RegisterRespModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$RegisterRespModelImplCopyWith<_$RegisterRespModelImpl> get copyWith =>
       __$$RegisterRespModelImplCopyWithImpl<_$RegisterRespModelImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RegisterRespModelImplToJson(
-      this,
-    );
+    return _$$RegisterRespModelImplToJson(this);
   }
 }
 
 abstract class _RegisterRespModel implements RegisterRespModel {
-  const factory _RegisterRespModel(
-      {final int? id,
-      final String? phone,
-      final String? role}) = _$RegisterRespModelImpl;
+  const factory _RegisterRespModel({
+    final int? id,
+    final String? phone,
+    final String? role,
+  }) = _$RegisterRespModelImpl;
 
   factory _RegisterRespModel.fromJson(Map<String, dynamic> json) =
       _$RegisterRespModelImpl.fromJson;
@@ -180,8 +200,11 @@ abstract class _RegisterRespModel implements RegisterRespModel {
   String? get phone;
   @override
   String? get role;
+
+  /// Create a copy of RegisterRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RegisterRespModelImplCopyWith<_$RegisterRespModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

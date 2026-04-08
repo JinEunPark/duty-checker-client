@@ -1,4 +1,6 @@
 import 'package:duty_checker/auth/presentation/view_model/login_view_model.dart';
+import 'package:duty_checker/core/fcm/fcm_service.dart';
+import 'package:duty_checker/core/network/dio_provider.dart';
 import 'package:duty_checker/core/shared_preferences_provider.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -60,6 +62,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
     final user = state.user;
     if (user != null) {
+      ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
+
       context.go(user.isGuardian ? '/guardian/home' : '/user/home');
     }
   }

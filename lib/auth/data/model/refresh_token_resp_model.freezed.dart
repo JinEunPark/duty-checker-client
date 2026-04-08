@@ -12,10 +12,12 @@ part of 'refresh_token_resp_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 RefreshTokenRespModel _$RefreshTokenRespModelFromJson(
-    Map<String, dynamic> json) {
+  Map<String, dynamic> json,
+) {
   return _RefreshTokenRespModel.fromJson(json);
 }
 
@@ -24,24 +26,31 @@ mixin _$RefreshTokenRespModel {
   String? get accessToken => throw _privateConstructorUsedError;
   String? get refreshToken => throw _privateConstructorUsedError;
 
+  /// Serializes this RefreshTokenRespModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of RefreshTokenRespModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RefreshTokenRespModelCopyWith<RefreshTokenRespModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $RefreshTokenRespModelCopyWith<$Res> {
-  factory $RefreshTokenRespModelCopyWith(RefreshTokenRespModel value,
-          $Res Function(RefreshTokenRespModel) then) =
-      _$RefreshTokenRespModelCopyWithImpl<$Res, RefreshTokenRespModel>;
+  factory $RefreshTokenRespModelCopyWith(
+    RefreshTokenRespModel value,
+    $Res Function(RefreshTokenRespModel) then,
+  ) = _$RefreshTokenRespModelCopyWithImpl<$Res, RefreshTokenRespModel>;
   @useResult
   $Res call({String? accessToken, String? refreshToken});
 }
 
 /// @nodoc
-class _$RefreshTokenRespModelCopyWithImpl<$Res,
-        $Val extends RefreshTokenRespModel>
+class _$RefreshTokenRespModelCopyWithImpl<
+  $Res,
+  $Val extends RefreshTokenRespModel
+>
     implements $RefreshTokenRespModelCopyWith<$Res> {
   _$RefreshTokenRespModelCopyWithImpl(this._value, this._then);
 
@@ -50,22 +59,24 @@ class _$RefreshTokenRespModelCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of RefreshTokenRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? accessToken = freezed,
-    Object? refreshToken = freezed,
-  }) {
-    return _then(_value.copyWith(
-      accessToken: freezed == accessToken
-          ? _value.accessToken
-          : accessToken // ignore: cast_nullable_to_non_nullable
-              as String?,
-      refreshToken: freezed == refreshToken
-          ? _value.refreshToken
-          : refreshToken // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  $Res call({Object? accessToken = freezed, Object? refreshToken = freezed}) {
+    return _then(
+      _value.copyWith(
+            accessToken: freezed == accessToken
+                ? _value.accessToken
+                : accessToken // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            refreshToken: freezed == refreshToken
+                ? _value.refreshToken
+                : refreshToken // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -73,9 +84,9 @@ class _$RefreshTokenRespModelCopyWithImpl<$Res,
 abstract class _$$RefreshTokenRespModelImplCopyWith<$Res>
     implements $RefreshTokenRespModelCopyWith<$Res> {
   factory _$$RefreshTokenRespModelImplCopyWith(
-          _$RefreshTokenRespModelImpl value,
-          $Res Function(_$RefreshTokenRespModelImpl) then) =
-      __$$RefreshTokenRespModelImplCopyWithImpl<$Res>;
+    _$RefreshTokenRespModelImpl value,
+    $Res Function(_$RefreshTokenRespModelImpl) then,
+  ) = __$$RefreshTokenRespModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String? accessToken, String? refreshToken});
@@ -83,29 +94,31 @@ abstract class _$$RefreshTokenRespModelImplCopyWith<$Res>
 
 /// @nodoc
 class __$$RefreshTokenRespModelImplCopyWithImpl<$Res>
-    extends _$RefreshTokenRespModelCopyWithImpl<$Res,
-        _$RefreshTokenRespModelImpl>
+    extends
+        _$RefreshTokenRespModelCopyWithImpl<$Res, _$RefreshTokenRespModelImpl>
     implements _$$RefreshTokenRespModelImplCopyWith<$Res> {
-  __$$RefreshTokenRespModelImplCopyWithImpl(_$RefreshTokenRespModelImpl _value,
-      $Res Function(_$RefreshTokenRespModelImpl) _then)
-      : super(_value, _then);
+  __$$RefreshTokenRespModelImplCopyWithImpl(
+    _$RefreshTokenRespModelImpl _value,
+    $Res Function(_$RefreshTokenRespModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of RefreshTokenRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? accessToken = freezed,
-    Object? refreshToken = freezed,
-  }) {
-    return _then(_$RefreshTokenRespModelImpl(
-      accessToken: freezed == accessToken
-          ? _value.accessToken
-          : accessToken // ignore: cast_nullable_to_non_nullable
-              as String?,
-      refreshToken: freezed == refreshToken
-          ? _value.refreshToken
-          : refreshToken // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+  $Res call({Object? accessToken = freezed, Object? refreshToken = freezed}) {
+    return _then(
+      _$RefreshTokenRespModelImpl(
+        accessToken: freezed == accessToken
+            ? _value.accessToken
+            : accessToken // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        refreshToken: freezed == refreshToken
+            ? _value.refreshToken
+            : refreshToken // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
@@ -138,29 +151,33 @@ class _$RefreshTokenRespModelImpl implements _RefreshTokenRespModel {
                 other.refreshToken == refreshToken));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, accessToken, refreshToken);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RefreshTokenRespModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$RefreshTokenRespModelImplCopyWith<_$RefreshTokenRespModelImpl>
-      get copyWith => __$$RefreshTokenRespModelImplCopyWithImpl<
-          _$RefreshTokenRespModelImpl>(this, _$identity);
+  get copyWith =>
+      __$$RefreshTokenRespModelImplCopyWithImpl<_$RefreshTokenRespModelImpl>(
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RefreshTokenRespModelImplToJson(
-      this,
-    );
+    return _$$RefreshTokenRespModelImplToJson(this);
   }
 }
 
 abstract class _RefreshTokenRespModel implements RefreshTokenRespModel {
-  const factory _RefreshTokenRespModel(
-      {final String? accessToken,
-      final String? refreshToken}) = _$RefreshTokenRespModelImpl;
+  const factory _RefreshTokenRespModel({
+    final String? accessToken,
+    final String? refreshToken,
+  }) = _$RefreshTokenRespModelImpl;
 
   factory _RefreshTokenRespModel.fromJson(Map<String, dynamic> json) =
       _$RefreshTokenRespModelImpl.fromJson;
@@ -169,8 +186,11 @@ abstract class _RefreshTokenRespModel implements RefreshTokenRespModel {
   String? get accessToken;
   @override
   String? get refreshToken;
+
+  /// Create a copy of RefreshTokenRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RefreshTokenRespModelImplCopyWith<_$RefreshTokenRespModelImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  get copyWith => throw _privateConstructorUsedError;
 }

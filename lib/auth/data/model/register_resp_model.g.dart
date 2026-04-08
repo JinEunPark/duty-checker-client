@@ -7,17 +7,17 @@ part of 'register_resp_model.dart';
 // **************************************************************************
 
 _$RegisterRespModelImpl _$$RegisterRespModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$RegisterRespModelImpl(
-      id: (json['id'] as num?)?.toInt(),
-      phone: json['phone'] as String?,
-      role: json['role'] as String?,
-    );
+  Map<String, dynamic> json,
+) => _$RegisterRespModelImpl(
+  id: (json['id'] as num?)?.toInt(),
+  phone: json['phone'] as String?,
+  role: json['role'] as String?,
+);
 
 Map<String, dynamic> _$$RegisterRespModelImplToJson(
-        _$RegisterRespModelImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'phone': instance.phone,
-      'role': instance.role,
-    };
+  _$RegisterRespModelImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'phone': instance.phone,
+  'role': instance.role,
+};

@@ -12,14 +12,17 @@ part of 'login_result.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$LoginResult {
   AuthToken get token => throw _privateConstructorUsedError;
   User get user => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LoginResultCopyWith<LoginResult> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -27,8 +30,9 @@ mixin _$LoginResult {
 /// @nodoc
 abstract class $LoginResultCopyWith<$Res> {
   factory $LoginResultCopyWith(
-          LoginResult value, $Res Function(LoginResult) then) =
-      _$LoginResultCopyWithImpl<$Res, LoginResult>;
+    LoginResult value,
+    $Res Function(LoginResult) then,
+  ) = _$LoginResultCopyWithImpl<$Res, LoginResult>;
   @useResult
   $Res call({AuthToken token, User user});
 
@@ -46,24 +50,28 @@ class _$LoginResultCopyWithImpl<$Res, $Val extends LoginResult>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? token = null,
-    Object? user = null,
-  }) {
-    return _then(_value.copyWith(
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as AuthToken,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User,
-    ) as $Val);
+  $Res call({Object? token = null, Object? user = null}) {
+    return _then(
+      _value.copyWith(
+            token: null == token
+                ? _value.token
+                : token // ignore: cast_nullable_to_non_nullable
+                      as AuthToken,
+            user: null == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as User,
+          )
+          as $Val,
+    );
   }
 
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AuthTokenCopyWith<$Res> get token {
@@ -72,6 +80,8 @@ class _$LoginResultCopyWithImpl<$Res, $Val extends LoginResult>
     });
   }
 
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $UserCopyWith<$Res> get user {
@@ -85,8 +95,9 @@ class _$LoginResultCopyWithImpl<$Res, $Val extends LoginResult>
 abstract class _$$LoginResultImplCopyWith<$Res>
     implements $LoginResultCopyWith<$Res> {
   factory _$$LoginResultImplCopyWith(
-          _$LoginResultImpl value, $Res Function(_$LoginResultImpl) then) =
-      __$$LoginResultImplCopyWithImpl<$Res>;
+    _$LoginResultImpl value,
+    $Res Function(_$LoginResultImpl) then,
+  ) = __$$LoginResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({AuthToken token, User user});
@@ -102,25 +113,27 @@ class __$$LoginResultImplCopyWithImpl<$Res>
     extends _$LoginResultCopyWithImpl<$Res, _$LoginResultImpl>
     implements _$$LoginResultImplCopyWith<$Res> {
   __$$LoginResultImplCopyWithImpl(
-      _$LoginResultImpl _value, $Res Function(_$LoginResultImpl) _then)
-      : super(_value, _then);
+    _$LoginResultImpl _value,
+    $Res Function(_$LoginResultImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? token = null,
-    Object? user = null,
-  }) {
-    return _then(_$LoginResultImpl(
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as AuthToken,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User,
-    ));
+  $Res call({Object? token = null, Object? user = null}) {
+    return _then(
+      _$LoginResultImpl(
+        token: null == token
+            ? _value.token
+            : token // ignore: cast_nullable_to_non_nullable
+                  as AuthToken,
+        user: null == user
+            ? _value.user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as User,
+      ),
+    );
   }
 }
 
@@ -151,7 +164,9 @@ class _$LoginResultImpl implements _LoginResult {
   @override
   int get hashCode => Object.hash(runtimeType, token, user);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$LoginResultImplCopyWith<_$LoginResultImpl> get copyWith =>
@@ -159,16 +174,20 @@ class _$LoginResultImpl implements _LoginResult {
 }
 
 abstract class _LoginResult implements LoginResult {
-  const factory _LoginResult(
-      {required final AuthToken token,
-      required final User user}) = _$LoginResultImpl;
+  const factory _LoginResult({
+    required final AuthToken token,
+    required final User user,
+  }) = _$LoginResultImpl;
 
   @override
   AuthToken get token;
   @override
   User get user;
+
+  /// Create a copy of LoginResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LoginResultImplCopyWith<_$LoginResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

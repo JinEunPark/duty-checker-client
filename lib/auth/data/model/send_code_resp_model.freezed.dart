@@ -12,7 +12,8 @@ part of 'send_code_resp_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 SendCodeRespModel _$SendCodeRespModelFromJson(Map<String, dynamic> json) {
   return _SendCodeRespModel.fromJson(json);
@@ -22,8 +23,12 @@ SendCodeRespModel _$SendCodeRespModelFromJson(Map<String, dynamic> json) {
 mixin _$SendCodeRespModel {
   String? get expiredAt => throw _privateConstructorUsedError;
 
+  /// Serializes this SendCodeRespModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SendCodeRespModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SendCodeRespModelCopyWith<SendCodeRespModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -31,8 +36,9 @@ mixin _$SendCodeRespModel {
 /// @nodoc
 abstract class $SendCodeRespModelCopyWith<$Res> {
   factory $SendCodeRespModelCopyWith(
-          SendCodeRespModel value, $Res Function(SendCodeRespModel) then) =
-      _$SendCodeRespModelCopyWithImpl<$Res, SendCodeRespModel>;
+    SendCodeRespModel value,
+    $Res Function(SendCodeRespModel) then,
+  ) = _$SendCodeRespModelCopyWithImpl<$Res, SendCodeRespModel>;
   @useResult
   $Res call({String? expiredAt});
 }
@@ -47,26 +53,30 @@ class _$SendCodeRespModelCopyWithImpl<$Res, $Val extends SendCodeRespModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SendCodeRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? expiredAt = freezed,
-  }) {
-    return _then(_value.copyWith(
-      expiredAt: freezed == expiredAt
-          ? _value.expiredAt
-          : expiredAt // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  $Res call({Object? expiredAt = freezed}) {
+    return _then(
+      _value.copyWith(
+            expiredAt: freezed == expiredAt
+                ? _value.expiredAt
+                : expiredAt // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$SendCodeRespModelImplCopyWith<$Res>
     implements $SendCodeRespModelCopyWith<$Res> {
-  factory _$$SendCodeRespModelImplCopyWith(_$SendCodeRespModelImpl value,
-          $Res Function(_$SendCodeRespModelImpl) then) =
-      __$$SendCodeRespModelImplCopyWithImpl<$Res>;
+  factory _$$SendCodeRespModelImplCopyWith(
+    _$SendCodeRespModelImpl value,
+    $Res Function(_$SendCodeRespModelImpl) then,
+  ) = __$$SendCodeRespModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String? expiredAt});
@@ -76,21 +86,24 @@ abstract class _$$SendCodeRespModelImplCopyWith<$Res>
 class __$$SendCodeRespModelImplCopyWithImpl<$Res>
     extends _$SendCodeRespModelCopyWithImpl<$Res, _$SendCodeRespModelImpl>
     implements _$$SendCodeRespModelImplCopyWith<$Res> {
-  __$$SendCodeRespModelImplCopyWithImpl(_$SendCodeRespModelImpl _value,
-      $Res Function(_$SendCodeRespModelImpl) _then)
-      : super(_value, _then);
+  __$$SendCodeRespModelImplCopyWithImpl(
+    _$SendCodeRespModelImpl _value,
+    $Res Function(_$SendCodeRespModelImpl) _then,
+  ) : super(_value, _then);
 
+  /// Create a copy of SendCodeRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? expiredAt = freezed,
-  }) {
-    return _then(_$SendCodeRespModelImpl(
-      expiredAt: freezed == expiredAt
-          ? _value.expiredAt
-          : expiredAt // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+  $Res call({Object? expiredAt = freezed}) {
+    return _then(
+      _$SendCodeRespModelImpl(
+        expiredAt: freezed == expiredAt
+            ? _value.expiredAt
+            : expiredAt // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
@@ -119,22 +132,24 @@ class _$SendCodeRespModelImpl implements _SendCodeRespModel {
                 other.expiredAt == expiredAt));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, expiredAt);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendCodeRespModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SendCodeRespModelImplCopyWith<_$SendCodeRespModelImpl> get copyWith =>
       __$$SendCodeRespModelImplCopyWithImpl<_$SendCodeRespModelImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SendCodeRespModelImplToJson(
-      this,
-    );
+    return _$$SendCodeRespModelImplToJson(this);
   }
 }
 
@@ -147,8 +162,11 @@ abstract class _SendCodeRespModel implements SendCodeRespModel {
 
   @override
   String? get expiredAt;
+
+  /// Create a copy of SendCodeRespModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SendCodeRespModelImplCopyWith<_$SendCodeRespModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
