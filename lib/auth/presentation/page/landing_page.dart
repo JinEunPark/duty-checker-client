@@ -20,7 +20,7 @@ class _LandingPageState extends ConsumerState<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -30,14 +30,14 @@ class _LandingPageState extends ConsumerState<LandingPage> {
               const Spacer(flex: 2),
 
               // 타이틀
-              const Text(
+              Text(
                 '어떤 역할로\n시작하실 건가요?',
-                style: AppTextStyles.display1,
+                style: context.appTextStyles.display1,
               ),
               const Gap(12),
-              const Text(
+              Text(
                 '매일 한 번, 소중한 사람의 안부를 확인해요',
-                style: AppTextStyles.body2,
+                style: context.appTextStyles.body2,
               ),
               const Spacer(flex: 2),
 
@@ -77,18 +77,18 @@ class _LandingPageState extends ConsumerState<LandingPage> {
                   child: Text.rich(
                     TextSpan(
                       text: '이미 계정이 있으신가요? ',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Pretendard',
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textTertiary,
+                        color: context.appColors.textTertiary,
                       ),
                       children: [
                         TextSpan(
                           text: '로그인',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
+                            color: context.appColors.primary,
                           ),
                         ),
                       ],

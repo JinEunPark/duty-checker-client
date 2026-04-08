@@ -1,3 +1,4 @@
+import 'package:duty_checker/core/setting/presentation/page/setting_page.dart';
 import 'package:duty_checker/guardian/presentation/page/guardian_home_page.dart';
 import 'package:duty_checker/auth/presentation/page/landing_page.dart';
 import 'package:duty_checker/auth/presentation/page/guardian_sign_up_page.dart';
@@ -47,6 +48,10 @@ final router = GoRouter(
     GoRoute(
       path: '/user/guardian-management',
       builder: (context, state) => const GuardianManagementPage(),
+    ),
+    GoRoute(
+      path: '/setting',
+      builder: (context, state) => const SettingPage(),
     ),
   ],
 );

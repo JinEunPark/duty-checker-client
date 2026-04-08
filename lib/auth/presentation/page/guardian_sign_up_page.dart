@@ -1,4 +1,5 @@
 import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
+import 'package:duty_checker/core/validators.dart';
 import 'package:duty_checker/core/widget/sign_up_widgets.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,10 +59,20 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     );
   }
 
-  void _onPhoneSend() {
+  Future<void> _onPhoneSend() async {
     final digits = _phoneController.text.replaceAll('-', '');
-    if (digits.length < 10) return;
-    ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
+    if (!phoneRegex.hasMatch(digits)) {
+      _showError('올바른 전화번호를 입력해주세요.\n예: 010-1234-5678');
+      return;
+    }
+    try {
+      await ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
+    } catch (e) {
+      if (!mounted) return;
+      _showError(e.toString());
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       _phoneCompleted = true;
       _showVerification = true;
@@ -96,16 +107,17 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
   Future<void> _onCodeSubmit() async {
     if (_codeController.text.length < 6) return;
     final digits = _phoneController.text.replaceAll('-', '');
-    await ref.read(signUpViewModelProvider.notifier).verifyCode(
-          phone: digits,
-          code: _codeController.text,
-        );
-    if (!mounted) return;
-    final signUpState = ref.read(signUpViewModelProvider);
-    if (signUpState.error != null) {
-      _showError(signUpState.error!);
+    try {
+      await ref.read(signUpViewModelProvider.notifier).verifyCode(
+            phone: digits,
+            code: _codeController.text,
+          );
+    } catch (e) {
+      if (!mounted) return;
+      _showError(e.toString());
       return;
     }
+    if (!mounted) return;
     setState(() {
       _codeCompleted = true;
       _showPassword = true;
@@ -114,25 +126,31 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     _scrollToBottom();
   }
 
-  Future<void> _onPasswordSubmit() async {
+  void _onPasswordSubmit() {
     final pw = _passwordController.text;
     final confirm = _passwordConfirmController.text;
     if (pw.length < 6 || pw != confirm) return;
-    final digits = _phoneController.text.replaceAll('-', '');
-    await ref.read(signUpViewModelProvider.notifier).register(
-          phone: digits,
-          password: pw,
-          role: 'GUARDIAN',
-        );
-    if (!mounted) return;
-    final signUpState = ref.read(signUpViewModelProvider);
-    if (signUpState.error != null) {
-      _showError(signUpState.error!);
-      return;
-    }
     setState(() {
       _passwordCompleted = true;
     });
+  }
+
+  Future<void> _onRegister() async {
+    final digits = _phoneController.text.replaceAll('-', '');
+    final pw = _passwordController.text;
+    try {
+      await ref.read(signUpViewModelProvider.notifier).register(
+            phone: digits,
+            password: pw,
+            role: 'GUARDIAN',
+          );
+    } catch (e) {
+      if (!mounted) return;
+      _showError(e.toString());
+      return;
+    }
+    if (!mounted) return;
+    context.go('/login');
   }
 
   @override
@@ -142,21 +160,21 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
         if (didPop) FocusManager.instance.primaryFocus?.unfocus();
       },
       child: CupertinoPageScaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.appColors.background,
         resizeToAvoidBottomInset: true,
         navigationBar: CupertinoNavigationBar(
-          backgroundColor: AppColors.surface,
+          backgroundColor: context.appColors.surface,
           padding: const EdgeInsetsDirectional.only(start: 4),
-          border: const Border(
-            bottom: BorderSide(color: AppColors.border, width: 0.5),
+          border: Border(
+            bottom: BorderSide(color: context.appColors.border, width: 0.5),
           ),
-          middle: const Text(
+          middle: Text(
             '보호자 등록',
             style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 17,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
           leading: CupertinoButton(
@@ -165,9 +183,9 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
               FocusManager.instance.primaryFocus?.unfocus();
               context.pop();
             },
-            child: const Icon(
+            child: Icon(
               CupertinoIcons.chevron_left,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
         ),
@@ -181,7 +199,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: context.appColors.surface,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
@@ -256,9 +274,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                 child: SignUpCompleteButton(
                   enabled: _passwordCompleted,
-                  onTap: () {
-                    context.go('/login');
-                  },
+                  onTap: _onRegister,
                 ),
               ),
             ],

@@ -1,4 +1,4 @@
-import 'package:duty_checker/core/widget/settings_action_sheet.dart';
+import 'package:duty_checker/core/widget/setting_button.dart';
 import 'package:duty_checker/theme.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -121,8 +121,11 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.background,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -134,16 +137,16 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('안부 전달', style: AppTextStyles.heading1),
-                  const SettingsDropdown(currentRole: UserRole.user),
+                  Text('안부 전달', style: textStyles.heading1),
+                  SettingButton(),
                 ],
               ),
               const Gap(4),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '보호자에게 안부를 전달할 수 있어요',
-                  style: AppTextStyles.body2,
+                  style: textStyles.body2,
                 ),
               ),
               const Gap(24),
@@ -192,7 +195,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: AppColors.primary
+                                            color: colors.primary
                                                 .withValues(
                                               alpha: 0.06 +
                                                   (0.1 *
@@ -215,15 +218,15 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                               height: 170,
                               decoration: BoxDecoration(
                                 color: _justChecked
-                                    ? AppColors.primary
-                                    : AppColors.surface,
+                                    ? colors.primary
+                                    : colors.surface,
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
                                     color: _justChecked
-                                        ? AppColors.primary
+                                        ? colors.primary
                                             .withValues(alpha: 0.25)
-                                        : AppColors.gray900
+                                        : colors.gray900
                                             .withValues(alpha: 0.06),
                                     blurRadius: _justChecked ? 24 : 20,
                                     offset: const Offset(0, 4),
@@ -240,8 +243,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                                   key: ValueKey(_justChecked),
                                   size: 52,
                                   color: _justChecked
-                                      ? AppColors.surface
-                                      : AppColors.primary,
+                                      ? colors.surface
+                                      : colors.primary,
                                 ),
                               ),
                             ),
@@ -257,7 +260,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                       child: Text(
                         _justChecked ? '안부가 전달되었어요' : '안부 확인',
                         key: ValueKey('title_$_justChecked'),
-                        style: AppTextStyles.heading2,
+                        style: textStyles.heading2,
                       ),
                     ),
                     const Gap(10),
@@ -266,10 +269,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 250),
                       child: _justChecked
-                          ? const Text(
+                          ? Text(
                               '보호자에게 안부가 전달됩니다',
-                              key: ValueKey('sent'),
-                              style: AppTextStyles.body2,
+                              key: const ValueKey('sent'),
+                              style: textStyles.body2,
                             )
                           : _lastCheckTime != null
                               ? _LastCheckChip(
@@ -278,10 +281,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                                     _lastCheckTime!,
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   '눌러서 안부를 전달해주세요',
-                                  key: ValueKey('guide'),
-                                  style: AppTextStyles.body2,
+                                  key: const ValueKey('guide'),
+                                  style: textStyles.body2,
                                 ),
                     ),
                   ],
@@ -295,8 +298,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
                   '안부는 하루 기준으로 보호자에게 전달돼요',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.gray400,
+                  style: textStyles.caption.copyWith(
+                    color: colors.gray400,
                   ),
                 ),
               ),
@@ -317,14 +320,17 @@ class _LastCheckChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.gray900.withValues(alpha: 0.04),
+            color: colors.gray900.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 1),
           ),
@@ -336,15 +342,15 @@ class _LastCheckChip extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: const BoxDecoration(
-              color: AppColors.success,
+            decoration: BoxDecoration(
+              color: colors.success,
               shape: BoxShape.circle,
             ),
           ),
           const Gap(8),
           Text(
             '마지막 안부  $text',
-            style: AppTextStyles.label,
+            style: textStyles.label,
           ),
         ],
       ),
@@ -366,16 +372,19 @@ class _GuardianManagementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.gray900.withValues(alpha: 0.05),
+              color: colors.gray900.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -386,14 +395,14 @@ class _GuardianManagementCard extends StatelessWidget {
             Container(
               width: 44,
               height: 44,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryLight,
+              decoration: BoxDecoration(
+                color: colors.primaryLight,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.person_2_fill,
                 size: 20,
-                color: AppColors.primary,
+                color: colors.primary,
               ),
             ),
             const Gap(14),
@@ -401,19 +410,19 @@ class _GuardianManagementCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '보호자 관리',
-                    style: AppTextStyles.heading3,
+                    style: textStyles.heading3,
                   ),
                   const Gap(2),
-                  Text(statusText, style: AppTextStyles.body2),
+                  Text(statusText, style: textStyles.body2),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               CupertinoIcons.chevron_right,
               size: 16,
-              color: AppColors.gray400,
+              color: colors.gray400,
             ),
           ],
         ),

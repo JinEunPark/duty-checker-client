@@ -20,14 +20,14 @@ class NextButtonWidget extends StatelessWidget {
         width: double.infinity,
         height: 54,
         decoration: BoxDecoration(
-          color: enabled ? AppColors.primary : AppColors.gray200,
+          color: enabled ? context.appColors.primary : context.appColors.gray200,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Center(
           child: Text(
             '다음',
-            style: AppTextStyles.body1Medium.copyWith(
-              color: enabled ? AppColors.surface : AppColors.gray400,
+            style: context.appTextStyles.body1Medium.copyWith(
+              color: enabled ? context.appColors.surface : context.appColors.gray400,
             ),
           ),
         ),

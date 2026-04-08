@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:duty_checker/auth/domain/use_case/auth_use_case_providers.dart';
 import 'package:duty_checker/auth/presentation/view_model/login_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,7 +71,28 @@ void main() {
       final state = container.read(loginViewModelProvider);
       expect(state.isLoading, false);
       expect(state.user, isNull);
-      expect(state.error, contains('인증 실패'));
+      expect(state.error, isNotNull);
+    });
+
+    test('DioException 401 시 친절한 에러 메시지가 설정된다', () async {
+      when(() => mockLoginUseCase(
+            phone: any(named: 'phone'),
+            password: any(named: 'password'),
+          )).thenThrow(DioException(
+        type: DioExceptionType.badResponse,
+        requestOptions: RequestOptions(),
+        response: Response(
+          statusCode: 401,
+          requestOptions: RequestOptions(),
+          data: {'code': 'INVALID_CREDENTIALS', 'message': '인증 실패'},
+        ),
+      ));
+
+      final notifier = container.read(loginViewModelProvider.notifier);
+      await notifier.login(phone: '01012345678', password: 'wrong');
+
+      final state = container.read(loginViewModelProvider);
+      expect(state.error, contains('비밀번호가 일치하지 않아요'));
     });
   });
 }

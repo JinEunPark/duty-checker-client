@@ -2,6 +2,7 @@
 
 ## 인프라 (완료)
 - [x] `core/network/` — Dio provider, AuthInterceptor, TokenStorage
+- [x] `core/fcm/` — FcmService, DeviceTokenApi, FCM 토큰 서버 등록
 - [x] `auth/` — domain + data 레이어 전체 (Entity, Repository, UseCase, DTO, API, DataSource)
 
 ---
@@ -13,7 +14,7 @@
 | 전화번호 인증코드 발송 | `POST /v1/auth/send-code` | ✅ 연결됨 |
 | 인증코드 검증 | `POST /v1/auth/verify-code` | ✅ 연결됨 |
 | 회원가입 | `POST /v1/auth/register` (role: SUBJECT) | ✅ 연결됨 |
-| 가입 후 자동 로그인 | `POST /v1/auth/login` | ✅ 연결됨 — register 성공 후 자동 login → 토큰 저장 → role 기반 홈 이동 |
+| 가입 후 로그인 화면 이동 | — | ✅ 변경됨 — 회원가입 완료 후 `/login`으로 이동 |
 | 보호자 전화번호 추가 | `POST /v1/connections` | ❌ 미구현 — 스텝4 보호자 추가가 로컬 리스트만 사용 중 |
 
 **필요한 feature**: auth (기존), connection (신규)
@@ -27,7 +28,7 @@
 | 전화번호 인증코드 발송 | `POST /v1/auth/send-code` | ✅ 연결됨 |
 | 인증코드 검증 | `POST /v1/auth/verify-code` | ✅ 연결됨 |
 | 회원가입 | `POST /v1/auth/register` (role: GUARDIAN) | ✅ 연결됨 |
-| 가입 후 자동 로그인 | `POST /v1/auth/login` | ✅ 연결됨 — register 성공 후 자동 login → 토큰 저장 → role 기반 홈 이동 |
+| 가입 후 로그인 화면 이동 | — | ✅ 변경됨 — 회원가입 완료 후 `/login`으로 이동 |
 
 **필요한 feature**: auth (기존)
 
@@ -39,7 +40,7 @@
 |------|-----|------|
 | 로그인 | `POST /v1/auth/login` | ✅ 연결됨 |
 | 역할별 홈 분기 | 응답의 `user.role` 기반 | ✅ 연결됨 |
-| 로그인 후 FCM 토큰 전송 | `PATCH /v1/users/device-token` | ❌ 미구현 |
+| 로그인 후 FCM 토큰 전송 | `PATCH /v1/users/device-token` | ✅ 연결됨 — 로그인 성공 시 `fcmService.connectApi()` 호출 |
 
 **필요한 feature**: auth (기존), user (신규)
 
@@ -119,10 +120,10 @@
 
 | 기능 | API | 상태 |
 |------|-----|------|
-| 로그인/앱 시작 시 토큰 전송 | `PATCH /v1/users/device-token` | ❌ 미구현 |
-| 토큰 갱신 시 서버 업데이트 | `PATCH /v1/users/device-token` | ❌ 미구현 |
+| 로그인/앱 시작 시 토큰 전송 | `PATCH /v1/users/device-token` | ✅ 연결됨 — `FcmService.connectApi()` 호출 시 즉시 전송 |
+| 토큰 갱신 시 서버 업데이트 | `PATCH /v1/users/device-token` | ✅ 연결됨 — `onTokenRefresh` 리스너에서 자동 전송 |
 
-**필요한 feature**: user (신규)
+**구현 위치**: `core/fcm/` (공통 인프라, user feature 불필요)
 
 ---
 
@@ -136,9 +137,9 @@
 - 사용 API: `POST /v1/check-ins`, `GET /v1/check-ins/latest`
 - 사용 화면: 당사자 홈
 
-### user feature (백그라운드)
-- 사용 API: `PATCH /v1/users/device-token`
-- 사용 위치: 로그인 성공 후, FCM 토큰 갱신 시
+### ~~user feature (백그라운드)~~ ✅ 완료
+- ~~사용 API: `PATCH /v1/users/device-token`~~
+- `core/fcm/`에서 구현 완료 (공통 인프라로 처리)
 
 ---
 
@@ -151,10 +152,7 @@
 
 ## 권장 작업 순서
 
-1. **보호자 회원가입 완성** — 자동 로그인 연결 (auth 기존 UseCase 활용)
-2. **당사자 회원가입 완성** — 자동 로그인 + connection 추가
-3. **connection feature 구현** → 보호자 관리, 당사자 관리, 양쪽 홈 연결
-4. **check_in feature 구현** → 당사자 홈 연결
-5. **설정 로그아웃 연결** (auth 기존 LogoutUseCase 활용)
-6. **user feature 구현** → FCM 토큰 전송
-7. **공통 개선** — 토큰 갱신, 에러 처리, splash 분기
+1. **connection feature 구현** → 보호자 관리, 당사자 관리, 양쪽 홈 연결
+2. **check_in feature 구현** → 당사자 홈 연결
+3. **설정 로그아웃 연결** (auth 기존 LogoutUseCase 활용)
+4. **공통 개선** — 토큰 갱신, 에러 처리, splash 분기

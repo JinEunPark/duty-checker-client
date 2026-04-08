@@ -27,10 +27,10 @@ class ModeCardWidget extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? context.appColors.primary : context.appColors.border,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -42,13 +42,13 @@ class ModeCardWidget extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryLight : AppColors.gray100,
+                color: isSelected ? context.appColors.primaryLight : context.appColors.gray100,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
                 size: 26,
-                color: isSelected ? AppColors.primary : AppColors.gray500,
+                color: isSelected ? context.appColors.primary : context.appColors.gray500,
               ),
             ),
             const Gap(16),
@@ -60,16 +60,16 @@ class ModeCardWidget extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.body1Medium.copyWith(
+                    style: context.appTextStyles.body1Medium.copyWith(
                       color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textPrimary,
+                          ? context.appColors.primary
+                          : context.appColors.textPrimary,
                     ),
                   ),
                   const Gap(4),
                   Text(
                     description,
-                    style: AppTextStyles.body2,
+                    style: context.appTextStyles.body2,
                   ),
                 ],
               ),
@@ -79,9 +79,9 @@ class ModeCardWidget extends StatelessWidget {
             AnimatedOpacity(
               duration: const Duration(milliseconds: 200),
               opacity: isSelected ? 1 : 0,
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.checkmark_circle_fill,
-                color: AppColors.primary,
+                color: context.appColors.primary,
                 size: 22,
               ),
             ),

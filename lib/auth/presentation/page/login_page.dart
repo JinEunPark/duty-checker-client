@@ -2,6 +2,7 @@ import 'package:duty_checker/auth/presentation/view_model/login_view_model.dart'
 import 'package:duty_checker/core/fcm/fcm_service.dart';
 import 'package:duty_checker/core/network/dio_provider.dart';
 import 'package:duty_checker/core/shared_preferences_provider.dart';
+import 'package:duty_checker/core/validators.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -43,36 +44,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> _onLogin() async {
-    final digits = _phoneController.text.replaceAll('-', '');
-    if (digits.length < 10) return;
-    if (_passwordController.text.isEmpty) return;
+    final phone = _phoneController.text;
+    final digits = phone.replaceAll('-', '');
+    final password = _passwordController.text;
 
-    ref.read(sharedPreferencesProvider).setString(_lastPhoneKey, _phoneController.text);
+    if (phone.isEmpty) {
+      _showAlert('전화번호 입력', '전화번호를 입력해주세요.');
+      return;
+    }
+    if (!phoneRegex.hasMatch(digits)) {
+      _showAlert('전화번호 확인', '올바른 전화번호를 입력해주세요.\n예: 010-1234-5678');
+      return;
+    }
+    if (password.isEmpty) {
+      _showAlert('비밀번호 입력', '비밀번호를 입력해주세요.');
+      return;
+    }
+
+    ref.read(sharedPreferencesProvider).setString(_lastPhoneKey, phone);
 
     await ref.read(loginViewModelProvider.notifier).login(
           phone: digits,
-          password: _passwordController.text,
+          password: password,
         );
-
-    if (!mounted) return;
-    final state = ref.read(loginViewModelProvider);
-    if (state.error != null) {
-      _showError(state.error!);
-      return;
-    }
-    final user = state.user;
-    if (user != null) {
-      ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
-
-      context.go(user.isGuardian ? '/guardian/home' : '/user/home');
-    }
   }
 
-  void _showError(String message) {
+  void _showAlert(String title, String message) {
     showCupertinoDialog(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('로그인 실패'),
+        title: Text(title),
         content: Text(message),
         actions: [
           CupertinoDialogAction(
@@ -86,8 +87,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(loginViewModelProvider, (prev, next) {
+      if (next.error != null) {
+        _showAlert('로그인 실패', next.error!);
+        return;
+      }
+      final user = next.user;
+      if (user != null) {
+        ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
+        context.go(user.isGuardian ? '/guardian/home' : '/user/home');
+      }
+    });
+
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
@@ -121,8 +134,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         Center(
                           child: Text(
                             '모스',
-                            style: AppTextStyles.heading1.copyWith(
-                              color: AppColors.primary,
+                            style: context.appTextStyles.heading1.copyWith(
+                              color: context.appColors.primary,
                               letterSpacing: 2,
                             ),
                           ),
@@ -133,19 +146,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         // 타이틀
                         Text(
                           '안녕하세요',
-                          style: AppTextStyles.display1,
+                          style: context.appTextStyles.display1,
                         ),
                         const Gap(12),
                         Text(
                           '전화번호와 비밀번호를 입력해주세요',
-                          style: AppTextStyles.body2,
+                          style: context.appTextStyles.body2,
                         ),
                         const Gap(28),
 
                         // 로그인 카드
                         Container(
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: context.appColors.surface,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: const EdgeInsets.all(20),
@@ -156,18 +169,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 controller: _phoneController,
                                 keyboardType: TextInputType.phone,
                                 placeholder: '전화번호',
-                                placeholderStyle: const TextStyle(
+                                placeholderStyle: TextStyle(
                                   fontFamily: 'Pretendard',
                                   fontSize: 16,
-                                  color: AppColors.textTertiary,
+                                  color: context.appColors.textTertiary,
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Pretendard',
                                   fontSize: 16,
-                                  color: AppColors.textPrimary,
+                                  color: context.appColors.textPrimary,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.gray100,
+                                  color: context.appColors.gray100,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 padding: const EdgeInsets.symmetric(
@@ -189,18 +202,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 focusNode: _passwordFocusNode,
                                 obscureText: _obscurePassword,
                                 placeholder: '비밀번호',
-                                placeholderStyle: const TextStyle(
+                                placeholderStyle: TextStyle(
                                   fontFamily: 'Pretendard',
                                   fontSize: 16,
-                                  color: AppColors.textTertiary,
+                                  color: context.appColors.textTertiary,
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Pretendard',
                                   fontSize: 16,
-                                  color: AppColors.textPrimary,
+                                  color: context.appColors.textPrimary,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.gray100,
+                                  color: context.appColors.gray100,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 padding: const EdgeInsets.only(
@@ -220,7 +233,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         ? CupertinoIcons.eye_slash
                                         : CupertinoIcons.eye,
                                     size: 20,
-                                    color: AppColors.textTertiary,
+                                    color: context.appColors.textTertiary,
                                   ),
                                 ),
                                 suffixMode: OverlayVisibilityMode.always,
@@ -234,14 +247,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   width: double.infinity,
                                   height: 54,
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary,
+                                    color: context.appColors.primary,
                                     borderRadius: BorderRadius.circular(14),
                                   ),
                                   child: Center(
                                     child: Text(
                                       '로그인',
-                                      style: AppTextStyles.body1Medium.copyWith(
-                                        color: AppColors.surface,
+                                      style: context.appTextStyles.body1Medium.copyWith(
+                                        color: context.appColors.surface,
                                       ),
                                     ),
                                   ),
@@ -263,18 +276,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           child: Text.rich(
                             TextSpan(
                               text: '계정이 없으신가요? ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Pretendard',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: AppColors.textTertiary,
+                                color: context.appColors.textTertiary,
                               ),
                               children: [
                                 TextSpan(
                                   text: '회원가입',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.primary,
+                                    color: context.appColors.primary,
                                   ),
                                 ),
                               ],

@@ -1,5 +1,6 @@
 import 'package:duty_checker/auth/domain/use_case/auth_use_case_providers.dart';
 import 'package:duty_checker/auth/presentation/state/login_state.dart';
+import 'package:duty_checker/core/error/app_error.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'login_view_model.g.dart';
@@ -19,7 +20,8 @@ class LoginViewModel extends _$LoginViewModel {
       final result = await useCase(phone: phone, password: password);
       state = state.copyWith(isLoading: false, user: result.user);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      final appError = AppError.from(e);
+      state = state.copyWith(isLoading: false, error: appError.message);
     }
   }
 }

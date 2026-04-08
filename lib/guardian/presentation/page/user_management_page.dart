@@ -82,6 +82,7 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
 
   void _showNicknameSetupDialog(_Invitation invitation) {
     final controller = TextEditingController();
+    final colors = context.appColors;
 
     showCupertinoDialog<void>(
       context: context,
@@ -91,12 +92,12 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
           padding: const EdgeInsets.only(top: 8),
           child: Column(
             children: [
-              const Text(
+              Text(
                 '나중에 언제든지 수정할 수 있어요',
                 style: TextStyle(
                   fontFamily: 'Pretendard',
                   fontSize: 13,
-                  color: AppColors.textSecondary,
+                  color: colors.textSecondary,
                 ),
               ),
               const Gap(12),
@@ -106,18 +107,18 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                 autofocus: true,
                 maxLength: 10,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Pretendard',
                   fontSize: 16,
-                  color: AppColors.textPrimary,
+                  color: colors.textPrimary,
                 ),
-                placeholderStyle: const TextStyle(
+                placeholderStyle: TextStyle(
                   fontFamily: 'Pretendard',
                   fontSize: 14,
-                  color: AppColors.textTertiary,
+                  color: colors.textTertiary,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.gray100,
+                  color: colors.gray100,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -201,6 +202,7 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
   // ── 닉네임 편집 ──
   void _editNickname(_ConnectedUser user) {
     final controller = TextEditingController(text: user.nickname ?? '');
+    final colors = context.appColors;
 
     showCupertinoDialog<void>(
       context: context,
@@ -214,18 +216,18 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
             autofocus: true,
             maxLength: 10,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 16,
-              color: AppColors.textPrimary,
+              color: colors.textPrimary,
             ),
-            placeholderStyle: const TextStyle(
+            placeholderStyle: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 14,
-              color: AppColors.textTertiary,
+              color: colors.textTertiary,
             ),
             decoration: BoxDecoration(
-              color: AppColors.gray100,
+              color: colors.gray100,
               borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.symmetric(
@@ -262,32 +264,33 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final hasContent =
         _connectedUsers.isNotEmpty || _invitations.isNotEmpty;
 
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.background,
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: colors.surface,
         padding: const EdgeInsetsDirectional.only(start: 4, end: 8),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.border, width: 0.5),
+        border: Border(
+          bottom: BorderSide(color: colors.border, width: 0.5),
         ),
-        middle: const Text(
+        middle: Text(
           '연결 관리',
           style: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 17,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: colors.textPrimary,
           ),
         ),
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Navigator.of(context).pop(),
-          child: const Icon(
+          child: Icon(
             CupertinoIcons.chevron_left,
-            color: AppColors.textPrimary,
+            color: colors.textPrimary,
           ),
         ),
       ),
@@ -357,6 +360,9 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
   }
 
   Widget _buildEmptyState() {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -367,32 +373,32 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.gray100,
+                color: colors.gray100,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.gray900.withValues(alpha: 0.06),
+                    color: colors.gray900.withValues(alpha: 0.06),
                     blurRadius: 12,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.person_2_fill,
                 size: 32,
-                color: AppColors.gray400,
+                color: colors.gray400,
               ),
             ),
             const Gap(20),
-            const Text(
+            Text(
               '아직 연결이 없어요',
-              style: AppTextStyles.heading2,
+              style: textStyles.heading2,
               textAlign: TextAlign.center,
             ),
             const Gap(10),
-            const Text(
+            Text(
               '당사자가 보호자로 등록하면\n이곳에서 연결을 수락할 수 있습니다',
-              style: AppTextStyles.body2,
+              style: textStyles.body2,
               textAlign: TextAlign.center,
             ),
           ],
@@ -413,13 +419,15 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Text(
       '$title ($count)',
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Pretendard',
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: colors.textSecondary,
       ),
     );
   }
@@ -439,15 +447,17 @@ class _ConnectedUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
     final displayName = user.nickname ?? user.name;
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.primaryLight,
+        color: colors.primaryLight,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
+          color: colors.primary.withValues(alpha: 0.2),
           width: 1.5,
         ),
       ),
@@ -457,18 +467,18 @@ class _ConnectedUserCard extends StatelessWidget {
           Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
+            decoration: BoxDecoration(
+              color: colors.surface,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 displayName.isNotEmpty ? displayName[0] : '?',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Pretendard',
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
+                  color: colors.primary,
                 ),
               ),
             ),
@@ -482,12 +492,12 @@ class _ConnectedUserCard extends StatelessWidget {
               children: [
                 Text(
                   displayName,
-                  style: AppTextStyles.heading3,
+                  style: textStyles.heading3,
                 ),
                 const Gap(2),
                 Text(
                   user.phone,
-                  style: AppTextStyles.body2,
+                  style: textStyles.body2,
                 ),
               ],
             ),
@@ -497,10 +507,10 @@ class _ConnectedUserCard extends StatelessWidget {
           CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: onEditNickname,
-            child: const Icon(
+            child: Icon(
               CupertinoIcons.pencil,
               size: 18,
-              color: AppColors.primary,
+              color: colors.primary,
             ),
           ),
         ],
@@ -525,15 +535,18 @@ class _InvitationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.5),
+        border: Border.all(color: colors.border, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: AppColors.gray900.withValues(alpha: 0.05),
+            color: colors.gray900.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -546,16 +559,16 @@ class _InvitationCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.12),
+              color: colors.warning.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
+            child: Text(
               '연결 요청',
               style: TextStyle(
                 fontFamily: 'Pretendard',
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.warning,
+                color: colors.warning,
               ),
             ),
           ),
@@ -564,12 +577,12 @@ class _InvitationCard extends StatelessWidget {
           // 전화번호
           Text(
             invitation.userPhone,
-            style: AppTextStyles.heading2,
+            style: textStyles.heading2,
           ),
           const Gap(6),
-          const Text(
+          Text(
             '이 번호에서 안부 보호자로 등록했습니다',
-            style: AppTextStyles.caption,
+            style: textStyles.caption,
           ),
           const Gap(16),
 
@@ -582,25 +595,25 @@ class _InvitationCard extends StatelessWidget {
                   child: Container(
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
+                      color: colors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           CupertinoIcons.checkmark_alt,
                           size: 16,
-                          color: AppColors.surface,
+                          color: colors.surface,
                         ),
-                        Gap(6),
+                        const Gap(6),
                         Text(
                           '수락',
                           style: TextStyle(
                             fontFamily: 'Pretendard',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.surface,
+                            color: colors.surface,
                           ),
                         ),
                       ],
@@ -615,29 +628,29 @@ class _InvitationCard extends StatelessWidget {
                   child: Container(
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: colors.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.gray300,
+                        color: colors.gray300,
                         width: 1.5,
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           CupertinoIcons.xmark,
                           size: 14,
-                          color: AppColors.textSecondary,
+                          color: colors.textSecondary,
                         ),
-                        Gap(6),
+                        const Gap(6),
                         Text(
                           '거절',
                           style: TextStyle(
                             fontFamily: 'Pretendard',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
+                            color: colors.textSecondary,
                           ),
                         ),
                       ],
@@ -662,15 +675,17 @@ class _Toast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.gray900,
+          color: colors.gray900,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: AppColors.gray900.withValues(alpha: 0.2),
+              color: colors.gray900.withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -679,19 +694,19 @@ class _Toast extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               CupertinoIcons.checkmark_circle_fill,
               size: 16,
-              color: AppColors.surface,
+              color: colors.surface,
             ),
             const Gap(8),
             Text(
               message,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Pretendard',
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.surface,
+                color: colors.surface,
               ),
             ),
           ],

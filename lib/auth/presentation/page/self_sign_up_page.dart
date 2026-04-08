@@ -1,4 +1,5 @@
 import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
+import 'package:duty_checker/core/validators.dart';
 import 'package:duty_checker/core/widget/sign_up_widgets.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -98,10 +99,20 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
     });
   }
 
-  void _onPhoneSend() {
+  Future<void> _onPhoneSend() async {
     final digits = _phoneController.text.replaceAll('-', '');
-    if (digits.length < 10) return;
-    ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
+    if (!phoneRegex.hasMatch(digits)) {
+      _showError('올바른 전화번호를 입력해주세요.\n예: 010-1234-5678');
+      return;
+    }
+    try {
+      await ref.read(signUpViewModelProvider.notifier).sendCode(phone: digits);
+    } catch (e) {
+      if (!mounted) return;
+      _showError(e.toString());
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       _phoneCompleted = true;
       _showVerification = true;
@@ -125,16 +136,17 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
   Future<void> _onCodeSubmit() async {
     if (_codeController.text.length < 6) return;
     final digits = _phoneController.text.replaceAll('-', '');
-    await ref.read(signUpViewModelProvider.notifier).verifyCode(
-          phone: digits,
-          code: _codeController.text,
-        );
-    if (!mounted) return;
-    final signUpState = ref.read(signUpViewModelProvider);
-    if (signUpState.error != null) {
-      _showError(signUpState.error!);
+    try {
+      await ref.read(signUpViewModelProvider.notifier).verifyCode(
+            phone: digits,
+            code: _codeController.text,
+          );
+    } catch (e) {
+      if (!mounted) return;
+      _showError(e.toString());
       return;
     }
+    if (!mounted) return;
     setState(() {
       _codeCompleted = true;
       _showPassword = true;
@@ -143,22 +155,10 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
     _scrollToBottom();
   }
 
-  Future<void> _onPasswordSubmit() async {
+  void _onPasswordSubmit() {
     final pw = _passwordController.text;
     final confirm = _passwordConfirmController.text;
     if (pw.length < 6 || pw != confirm) return;
-    final digits = _phoneController.text.replaceAll('-', '');
-    await ref.read(signUpViewModelProvider.notifier).register(
-          phone: digits,
-          password: pw,
-          role: 'SUBJECT',
-        );
-    if (!mounted) return;
-    final signUpState = ref.read(signUpViewModelProvider);
-    if (signUpState.error != null) {
-      _showError(signUpState.error!);
-      return;
-    }
     setState(() {
       _passwordCompleted = true;
       _showGuardian = true;
@@ -208,9 +208,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
               child: const Text('계속 진행'),
               onPressed: () {
                 Navigator.of(ctx).pop();
-                setState(() {
-                  _isComplete = true;
-                });
+                _register();
               },
             ),
           ],
@@ -218,6 +216,24 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
       );
       return;
     }
+    _register();
+  }
+
+  Future<void> _register() async {
+    final digits = _phoneController.text.replaceAll('-', '');
+    final pw = _passwordController.text;
+    try {
+      await ref.read(signUpViewModelProvider.notifier).register(
+            phone: digits,
+            password: pw,
+            role: 'SUBJECT',
+          );
+    } catch (e) {
+      if (!mounted) return;
+      _showError(e.toString());
+      return;
+    }
+    if (!mounted) return;
     setState(() => _isComplete = true);
   }
 
@@ -229,21 +245,21 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
         if (didPop) FocusManager.instance.primaryFocus?.unfocus();
       },
       child: CupertinoPageScaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.appColors.background,
         resizeToAvoidBottomInset: true,
         navigationBar: CupertinoNavigationBar(
-          backgroundColor: AppColors.surface,
+          backgroundColor: context.appColors.surface,
           padding: const EdgeInsetsDirectional.only(start: 4),
-          border: const Border(
-            bottom: BorderSide(color: AppColors.border, width: 0.5),
+          border: Border(
+            bottom: BorderSide(color: context.appColors.border, width: 0.5),
           ),
           middle: Text(
             _isComplete ? '설정 완료' : '당사자 등록',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 17,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
           leading: _isComplete
@@ -254,9 +270,9 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
                     FocusManager.instance.primaryFocus?.unfocus();
                     context.pop();
                   },
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.chevron_left,
-                    color: AppColors.textPrimary,
+                    color: context.appColors.textPrimary,
                   ),
                 ),
         ),
@@ -281,39 +297,39 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
                     width: 96,
                     height: 96,
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: context.appColors.surface,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.gray900.withValues(alpha: 0.08),
+                          color: context.appColors.gray900.withValues(alpha: 0.08),
                           blurRadius: 16,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       CupertinoIcons.checkmark,
                       size: 48,
-                      color: AppColors.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
                   const Gap(24),
-                  const Text('설정이 완료되었습니다', style: AppTextStyles.display1),
+                  Text('설정이 완료되었습니다', style: context.appTextStyles.display1),
                   const Gap(16),
                   Text(
                     '안부 확인 서비스를 시작합니다\n등록하신 보호자에게 알림이 전송됩니다',
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.body2.copyWith(height: 1.6),
+                    style: context.appTextStyles.body2.copyWith(height: 1.6),
                   ),
                   const Gap(40),
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: context.appColors.surface,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.gray900.withValues(alpha: 0.05),
+                          color: context.appColors.gray900.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -326,24 +342,24 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('본인 전화번호',
-                                style: AppTextStyles.body2.copyWith(fontSize: 15)),
+                                style: context.appTextStyles.body2.copyWith(fontSize: 15)),
                             Text(_phoneController.text,
-                                style: AppTextStyles.body1Medium
+                                style: context.appTextStyles.body1Medium
                                     .copyWith(fontSize: 15)),
                           ],
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 16),
                           height: 1,
-                          color: AppColors.divider,
+                          color: context.appColors.divider,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('보호자',
-                                style: AppTextStyles.body2.copyWith(fontSize: 15)),
+                                style: context.appTextStyles.body2.copyWith(fontSize: 15)),
                             Text('${_guardians.length}명',
-                                style: AppTextStyles.body1Medium
+                                style: context.appTextStyles.body1Medium
                                     .copyWith(fontSize: 15)),
                           ],
                         ),
@@ -379,7 +395,7 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.appColors.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
@@ -519,18 +535,18 @@ class _GuardianStepContent extends StatelessWidget {
                 enabled: !isFull,
                 keyboardType: TextInputType.phone,
                 placeholder: '010-0000-0000',
-                placeholderStyle: const TextStyle(
+                placeholderStyle: TextStyle(
                   fontFamily: 'Pretendard',
                   fontSize: 16,
-                  color: AppColors.textTertiary,
+                  color: context.appColors.textTertiary,
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Pretendard',
                   fontSize: 16,
-                  color: AppColors.textPrimary,
+                  color: context.appColors.textPrimary,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.gray100,
+                  color: context.appColors.gray100,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding:
@@ -549,13 +565,13 @@ class _GuardianStepContent extends StatelessWidget {
                 width: 54,
                 height: 54,
                 decoration: BoxDecoration(
-                  color: isFull ? AppColors.gray200 : AppColors.gray300,
+                  color: isFull ? context.appColors.gray200 : context.appColors.gray300,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   CupertinoIcons.add,
                   size: 22,
-                  color: isFull ? AppColors.gray400 : AppColors.gray700,
+                  color: isFull ? context.appColors.gray400 : context.appColors.gray700,
                 ),
               ),
             ),
@@ -564,7 +580,7 @@ class _GuardianStepContent extends StatelessWidget {
         const Gap(8),
         Text(
           '최대 5명까지 등록 가능 · ${guardians.length}/5',
-          style: AppTextStyles.caption,
+          style: context.appTextStyles.caption,
         ),
         if (guardians.isNotEmpty) ...[
           const Gap(12),
@@ -576,7 +592,7 @@ class _GuardianStepContent extends StatelessWidget {
                 child: Container(
                   key: isLast ? lastGuardianKey : null,
                   decoration: BoxDecoration(
-                    color: AppColors.gray100,
+                    color: context.appColors.gray100,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -587,13 +603,13 @@ class _GuardianStepContent extends StatelessWidget {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: AppColors.primaryLight,
+                          color: context.appColors.primaryLight,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           CupertinoIcons.person_fill,
                           size: 18,
-                          color: AppColors.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                       const Gap(12),
@@ -602,20 +618,20 @@ class _GuardianStepContent extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('보호자 ${entry.key + 1}',
-                                style: AppTextStyles.label),
+                                style: context.appTextStyles.label),
                             const Gap(2),
                             Text(entry.value,
-                                style: AppTextStyles.body1Medium),
+                                style: context.appTextStyles.body1Medium),
                           ],
                         ),
                       ),
                       CupertinoButton(
                         padding: EdgeInsets.zero,
                         onPressed: () => onRemove(entry.key),
-                        child: const Icon(
+                        child: Icon(
                           CupertinoIcons.xmark,
                           size: 16,
-                          color: AppColors.gray400,
+                          color: context.appColors.gray400,
                         ),
                       ),
                     ],

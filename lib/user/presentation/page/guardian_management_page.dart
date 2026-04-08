@@ -61,7 +61,7 @@ class _GuardianManagementPageState
 
     showCupertinoDialog<void>(
       context: context,
-      builder: (context) => CupertinoAlertDialog(
+      builder: (dialogContext) => CupertinoAlertDialog(
         title: const Text('별칭 수정'),
         content: Padding(
           padding: const EdgeInsets.only(top: 12),
@@ -71,18 +71,18 @@ class _GuardianManagementPageState
             autofocus: true,
             maxLength: 10,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 16,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
-            placeholderStyle: const TextStyle(
+            placeholderStyle: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 16,
-              color: AppColors.textTertiary,
+              color: context.appColors.textTertiary,
             ),
             decoration: BoxDecoration(
-              color: AppColors.gray100,
+              color: context.appColors.gray100,
               borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.symmetric(
@@ -96,7 +96,7 @@ class _GuardianManagementPageState
             child: const Text('취소'),
             onPressed: () {
               controller.dispose();
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
             },
           ),
           CupertinoDialogAction(
@@ -112,7 +112,7 @@ class _GuardianManagementPageState
                 });
               }
               controller.dispose();
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
             },
           ),
         ],
@@ -123,7 +123,7 @@ class _GuardianManagementPageState
   void _confirmRemoveGuardian(int index) {
     showCupertinoDialog<void>(
       context: context,
-      builder: (context) => CupertinoAlertDialog(
+      builder: (dialogContext) => CupertinoAlertDialog(
         title: const Text('보호자 삭제'),
         content: Text(
           '${_guardians[index].nickname}을(를) 삭제하시겠습니까?',
@@ -131,13 +131,13 @@ class _GuardianManagementPageState
         actions: [
           CupertinoDialogAction(
             child: const Text('취소'),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             child: const Text('삭제'),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
               setState(() => _guardians.removeAt(index));
             },
           ),
@@ -148,29 +148,31 @@ class _GuardianManagementPageState
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.background,
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: colors.surface,
         padding: const EdgeInsetsDirectional.only(start: 4, end: 8),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.border, width: 0.5),
+        border: Border(
+          bottom: BorderSide(color: colors.border, width: 0.5),
         ),
-        middle: const Text(
+        middle: Text(
           '보호자 관리',
           style: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 17,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: colors.textPrimary,
           ),
         ),
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Navigator.of(context).pop(),
-          child: const Icon(
+          child: Icon(
             CupertinoIcons.chevron_left,
-            color: AppColors.textPrimary,
+            color: colors.textPrimary,
           ),
         ),
       ),
@@ -251,16 +253,18 @@ class _AddGuardianCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
     final isFull = guardianCount >= 3;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.gray900.withValues(alpha: 0.05),
+            color: colors.gray900.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -277,18 +281,18 @@ class _AddGuardianCard extends StatelessWidget {
                   enabled: !isFull,
                   keyboardType: TextInputType.phone,
                   placeholder: '전화번호 입력',
-                  placeholderStyle: const TextStyle(
+                  placeholderStyle: TextStyle(
                     fontFamily: 'Pretendard',
                     fontSize: 16,
-                    color: AppColors.textTertiary,
+                    color: colors.textTertiary,
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Pretendard',
                     fontSize: 16,
-                    color: AppColors.textPrimary,
+                    color: colors.textPrimary,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.gray100,
+                    color: colors.gray100,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -308,13 +312,13 @@ class _AddGuardianCard extends StatelessWidget {
                   width: 54,
                   height: 54,
                   decoration: BoxDecoration(
-                    color: isFull ? AppColors.gray200 : AppColors.primary,
+                    color: isFull ? colors.gray200 : colors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     CupertinoIcons.add,
                     size: 22,
-                    color: isFull ? AppColors.gray400 : AppColors.surface,
+                    color: isFull ? colors.gray400 : colors.surface,
                   ),
                 ),
               ),
@@ -323,7 +327,7 @@ class _AddGuardianCard extends StatelessWidget {
           const Gap(10),
           Text(
             '최대 3명까지 등록 가능 · $guardianCount/3',
-            style: AppTextStyles.caption,
+            style: textStyles.caption,
           ),
         ],
       ),
@@ -347,16 +351,18 @@ class _GuardianCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
     final isConnected = guardian.status == _GuardianStatus.connected;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.gray900.withValues(alpha: 0.05),
+            color: colors.gray900.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -368,14 +374,14 @@ class _GuardianCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.primaryLight,
+            decoration: BoxDecoration(
+              color: colors.primaryLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               CupertinoIcons.person_fill,
               size: 24,
-              color: AppColors.primary,
+              color: colors.primary,
             ),
           ),
           const Gap(14),
@@ -392,19 +398,19 @@ class _GuardianCard extends StatelessWidget {
                     children: [
                       Text(
                         guardian.nickname,
-                        style: AppTextStyles.heading3.copyWith(fontSize: 16),
+                        style: textStyles.heading3.copyWith(fontSize: 16),
                       ),
                       const Gap(6),
-                      const Icon(
+                      Icon(
                         CupertinoIcons.pencil,
                         size: 18,
-                        color: AppColors.textSecondary,
+                        color: colors.textSecondary,
                       ),
                     ],
                   ),
                 ),
                 const Gap(2),
-                Text(guardian.phone, style: AppTextStyles.body2),
+                Text(guardian.phone, style: textStyles.body2),
                 const Gap(4),
                 Row(
                   children: [
@@ -413,18 +419,18 @@ class _GuardianCard extends StatelessWidget {
                       height: 6,
                       decoration: BoxDecoration(
                         color: isConnected
-                            ? AppColors.success
-                            : AppColors.warning,
+                            ? colors.success
+                            : colors.warning,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const Gap(6),
                     Text(
                       isConnected ? '연결됨' : '연결 대기 중',
-                      style: AppTextStyles.caption.copyWith(
+                      style: textStyles.caption.copyWith(
                         color: isConnected
-                            ? AppColors.success
-                            : AppColors.warning,
+                            ? colors.success
+                            : colors.warning,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -438,10 +444,10 @@ class _GuardianCard extends StatelessWidget {
           CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: onDelete,
-            child: const Icon(
+            child: Icon(
               CupertinoIcons.xmark,
               size: 16,
-              color: AppColors.gray400,
+              color: colors.gray400,
             ),
           ),
         ],
@@ -458,6 +464,9 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 60),
       child: Column(
@@ -465,22 +474,22 @@ class _EmptyState extends StatelessWidget {
           Container(
             width: 72,
             height: 72,
-            decoration: const BoxDecoration(
-              color: AppColors.gray100,
+            decoration: BoxDecoration(
+              color: colors.gray100,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               CupertinoIcons.person_2_fill,
               size: 32,
-              color: AppColors.gray400,
+              color: colors.gray400,
             ),
           ),
           const Gap(20),
-          const Text('아직 보호자가 없어요', style: AppTextStyles.heading2),
+          Text('아직 보호자가 없어요', style: textStyles.heading2),
           const Gap(8),
-          const Text(
+          Text(
             '보호자를 등록하면 안부를 전달받을 수 있어요',
-            style: AppTextStyles.body2,
+            style: textStyles.body2,
           ),
         ],
       ),

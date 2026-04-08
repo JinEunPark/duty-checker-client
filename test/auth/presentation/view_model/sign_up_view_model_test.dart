@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:duty_checker/auth/domain/use_case/auth_use_case_providers.dart';
 import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
+import 'package:duty_checker/core/error/app_error.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,20 +12,17 @@ void main() {
   late MockSendCodeUseCase mockSendCode;
   late MockVerifyCodeUseCase mockVerifyCode;
   late MockRegisterUseCase mockRegister;
-  late MockLoginUseCase mockLogin;
   late ProviderContainer container;
 
   setUp(() {
     mockSendCode = MockSendCodeUseCase();
     mockVerifyCode = MockVerifyCodeUseCase();
     mockRegister = MockRegisterUseCase();
-    mockLogin = MockLoginUseCase();
     container = ProviderContainer(
       overrides: [
         sendCodeUseCaseProvider.overrideWithValue(mockSendCode),
         verifyCodeUseCaseProvider.overrideWithValue(mockVerifyCode),
         registerUseCaseProvider.overrideWithValue(mockRegister),
-        loginUseCaseProvider.overrideWithValue(mockLogin),
       ],
     );
   });
@@ -44,17 +43,64 @@ void main() {
       expect(state.error, isNull);
     });
 
-    test('실패 시 error가 설정된다', () async {
+    test('실패 시 AppError를 throw한다', () async {
       when(() => mockSendCode(phone: any(named: 'phone')))
           .thenThrow(Exception('발송 실패'));
 
       final notifier = container.read(signUpViewModelProvider.notifier);
-      await notifier.sendCode(phone: '010');
 
-      final state = container.read(signUpViewModelProvider);
-      expect(state.isSendingCode, false);
-      expect(state.codeSent, false);
-      expect(state.error, contains('발송 실패'));
+      expect(
+        () => notifier.sendCode(phone: '010'),
+        throwsA(isA<AppError>()),
+      );
+    });
+
+    test('DioException 400 INVALID_PHONE_FORMAT 시 친절한 메시지로 변환된다', () async {
+      when(() => mockSendCode(phone: any(named: 'phone'))).thenThrow(
+        DioException(
+          type: DioExceptionType.badResponse,
+          requestOptions: RequestOptions(),
+          response: Response(
+            statusCode: 400,
+            requestOptions: RequestOptions(),
+            data: {'code': 'INVALID_PHONE_FORMAT', 'message': '전화번호 형식이 올바르지 않습니다'},
+          ),
+        ),
+      );
+
+      final notifier = container.read(signUpViewModelProvider.notifier);
+
+      try {
+        await notifier.sendCode(phone: '010');
+        fail('예외가 발생해야 합니다');
+      } catch (e) {
+        expect(e, isA<AppError>());
+        expect((e as AppError).message, contains('전화번호 형식'));
+      }
+    });
+
+    test('DioException 429 RESEND_COOLDOWN 시 재시도 안내 메시지', () async {
+      when(() => mockSendCode(phone: any(named: 'phone'))).thenThrow(
+        DioException(
+          type: DioExceptionType.badResponse,
+          requestOptions: RequestOptions(),
+          response: Response(
+            statusCode: 429,
+            requestOptions: RequestOptions(),
+            data: {'code': 'RESEND_COOLDOWN', 'message': '재발송 대기'},
+          ),
+        ),
+      );
+
+      final notifier = container.read(signUpViewModelProvider.notifier);
+
+      try {
+        await notifier.sendCode(phone: '01012345678');
+        fail('예외가 발생해야 합니다');
+      } catch (e) {
+        expect(e, isA<AppError>());
+        expect((e as AppError).message, contains('잠시 후'));
+      }
     });
   });
 
@@ -74,33 +120,53 @@ void main() {
       expect(state.error, isNull);
     });
 
-    test('실패 시 error가 설정된다', () async {
+    test('실패 시 AppError를 throw한다', () async {
       when(() => mockVerifyCode(
             phone: any(named: 'phone'),
             verificationCode: any(named: 'verificationCode'),
           )).thenThrow(Exception('코드 불일치'));
 
       final notifier = container.read(signUpViewModelProvider.notifier);
-      await notifier.verifyCode(phone: '010', code: '000000');
 
-      final state = container.read(signUpViewModelProvider);
-      expect(state.isVerifyingCode, false);
-      expect(state.codeVerified, false);
-      expect(state.error, contains('코드 불일치'));
+      expect(
+        () => notifier.verifyCode(phone: '010', code: '000000'),
+        throwsA(isA<AppError>()),
+      );
+    });
+
+    test('CODE_MISMATCH 시 인증코드 불일치 안내', () async {
+      when(() => mockVerifyCode(
+            phone: any(named: 'phone'),
+            verificationCode: any(named: 'verificationCode'),
+          )).thenThrow(DioException(
+        type: DioExceptionType.badResponse,
+        requestOptions: RequestOptions(),
+        response: Response(
+          statusCode: 400,
+          requestOptions: RequestOptions(),
+          data: {'code': 'CODE_MISMATCH', 'message': '인증 코드 불일치'},
+        ),
+      ));
+
+      final notifier = container.read(signUpViewModelProvider.notifier);
+
+      try {
+        await notifier.verifyCode(phone: '01012345678', code: '000000');
+        fail('예외가 발생해야 합니다');
+      } catch (e) {
+        expect(e, isA<AppError>());
+        expect((e as AppError).message, contains('일치하지 않아요'));
+      }
     });
   });
 
   group('SignUpViewModel - register', () {
-    test('성공 시 registered가 true이고 자동 로그인으로 user가 설정된다', () async {
+    test('성공 시 registered가 true가 된다', () async {
       when(() => mockRegister(
             phone: any(named: 'phone'),
             password: any(named: 'password'),
             role: any(named: 'role'),
           )).thenAnswer((_) async => testUser);
-      when(() => mockLogin(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => testLoginResult);
 
       final notifier = container.read(signUpViewModelProvider.notifier);
       await notifier.register(
@@ -112,84 +178,52 @@ void main() {
       final state = container.read(signUpViewModelProvider);
       expect(state.isRegistering, false);
       expect(state.registered, true);
-      expect(state.user, testUser);
       expect(state.error, isNull);
-
-      verify(() => mockLogin(phone: '01012345678', password: 'pw123456')).called(1);
     });
 
-    test('등록 실패 시 error가 설정되고 로그인은 호출되지 않는다', () async {
+    test('실패 시 AppError를 throw한다', () async {
       when(() => mockRegister(
             phone: any(named: 'phone'),
             password: any(named: 'password'),
             role: any(named: 'role'),
-          )).thenThrow(Exception('이미 가입된 번호'));
+          )).thenThrow(Exception('등록 실패'));
 
       final notifier = container.read(signUpViewModelProvider.notifier);
-      await notifier.register(
-        phone: '010',
-        password: 'pw',
-        role: 'SUBJECT',
+
+      expect(
+        () => notifier.register(phone: '010', password: 'pw', role: 'SUBJECT'),
+        throwsA(isA<AppError>()),
       );
-
-      final state = container.read(signUpViewModelProvider);
-      expect(state.isRegistering, false);
-      expect(state.registered, false);
-      expect(state.error, contains('이미 가입된 번호'));
-
-      verifyNever(() => mockLogin(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-          ));
     });
 
-    test('등록 성공 후 자동 로그인 실패 시 error가 설정된다', () async {
+    test('PHONE_ALREADY_REGISTERED 시 중복 가입 안내', () async {
       when(() => mockRegister(
             phone: any(named: 'phone'),
             password: any(named: 'password'),
             role: any(named: 'role'),
-          )).thenAnswer((_) async => testUser);
-      when(() => mockLogin(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-          )).thenThrow(Exception('로그인 실패'));
+          )).thenThrow(DioException(
+        type: DioExceptionType.badResponse,
+        requestOptions: RequestOptions(),
+        response: Response(
+          statusCode: 409,
+          requestOptions: RequestOptions(),
+          data: {'code': 'PHONE_ALREADY_REGISTERED', 'message': '이미 가입된 번호'},
+        ),
+      ));
 
       final notifier = container.read(signUpViewModelProvider.notifier);
-      await notifier.register(
-        phone: '01012345678',
-        password: 'pw123456',
-        role: 'SUBJECT',
-      );
 
-      final state = container.read(signUpViewModelProvider);
-      expect(state.isRegistering, false);
-      expect(state.registered, true);
-      expect(state.user, isNull);
-      expect(state.error, contains('자동 로그인에 실패'));
-    });
-
-    test('보호자 가입 성공 시 guardian user가 설정된다', () async {
-      when(() => mockRegister(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-            role: any(named: 'role'),
-          )).thenAnswer((_) async => testGuardian);
-      when(() => mockLogin(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => testGuardianLoginResult);
-
-      final notifier = container.read(signUpViewModelProvider.notifier);
-      await notifier.register(
-        phone: '01087654321',
-        password: 'pw123456',
-        role: 'GUARDIAN',
-      );
-
-      final state = container.read(signUpViewModelProvider);
-      expect(state.registered, true);
-      expect(state.user, testGuardian);
-      expect(state.user!.isGuardian, true);
+      try {
+        await notifier.register(
+          phone: '01012345678',
+          password: 'pw123456',
+          role: 'SUBJECT',
+        );
+        fail('예외가 발생해야 합니다');
+      } catch (e) {
+        expect(e, isA<AppError>());
+        expect((e as AppError).message, contains('이미 가입'));
+      }
     });
   });
 }

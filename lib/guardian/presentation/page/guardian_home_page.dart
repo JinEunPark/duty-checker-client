@@ -1,10 +1,11 @@
-import 'package:duty_checker/core/widget/settings_action_sheet.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../core/widget/setting_button.dart';
 
 // ─────────────────────────────────────────────
 // 모델
@@ -118,10 +119,11 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final hasUsers = _connectedUsers.isNotEmpty;
 
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.background,
       child: Stack(
         children: [
           SafeArea(
@@ -139,6 +141,8 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
   }
 
   Widget _buildMainContent() {
+    final textStyles = context.appTextStyles;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
       children: [
@@ -146,14 +150,14 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('보호자 홈', style: AppTextStyles.heading1),
-            const SettingsDropdown(currentRole: UserRole.guardian),
+            Text('보호자 홈', style: textStyles.heading1),
+            const SettingButton(),
           ],
         ),
         const Gap(4),
-        const Text(
+        Text(
           '연결된 분의 안부를 확인해보세요',
-          style: AppTextStyles.body2,
+          style: textStyles.body2,
         ),
         const Gap(24),
 
@@ -181,6 +185,9 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
   }
 
   Widget _buildEmptyState() {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -191,32 +198,32 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: colors.surface,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.gray900.withValues(alpha: 0.06),
+                    color: colors.gray900.withValues(alpha: 0.06),
                     blurRadius: 12,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.person_2_fill,
                 size: 32,
-                color: AppColors.gray400,
+                color: colors.gray400,
               ),
             ),
             const Gap(20),
-            const Text(
+            Text(
               '아직 연결된 분이 없어요',
-              style: AppTextStyles.heading2,
+              style: textStyles.heading2,
               textAlign: TextAlign.center,
             ),
             const Gap(10),
-            const Text(
+            Text(
               '안부를 확인할 분이 등록되면\n이곳에서 상태를 확인할 수 있어요.',
-              style: AppTextStyles.body2,
+              style: textStyles.body2,
               textAlign: TextAlign.center,
             ),
             const Gap(32),
@@ -224,11 +231,11 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.gray900.withValues(alpha: 0.05),
+                    color: colors.gray900.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -236,19 +243,19 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
               ),
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     '안부 확인 요청을 기다리고 있어요',
                     style: TextStyle(
                       fontFamily: 'Pretendard',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: colors.textPrimary,
                     ),
                   ),
                   const Gap(6),
-                  const Text(
+                  Text(
                     '당사자가 등록하면 자동으로 알려드릴게요',
-                    style: AppTextStyles.caption,
+                    style: textStyles.caption,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -272,16 +279,19 @@ class _ManagementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.gray900.withValues(alpha: 0.05),
+              color: colors.gray900.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -293,13 +303,13 @@ class _ManagementCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: colors.primaryLight,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.person_2_fill,
                 size: 20,
-                color: AppColors.primary,
+                color: colors.primary,
               ),
             ),
             const Gap(14),
@@ -307,22 +317,22 @@ class _ManagementCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '당사자 관리',
-                    style: AppTextStyles.heading3,
+                    style: textStyles.heading3,
                   ),
                   const Gap(2),
                   Text(
                     '당사자 $userCount명 연결됨',
-                    style: AppTextStyles.body2,
+                    style: textStyles.body2,
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               CupertinoIcons.chevron_right,
               size: 16,
-              color: AppColors.gray400,
+              color: colors.gray400,
             ),
           ],
         ),
@@ -345,56 +355,23 @@ class _UserStatusCard extends StatelessWidget {
     required this.lastCheckTimeText,
   });
 
-  _StatusConfig get _config {
-    switch (status) {
-      case UserStatus.normal:
-        return _StatusConfig(
-          label: null,
-          message: '안부가 정상적으로 확인되고 있어요.',
-          avatarBg: AppColors.primaryLight,
-          borderColor: null,
-          dotColor: AppColors.success,
-          labelColor: null,
-          labelBg: null,
-        );
-      case UserStatus.warning:
-        return _StatusConfig(
-          label: '주의',
-          message: '아직 안부 확인이 되지 않았어요.',
-          avatarBg: const Color(0xFFFFF5E6),
-          borderColor: AppColors.warning,
-          dotColor: AppColors.warning,
-          labelColor: AppColors.warning,
-          labelBg: const Color(0xFFFFF5E6),
-        );
-      case UserStatus.critical:
-        return _StatusConfig(
-          label: '긴급',
-          message: '48시간 동안 안부 확인이 되지 않았습니다.',
-          avatarBg: const Color(0xFFFFF5F5),
-          borderColor: AppColors.error,
-          dotColor: AppColors.error,
-          labelColor: AppColors.error,
-          labelBg: const Color(0xFFFFF5F5),
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final cfg = _config;
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+    final cfg = _getConfig(colors);
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         border: cfg.borderColor != null
             ? Border.all(color: cfg.borderColor!, width: 1.5)
             : null,
         boxShadow: [
           BoxShadow(
-            color: AppColors.gray900.withValues(alpha: 0.05),
+            color: colors.gray900.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -416,17 +393,17 @@ class _UserStatusCard extends StatelessWidget {
                 child: Center(
                   child: Text(
                     user.nickname.isNotEmpty ? user.nickname[0] : '?',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Pretendard',
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: colors.textPrimary,
                     ),
                   ),
                 ),
               ),
               const Gap(12),
-              Text(user.nickname, style: AppTextStyles.heading3),
+              Text(user.nickname, style: textStyles.heading3),
               const Spacer(),
               if (cfg.label != null)
                 Container(
@@ -464,31 +441,31 @@ class _UserStatusCard extends StatelessWidget {
           ),
 
           const Gap(16),
-          Container(height: 1, color: AppColors.divider),
+          Container(height: 1, color: colors.divider),
           const Gap(16),
 
           // 마지막 안부 확인 시각
-          const Text(
+          Text(
             '마지막 안부 확인',
-            style: AppTextStyles.caption,
+            style: textStyles.caption,
           ),
           const Gap(4),
-          Text(lastCheckTimeText, style: AppTextStyles.heading3),
+          Text(lastCheckTimeText, style: textStyles.heading3),
 
           const Gap(12),
 
           // 상태 메시지
-          Text(cfg.message, style: AppTextStyles.body2),
+          Text(cfg.message, style: textStyles.body2),
 
           const Gap(16),
 
           // 안내 텍스트
-          const Text(
+          Text(
             '필요 시 직접 연락해 주세요.',
             style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 12,
-              color: AppColors.gray400,
+              color: colors.gray400,
             ),
           ),
           const Gap(10),
@@ -518,6 +495,41 @@ class _UserStatusCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _StatusConfig _getConfig(AppColorScheme colors) {
+    switch (status) {
+      case UserStatus.normal:
+        return _StatusConfig(
+          label: null,
+          message: '안부가 정상적으로 확인되고 있어요.',
+          avatarBg: colors.primaryLight,
+          borderColor: null,
+          dotColor: colors.success,
+          labelColor: null,
+          labelBg: null,
+        );
+      case UserStatus.warning:
+        return _StatusConfig(
+          label: '주의',
+          message: '아직 안부 확인이 되지 않았어요.',
+          avatarBg: const Color(0xFFFFF5E6),
+          borderColor: colors.warning,
+          dotColor: colors.warning,
+          labelColor: colors.warning,
+          labelBg: const Color(0xFFFFF5E6),
+        );
+      case UserStatus.critical:
+        return _StatusConfig(
+          label: '긴급',
+          message: '48시간 동안 안부 확인이 되지 않았습니다.',
+          avatarBg: const Color(0xFFFFF5F5),
+          borderColor: colors.error,
+          dotColor: colors.error,
+          labelColor: colors.error,
+          labelBg: const Color(0xFFFFF5F5),
+        );
+    }
   }
 }
 
@@ -559,13 +571,15 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: onTap,
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: isPrimary ? AppColors.primary : AppColors.gray100,
+          color: isPrimary ? colors.primary : colors.gray100,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -574,7 +588,7 @@ class _ActionButton extends StatelessWidget {
             Icon(
               icon,
               size: 16,
-              color: isPrimary ? AppColors.surface : AppColors.textPrimary,
+              color: isPrimary ? colors.surface : colors.textPrimary,
             ),
             const Gap(6),
             Text(
@@ -583,7 +597,7 @@ class _ActionButton extends StatelessWidget {
                 fontFamily: 'Pretendard',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isPrimary ? AppColors.surface : AppColors.textPrimary,
+                color: isPrimary ? colors.surface : colors.textPrimary,
               ),
             ),
           ],
@@ -602,6 +616,9 @@ class _CriticalAlertOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final textStyles = context.appTextStyles;
+
     return GestureDetector(
       onTap: onDismiss,
       child: Container(
@@ -613,7 +630,7 @@ class _CriticalAlertOverlay extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 32),
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -629,23 +646,23 @@ class _CriticalAlertOverlay extends StatelessWidget {
                           color: Color(0xFFFFF5F5),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           CupertinoIcons.exclamationmark_circle_fill,
                           size: 22,
-                          color: AppColors.error,
+                          color: colors.error,
                         ),
                       ),
                       const Gap(12),
-                      const Text(
+                      Text(
                         '안부 미확인 알림',
-                        style: AppTextStyles.heading2,
+                        style: textStyles.heading2,
                       ),
                     ],
                   ),
                   const Gap(16),
-                  const Text(
+                  Text(
                     '48시간 동안 안부 확인이 되지 않았습니다.',
-                    style: AppTextStyles.body2,
+                    style: textStyles.body2,
                   ),
                   const Gap(24),
                   GestureDetector(
@@ -654,17 +671,17 @@ class _CriticalAlertOverlay extends StatelessWidget {
                       width: double.infinity,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: AppColors.textPrimary,
+                        color: colors.textPrimary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           '확인',
                           style: TextStyle(
                             fontFamily: 'Pretendard',
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.surface,
+                            color: colors.surface,
                           ),
                         ),
                       ),

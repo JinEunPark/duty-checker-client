@@ -19,7 +19,7 @@ void main() async {
   );
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  final fcmService = FcmService(messaging:FirebaseMessaging.instance);
+  final fcmService = FcmService(messaging: FirebaseMessaging.instance);
   try {
     await fcmService.initialize();
   } catch (e) {
@@ -39,16 +39,21 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return CupertinoApp.router(
-      routerConfig: router,
-      title: 'Duty Checker',
-      theme: appTheme,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = ref.watch(themeModeProvider);
+    final colors = isDark ? AppColorScheme.dark : AppColorScheme.light;
+
+    return AppThemeScope(
+      isDark: isDark,
+      child: CupertinoApp.router(
+        routerConfig: router,
+        title: 'Duty Checker',
+        theme: buildAppTheme(colors),
+      ),
     );
   }
 }

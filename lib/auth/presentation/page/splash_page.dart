@@ -51,7 +51,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       child: Center(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -66,8 +66,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
               const SizedBox(height: 20),
               Text(
                 '모스',
-                style: AppTextStyles.heading1.copyWith(
-                  color: AppColors.primary,
+                style: context.appTextStyles.heading1.copyWith(
+                  color: context.appColors.primary,
                   letterSpacing: 2,
                 ),
               ),

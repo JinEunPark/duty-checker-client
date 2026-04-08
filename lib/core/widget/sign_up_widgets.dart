@@ -87,7 +87,7 @@ class StepItem extends StatelessWidget {
                   child: Container(
                     width: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    color: isCompleted ? AppColors.success : AppColors.gray200,
+                    color: isCompleted ? context.appColors.success : context.appColors.gray200,
                   ),
                 ),
             ],
@@ -97,9 +97,9 @@ class StepItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.heading3),
+                Text(title, style: context.appTextStyles.heading3),
                 const Gap(6),
-                Text(description, style: AppTextStyles.body2),
+                Text(description, style: context.appTextStyles.body2),
                 const Gap(16),
                 content,
                 if (statusMessage != null) ...[
@@ -130,7 +130,7 @@ class StepCircle extends StatelessWidget {
       height: 24,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted ? AppColors.success : AppColors.primary,
+        color: isCompleted ? context.appColors.success : context.appColors.primary,
       ),
       child: isCompleted
           ? const Icon(
@@ -154,16 +154,16 @@ class StepStatusMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(CupertinoIcons.checkmark_alt,
-            color: AppColors.success, size: 16),
+        Icon(CupertinoIcons.checkmark_alt,
+            color: context.appColors.success, size: 16),
         const Gap(6),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: AppColors.success,
+            color: context.appColors.success,
           ),
         ),
       ],
@@ -263,18 +263,18 @@ class _PhoneStepContentState extends State<PhoneStepContent> {
       enabled: !widget.codeSent,
       keyboardType: TextInputType.phone,
       placeholder: '010-0000-0000',
-      placeholderStyle: const TextStyle(
+      placeholderStyle: TextStyle(
         fontFamily: 'Pretendard',
         fontSize: 16,
-        color: AppColors.textTertiary,
+        color: context.appColors.textTertiary,
       ),
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Pretendard',
         fontSize: 16,
-        color: AppColors.textPrimary,
+        color: context.appColors.textPrimary,
       ),
       decoration: BoxDecoration(
-        color: AppColors.gray100,
+        color: context.appColors.gray100,
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -289,7 +289,7 @@ class _PhoneStepContentState extends State<PhoneStepContent> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: onPressed != null ? AppColors.primary : AppColors.gray200,
+              color: onPressed != null ? context.appColors.primary : context.appColors.gray200,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -298,7 +298,7 @@ class _PhoneStepContentState extends State<PhoneStepContent> {
                 fontFamily: 'Pretendard',
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: onPressed != null ? AppColors.surface : AppColors.gray400,
+                color: onPressed != null ? context.appColors.surface : context.appColors.gray400,
               ),
             ),
           ),
@@ -396,15 +396,15 @@ class _CodeStepContentState extends State<CodeStepContent> {
           enabled: !widget.isCompleted && (widget.expiresAt == null || _remainingSeconds > 0),
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 26,
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            color: context.appColors.textPrimary,
             letterSpacing: 12,
           ),
           decoration: BoxDecoration(
-            color: AppColors.gray100,
+            color: context.appColors.gray100,
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
@@ -427,8 +427,8 @@ class _CodeStepContentState extends State<CodeStepContent> {
               fontSize: 13,
               fontWeight: FontWeight.w500,
               color: _remainingSeconds > 0
-                  ? AppColors.textTertiary
-                  : AppColors.error,
+                  ? context.appColors.textTertiary
+                  : context.appColors.error,
             ),
           ),
         ],
@@ -493,18 +493,18 @@ class _PasswordStepContentState extends State<PasswordStepContent> {
           enabled: !widget.isCompleted,
           obscureText: true,
           placeholder: '비밀번호 (6자 이상)',
-          placeholderStyle: const TextStyle(
+          placeholderStyle: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 16,
-            color: AppColors.textTertiary,
+            color: context.appColors.textTertiary,
           ),
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 16,
-            color: AppColors.textPrimary,
+            color: context.appColors.textPrimary,
           ),
           decoration: BoxDecoration(
-            color: AppColors.gray100,
+            color: context.appColors.gray100,
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -520,18 +520,18 @@ class _PasswordStepContentState extends State<PasswordStepContent> {
           enabled: !widget.isCompleted,
           obscureText: true,
           placeholder: '비밀번호 확인',
-          placeholderStyle: const TextStyle(
+          placeholderStyle: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 16,
-            color: AppColors.textTertiary,
+            color: context.appColors.textTertiary,
           ),
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Pretendard',
             fontSize: 16,
-            color: AppColors.textPrimary,
+            color: context.appColors.textPrimary,
           ),
           decoration: BoxDecoration(
-            color: AppColors.gray100,
+            color: context.appColors.gray100,
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -542,13 +542,13 @@ class _PasswordStepContentState extends State<PasswordStepContent> {
         ),
         if (_showError) ...[
           const Gap(8),
-          const Text(
+          Text(
             '비밀번호가 일치하지 않습니다',
             style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: AppColors.error,
+              color: context.appColors.error,
             ),
           ),
         ],
@@ -581,14 +581,14 @@ class SignUpCompleteButton extends StatelessWidget {
         width: double.infinity,
         height: 54,
         decoration: BoxDecoration(
-          color: enabled ? AppColors.primary : AppColors.gray200,
+          color: enabled ? context.appColors.primary : context.appColors.gray200,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Center(
           child: Text(
             label,
-            style: AppTextStyles.body1Medium.copyWith(
-              color: enabled ? AppColors.surface : AppColors.gray400,
+            style: context.appTextStyles.body1Medium.copyWith(
+              color: enabled ? context.appColors.surface : context.appColors.gray400,
             ),
           ),
         ),
