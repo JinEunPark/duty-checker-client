@@ -3,6 +3,7 @@ import 'package:duty_checker/check_in/data/model/create_check_in_resp_model.dart
 import 'package:duty_checker/check_in/data/model/get_latest_check_in_resp_model.dart';
 import 'package:duty_checker/check_in/domain/entity/check_in.dart';
 import 'package:duty_checker/check_in/domain/repository/check_in_repository.dart';
+import 'package:duty_checker/core/date_time_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final checkInRepositoryProvider = Provider<CheckInRepository>((ref) {
@@ -32,18 +33,14 @@ class CheckInRepositoryImpl implements CheckInRepository {
 extension CreateCheckInRespModelMapper on CreateCheckInRespModel {
   CheckIn toDomain() => CheckIn(
         id: id ?? 0,
-        checkedAt: checkedAt != null
-            ? DateTime.parse(checkedAt!)
-            : DateTime.now(),
+        checkedAt: parseServerDateTime(checkedAt) ?? DateTime.now(),
         status: status ?? '',
       );
 }
 
 extension GetLatestCheckInRespModelMapper on GetLatestCheckInRespModel {
   LatestCheckIn toDomain() => LatestCheckIn(
-        latestCheckedAt: latestCheckedAt != null
-            ? DateTime.tryParse(latestCheckedAt!)
-            : null,
+        latestCheckedAt: parseServerDateTime(latestCheckedAt),
         todayChecked: todayChecked ?? false,
       );
 }

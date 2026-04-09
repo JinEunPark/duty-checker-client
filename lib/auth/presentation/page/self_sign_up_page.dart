@@ -1,4 +1,5 @@
 import 'package:duty_checker/auth/presentation/view_model/sign_up_view_model.dart';
+import 'package:duty_checker/connection/domain/use_case/connection_use_case_providers.dart';
 import 'package:duty_checker/core/validators.dart';
 import 'package:duty_checker/core/widget/sign_up_widgets.dart';
 import 'package:duty_checker/theme.dart';
@@ -232,11 +233,26 @@ class _SelfSignUpPageState extends ConsumerState<SelfSignUpPage>
       _showError(e.toString());
       return;
     }
+
+    // 자동 로그인 완료 후 보호자 등록 (실패해도 흐름 중단하지 않음)
+    final addConnection = ref.read(addConnectionUseCaseProvider);
+    var addedCount = 0;
+    for (final guardian in _guardians) {
+      final guardianDigits = guardian.replaceAll('-', '');
+      try {
+        await addConnection(guardianPhone: guardianDigits);
+        addedCount++;
+      } catch (_) {
+        // 개별 보호자 등록 실패 무시
+      }
+    }
+
     if (!mounted) return;
     context.go('/sign-up/complete', extra: {
       'phone': _phoneController.text,
       'role': 'SUBJECT',
-      'guardianCount': _guardians.length,
+      'guardianCount': addedCount,
+      'autoLoggedIn': true,
     });
   }
 

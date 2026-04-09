@@ -6,6 +6,7 @@ import 'package:duty_checker/auth/domain/entity/auth_token.dart';
 import 'package:duty_checker/auth/domain/entity/login_result.dart';
 import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:duty_checker/auth/domain/repository/auth_repository.dart';
+import 'package:duty_checker/core/date_time_utils.dart';
 import 'package:duty_checker/core/network/token_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,7 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<DateTime> sendCode({required String phone}) async {
     final resp = await _remoteDataSource.sendCode(phone: phone);
-    return DateTime.parse(resp.expiredAt ?? DateTime.now().toIso8601String());
+    return parseServerDateTime(resp.expiredAt) ?? DateTime.now();
   }
 
   @override
@@ -86,7 +87,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
-    await _remoteDataSource.logout();
-    await _tokenStorage.clear();
+    try {
+      await _remoteDataSource.logout();
+    } finally {
+      await _tokenStorage.clear();
+    }
   }
 }

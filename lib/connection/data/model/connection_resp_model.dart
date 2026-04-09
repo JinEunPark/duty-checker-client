@@ -1,3 +1,4 @@
+import 'package:duty_checker/core/date_time_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entity/connection.dart';
@@ -26,9 +27,7 @@ extension ConnectionRespModelMapper on ConnectionRespModel {
         phone: phone ?? '',
         name: name ?? '',
         status: ConnectionStatusMapper.fromString(status),
-        latestCheckedAt: latestCheckedAt != null
-            ? DateTime.tryParse(latestCheckedAt!)
-            : null,
+        latestCheckedAt: parseServerDateTime(latestCheckedAt),
         isTodayChecked: isTodayChecked ?? false,
       );
 }

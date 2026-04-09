@@ -111,4 +111,27 @@ void main() {
       verifyNever(() => mockTokenStorage.saveRole(any()));
     });
   });
+
+  group('AuthRepositoryImpl.logout', () {
+    test('서버 로그아웃 후 토큰을 삭제한다', () async {
+      when(() => mockDataSource.logout()).thenAnswer((_) async {});
+      when(() => mockTokenStorage.clear()).thenAnswer((_) async {});
+
+      await repository.logout();
+
+      verify(() => mockDataSource.logout()).called(1);
+      verify(() => mockTokenStorage.clear()).called(1);
+    });
+
+    test('서버 로그아웃 실패해도 토큰을 삭제한다', () async {
+      when(() => mockDataSource.logout()).thenThrow(Exception('네트워크 오류'));
+      when(() => mockTokenStorage.clear()).thenAnswer((_) async {});
+
+      await expectLater(
+        () => repository.logout(),
+        throwsA(isA<Exception>()),
+      );
+      verify(() => mockTokenStorage.clear()).called(1);
+    });
+  });
 }

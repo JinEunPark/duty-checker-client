@@ -29,7 +29,12 @@ void main() {
         final model = CreateCheckInRespModel.fromJson(json);
         final entity = model.toDomain();
         expect(entity.id, 1);
-        expect(entity.checkedAt, DateTime.utc(2026, 4, 9, 10, 30));
+        // 서버 UTC 시각이 로컬로 변환되어야 함 (절대 시각은 동일)
+        expect(
+          entity.checkedAt.isAtSameMomentAs(DateTime.utc(2026, 4, 9, 10, 30)),
+          true,
+        );
+        expect(entity.checkedAt.isUtc, false);
         expect(entity.status, 'CHECKED');
       });
 

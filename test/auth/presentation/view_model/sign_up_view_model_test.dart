@@ -12,17 +12,20 @@ void main() {
   late MockSendCodeUseCase mockSendCode;
   late MockVerifyCodeUseCase mockVerifyCode;
   late MockRegisterUseCase mockRegister;
+  late MockLoginUseCase mockLogin;
   late ProviderContainer container;
 
   setUp(() {
     mockSendCode = MockSendCodeUseCase();
     mockVerifyCode = MockVerifyCodeUseCase();
     mockRegister = MockRegisterUseCase();
+    mockLogin = MockLoginUseCase();
     container = ProviderContainer(
       overrides: [
         sendCodeUseCaseProvider.overrideWithValue(mockSendCode),
         verifyCodeUseCaseProvider.overrideWithValue(mockVerifyCode),
         registerUseCaseProvider.overrideWithValue(mockRegister),
+        loginUseCaseProvider.overrideWithValue(mockLogin),
       ],
     );
   });
@@ -161,12 +164,16 @@ void main() {
   });
 
   group('SignUpViewModel - register', () {
-    test('성공 시 registered가 true가 된다', () async {
+    test('성공 시 registered가 true가 되고 자동 로그인된다', () async {
       when(() => mockRegister(
             phone: any(named: 'phone'),
             password: any(named: 'password'),
             role: any(named: 'role'),
           )).thenAnswer((_) async => testUser);
+      when(() => mockLogin(
+            phone: any(named: 'phone'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async => testLoginResult);
 
       final notifier = container.read(signUpViewModelProvider.notifier);
       await notifier.register(
@@ -179,6 +186,31 @@ void main() {
       expect(state.isRegistering, false);
       expect(state.registered, true);
       expect(state.error, isNull);
+      verify(() => mockLogin(phone: '01012345678', password: 'pw123456'))
+          .called(1);
+    });
+
+    test('자동 로그인 실패 시 AppError를 throw한다', () async {
+      when(() => mockRegister(
+            phone: any(named: 'phone'),
+            password: any(named: 'password'),
+            role: any(named: 'role'),
+          )).thenAnswer((_) async => testUser);
+      when(() => mockLogin(
+            phone: any(named: 'phone'),
+            password: any(named: 'password'),
+          )).thenThrow(Exception('로그인 실패'));
+
+      final notifier = container.read(signUpViewModelProvider.notifier);
+
+      expect(
+        () => notifier.register(
+          phone: '01012345678',
+          password: 'pw123456',
+          role: 'SUBJECT',
+        ),
+        throwsA(isA<AppError>()),
+      );
     });
 
     test('실패 시 AppError를 throw한다', () async {

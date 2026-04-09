@@ -10,13 +10,20 @@ class SignUpCompletePage extends StatelessWidget {
     required this.phone,
     required this.role,
     this.guardianCount = 0,
+    this.autoLoggedIn = false,
   });
 
   final String phone;
   final String role;
   final int guardianCount;
+  final bool autoLoggedIn;
 
   bool get _isGuardian => role == 'GUARDIAN';
+
+  String get _nextRoute {
+    if (!autoLoggedIn) return '/login';
+    return _isGuardian ? '/guardian/home' : '/user/home';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +170,7 @@ class SignUpCompletePage extends StatelessWidget {
               child: SignUpCompleteButton(
                 enabled: true,
                 label: '시작하기',
-                onTap: () => context.go('/login'),
+                onTap: () => context.go(_nextRoute),
               ),
             ),
           ],

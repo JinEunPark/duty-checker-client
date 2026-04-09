@@ -25,7 +25,12 @@ void main() {
       test('올바르게 변환된다', () {
         final model = GetLatestCheckInRespModel.fromJson(json);
         final entity = model.toDomain();
-        expect(entity.latestCheckedAt, DateTime.utc(2026, 4, 9, 10, 30));
+        // 서버 UTC 시각이 로컬로 변환되어야 함 (절대 시각은 동일)
+        expect(
+          entity.latestCheckedAt!.isAtSameMomentAs(DateTime.utc(2026, 4, 9, 10, 30)),
+          true,
+        );
+        expect(entity.latestCheckedAt!.isUtc, false);
         expect(entity.todayChecked, true);
       });
 

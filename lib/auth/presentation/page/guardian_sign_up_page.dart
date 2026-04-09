@@ -153,6 +153,7 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
     context.go('/sign-up/complete', extra: {
       'phone': _phoneController.text,
       'role': 'GUARDIAN',
+      'autoLoggedIn': true,
     });
   }
 

@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/domain/use_case/auth_use_case_providers.dart';
 import 'package:duty_checker/core/network/token_storage.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,10 +31,17 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           CupertinoDialogAction(
             isDestructiveAction: true,
             child: const Text('로그아웃'),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              ref.read(tokenStorageProvider).clear();
-              context.go('/login');
+              try {
+                await ref.read(logoutUseCaseProvider).call();
+              } catch (e) {
+                // 서버 로그아웃 실패해도 로컬 토큰은 이미 삭제됨 (RepositoryImpl에서 처리)
+                // 네트워크 오류 등의 경우에도 로그인 화면으로 이동
+              }
+              if (mounted) {
+                context.go('/login');
+              }
             },
           ),
         ],

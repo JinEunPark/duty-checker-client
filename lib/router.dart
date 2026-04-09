@@ -34,6 +34,7 @@ final router = GoRouter(
           phone: extra['phone'] as String,
           role: extra['role'] as String,
           guardianCount: extra['guardianCount'] as int? ?? 0,
+          autoLoggedIn: extra['autoLoggedIn'] as bool? ?? false,
         );
       },
     ),

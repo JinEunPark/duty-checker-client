@@ -52,6 +52,11 @@ class SignUpViewModel extends _$SignUpViewModel {
     try {
       final registerUseCase = ref.read(registerUseCaseProvider);
       await registerUseCase(phone: phone, password: password, role: role);
+
+      // 회원가입 성공 후 자동 로그인 (토큰/role 저장)
+      final loginUseCase = ref.read(loginUseCaseProvider);
+      await loginUseCase(phone: phone, password: password);
+
       state = state.copyWith(isRegistering: false, registered: true);
     } catch (e) {
       final appError = AppError.from(e);
