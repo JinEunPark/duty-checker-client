@@ -1,3 +1,5 @@
+import 'package:duty_checker/connection/domain/entity/connection.dart';
+import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -19,20 +21,6 @@ class _GuardianManagementPageState
     extends ConsumerState<GuardianManagementPage> {
   final _phoneController = TextEditingController();
 
-  // TODO: 실제 데이터로 교체
-  final List<_GuardianData> _guardians = [
-    _GuardianData(
-      nickname: '엄마',
-      phone: '010-1234-5678',
-      status: _GuardianStatus.pending,
-    ),
-    _GuardianData(
-      nickname: '아빠',
-      phone: '010-9876-5432',
-      status: _GuardianStatus.connected,
-    ),
-  ];
-
   @override
   void dispose() {
     _phoneController.dispose();
@@ -41,23 +29,15 @@ class _GuardianManagementPageState
 
   void _addGuardian() {
     final digits = _phoneController.text.replaceAll('-', '');
-    if (digits.length < 10 || _guardians.length >= 3) return;
-    setState(() {
-      _guardians.add(
-        _GuardianData(
-          nickname: '보호자 ${_guardians.length + 1}',
-          phone: _phoneController.text,
-          status: _GuardianStatus.pending,
-        ),
-      );
-      _phoneController.clear();
-    });
+    if (digits.length < 10) return;
+    ref.read(connectionViewModelProvider.notifier).addConnection(
+          guardianPhone: digits,
+        );
+    _phoneController.clear();
   }
 
-  void _editNickname(int index) {
-    final controller = TextEditingController(
-      text: _guardians[index].nickname,
-    );
+  void _editNickname(Connection guardian) {
+    final controller = TextEditingController(text: guardian.name);
 
     showCupertinoDialog<void>(
       context: context,
@@ -105,11 +85,12 @@ class _GuardianManagementPageState
             onPressed: () {
               final newNickname = controller.text.trim();
               if (newNickname.isNotEmpty) {
-                setState(() {
-                  _guardians[index] = _guardians[index].copyWith(
-                    nickname: newNickname,
-                  );
-                });
+                ref
+                    .read(connectionViewModelProvider.notifier)
+                    .updateConnectionName(
+                      id: guardian.id,
+                      name: newNickname,
+                    );
               }
               controller.dispose();
               Navigator.of(dialogContext).pop();
@@ -120,14 +101,12 @@ class _GuardianManagementPageState
     );
   }
 
-  void _confirmRemoveGuardian(int index) {
+  void _confirmRemoveGuardian(Connection guardian) {
     showCupertinoDialog<void>(
       context: context,
       builder: (dialogContext) => CupertinoAlertDialog(
         title: const Text('보호자 삭제'),
-        content: Text(
-          '${_guardians[index].nickname}을(를) 삭제하시겠습니까?',
-        ),
+        content: Text('${guardian.name.isNotEmpty ? guardian.name : guardian.phone}을(를) 삭제하시겠습니까?'),
         actions: [
           CupertinoDialogAction(
             child: const Text('취소'),
@@ -138,7 +117,7 @@ class _GuardianManagementPageState
             child: const Text('삭제'),
             onPressed: () {
               Navigator.of(dialogContext).pop();
-              setState(() => _guardians.removeAt(index));
+              // TODO: DELETE /v1/connections/{id} API 추가 후 연동
             },
           ),
         ],
@@ -149,6 +128,8 @@ class _GuardianManagementPageState
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final connectionState = ref.watch(connectionViewModelProvider);
+    final guardians = connectionState.connections;
 
     return CupertinoPageScaffold(
       backgroundColor: colors.background,
@@ -177,65 +158,38 @@ class _GuardianManagementPageState
         ),
       ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          children: [
-            _AddGuardianCard(
-              controller: _phoneController,
-              guardianCount: _guardians.length,
-              onAdd: _addGuardian,
-            ),
-            const Gap(16),
-            if (_guardians.isEmpty)
-              const _EmptyState()
-            else
-              ...List.generate(_guardians.length, (index) {
-                final guardian = _guardians[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _GuardianCard(
-                    guardian: guardian,
-                    onEditNickname: () => _editNickname(index),
-                    onDelete: () => _confirmRemoveGuardian(index),
+        child: connectionState.isLoading
+            ? const Center(child: CupertinoActivityIndicator())
+            : ListView(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 20),
+                children: [
+                  _AddGuardianCard(
+                    controller: _phoneController,
+                    guardianCount: guardians.length,
+                    onAdd: _addGuardian,
                   ),
-                );
-              }),
-
-          ],
-        ),
+                  const Gap(16),
+                  if (guardians.isEmpty)
+                    const _EmptyState()
+                  else
+                    ...guardians.map((guardian) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _GuardianCard(
+                          guardian: guardian,
+                          onEditNickname: () => _editNickname(guardian),
+                          onDelete: () => _confirmRemoveGuardian(guardian),
+                        ),
+                      );
+                    }),
+                ],
+              ),
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────
-// 보호자 데이터 모델 (임시)
-// ─────────────────────────────────────────────
-enum _GuardianStatus { connected, pending }
-
-class _GuardianData {
-  final String nickname;
-  final String phone;
-  final _GuardianStatus status;
-
-  const _GuardianData({
-    required this.nickname,
-    required this.phone,
-    required this.status,
-  });
-
-  _GuardianData copyWith({
-    String? nickname,
-    String? phone,
-    _GuardianStatus? status,
-  }) {
-    return _GuardianData(
-      nickname: nickname ?? this.nickname,
-      phone: phone ?? this.phone,
-      status: status ?? this.status,
-    );
-  }
-}
 
 // ─────────────────────────────────────────────
 // 보호자 추가 입력 카드
@@ -339,7 +293,7 @@ class _AddGuardianCard extends StatelessWidget {
 // 보호자 개별 카드
 // ─────────────────────────────────────────────
 class _GuardianCard extends StatelessWidget {
-  final _GuardianData guardian;
+  final Connection guardian;
   final VoidCallback onEditNickname;
   final VoidCallback onDelete;
 
@@ -353,7 +307,7 @@ class _GuardianCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
-    final isConnected = guardian.status == _GuardianStatus.connected;
+    final isConnected = guardian.isConnected;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -397,7 +351,7 @@ class _GuardianCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        guardian.nickname,
+                        guardian.name,
                         style: textStyles.heading3.copyWith(fontSize: 16),
                       ),
                       const Gap(6),

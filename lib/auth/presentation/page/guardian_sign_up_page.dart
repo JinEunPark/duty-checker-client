@@ -150,7 +150,10 @@ class _GuardianSignUpPageState extends ConsumerState<GuardianSignUpPage> {
       return;
     }
     if (!mounted) return;
-    context.go('/login');
+    context.go('/sign-up/complete', extra: {
+      'phone': _phoneController.text,
+      'role': 'GUARDIAN',
+    });
   }
 
   @override

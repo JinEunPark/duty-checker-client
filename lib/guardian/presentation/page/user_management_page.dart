@@ -1,38 +1,9 @@
+import 'package:duty_checker/connection/domain/entity/connection.dart';
+import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-
-// ─────────────────────────────────────────────
-// 모델
-// ─────────────────────────────────────────────
-class _Invitation {
-  final String id;
-  final String? userName;
-  final String userPhone;
-  final String createdAt;
-
-  const _Invitation({
-    required this.id,
-    this.userName,
-    required this.userPhone,
-    required this.createdAt,
-  });
-}
-
-class _ConnectedUser {
-  final String id;
-  final String name;
-  String? nickname;
-  final String phone;
-
-  _ConnectedUser({
-    required this.id,
-    required this.name,
-    this.nickname,
-    required this.phone,
-  });
-}
 
 // ─────────────────────────────────────────────
 // 당사자 관리 페이지 (보호자 → 당사자)
@@ -46,25 +17,6 @@ class UserManagementPage extends ConsumerStatefulWidget {
 }
 
 class _UserManagementPageState extends ConsumerState<UserManagementPage> {
-  // TODO: 실제 데이터로 교체
-  final List<_ConnectedUser> _connectedUsers = [
-    _ConnectedUser(
-      id: 'user-1',
-      name: '김철수',
-      nickname: '아버지',
-      phone: '010-1234-5678',
-    ),
-  ];
-
-  final List<_Invitation> _invitations = [
-    _Invitation(
-      id: 'inv-1',
-      userName: '박영희',
-      userPhone: '010-5555-1234',
-      createdAt: '2026-03-22T11:00:00Z',
-    ),
-  ];
-
   String? _toastMessage;
 
   void _showToast(String message) {
@@ -74,134 +26,9 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
     });
   }
 
-  // ── 초대 수락 ──
-  void _acceptInvitation(String invitationId) {
-    final invitation = _invitations.firstWhere((i) => i.id == invitationId);
-    _showNicknameSetupDialog(invitation);
-  }
-
-  void _showNicknameSetupDialog(_Invitation invitation) {
-    final controller = TextEditingController();
-    final colors = context.appColors;
-
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('이 분을 어떻게 부를까요?'),
-        content: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Column(
-            children: [
-              Text(
-                '나중에 언제든지 수정할 수 있어요',
-                style: TextStyle(
-                  fontFamily: 'Pretendard',
-                  fontSize: 13,
-                  color: colors.textSecondary,
-                ),
-              ),
-              const Gap(12),
-              CupertinoTextField(
-                controller: controller,
-                placeholder: '예: 어머니, 아들, 이웃 김○○',
-                autofocus: true,
-                maxLength: 10,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Pretendard',
-                  fontSize: 16,
-                  color: colors.textPrimary,
-                ),
-                placeholderStyle: TextStyle(
-                  fontFamily: 'Pretendard',
-                  fontSize: 14,
-                  color: colors.textTertiary,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.gray100,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('건너뛰기'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              _doAccept(invitation, null);
-              controller.dispose();
-            },
-          ),
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            child: const Text('저장'),
-            onPressed: () {
-              final nickname = controller.text.trim();
-              Navigator.of(ctx).pop();
-              _doAccept(
-                invitation,
-                nickname.isEmpty ? null : nickname,
-              );
-              controller.dispose();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _doAccept(_Invitation invitation, String? nickname) {
-    setState(() {
-      _connectedUsers.add(
-        _ConnectedUser(
-          id: invitation.id,
-          name: invitation.userName ?? '이용자',
-          nickname: nickname,
-          phone: invitation.userPhone,
-        ),
-      );
-      _invitations.removeWhere((i) => i.id == invitation.id);
-    });
-    _showToast('초대를 수락했습니다');
-  }
-
-  // ── 초대 거절 ──
-  void _rejectInvitation(String invitationId) {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('초대 거절'),
-        content: const Text('이 연결 요청을 거절하시겠습니까?'),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('취소'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: const Text('거절'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              setState(() {
-                _invitations.removeWhere((i) => i.id == invitationId);
-              });
-              _showToast('초대를 거절했습니다');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   // ── 닉네임 편집 ──
-  void _editNickname(_ConnectedUser user) {
-    final controller = TextEditingController(text: user.nickname ?? '');
+  void _editNickname(Connection user) {
+    final controller = TextEditingController(text: user.name);
     final colors = context.appColors;
 
     showCupertinoDialog<void>(
@@ -250,7 +77,9 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
             onPressed: () {
               final newNickname = controller.text.trim();
               if (newNickname.isNotEmpty) {
-                setState(() => user.nickname = newNickname);
+                ref
+                    .read(connectionViewModelProvider.notifier)
+                    .updateConnectionName(id: user.id, name: newNickname);
                 _showToast('호칭이 변경되었습니다');
               }
               controller.dispose();
@@ -265,8 +94,12 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final hasContent =
-        _connectedUsers.isNotEmpty || _invitations.isNotEmpty;
+    final connectionState = ref.watch(connectionViewModelProvider);
+    final connectedUsers =
+        connectionState.connections.where((c) => c.isConnected).toList();
+    final pendingUsers =
+        connectionState.connections.where((c) => c.isPending).toList();
+    final hasContent = connectedUsers.isNotEmpty || pendingUsers.isNotEmpty;
 
     return CupertinoPageScaffold(
       backgroundColor: colors.background,
@@ -297,7 +130,11 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
       child: Stack(
         children: [
           SafeArea(
-            child: hasContent ? _buildContent() : _buildEmptyState(),
+            child: connectionState.isLoading
+                ? const Center(child: CupertinoActivityIndicator())
+                : hasContent
+                    ? _buildContent(connectedUsers, pendingUsers)
+                    : _buildEmptyState(),
           ),
 
           // 토스트
@@ -313,18 +150,21 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(
+    List<Connection> connectedUsers,
+    List<Connection> pendingUsers,
+  ) {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       children: [
         // ── 연결된 분 ──
-        if (_connectedUsers.isNotEmpty) ...[
+        if (connectedUsers.isNotEmpty) ...[
           _SectionHeader(
             title: '연결된 분',
-            count: _connectedUsers.length,
+            count: connectedUsers.length,
           ),
           const Gap(10),
-          ..._connectedUsers.map(
+          ...connectedUsers.map(
             (user) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _ConnectedUserCard(
@@ -336,25 +176,20 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
           const Gap(8),
         ],
 
-        // ── 대기 중인 초대 ──
-        if (_invitations.isNotEmpty) ...[
+        // ── 대기 중인 연결 ──
+        if (pendingUsers.isNotEmpty) ...[
           _SectionHeader(
-            title: '대기 중인 초대',
-            count: _invitations.length,
+            title: '대기 중인 연결',
+            count: pendingUsers.length,
           ),
           const Gap(10),
-          ..._invitations.map(
-            (invitation) => Padding(
+          ...pendingUsers.map(
+            (user) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: _InvitationCard(
-                invitation: invitation,
-                onAccept: () => _acceptInvitation(invitation.id),
-                onReject: () => _rejectInvitation(invitation.id),
-              ),
+              child: _PendingUserCard(user: user),
             ),
           ),
         ],
-
       ],
     );
   }
@@ -437,7 +272,7 @@ class _SectionHeader extends StatelessWidget {
 // 연결된 당사자 카드
 // ─────────────────────────────────────────────
 class _ConnectedUserCard extends StatelessWidget {
-  final _ConnectedUser user;
+  final Connection user;
   final VoidCallback onEditNickname;
 
   const _ConnectedUserCard({
@@ -449,7 +284,7 @@ class _ConnectedUserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
-    final displayName = user.nickname ?? user.name;
+    final displayName = user.name;
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -520,18 +355,12 @@ class _ConnectedUserCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-// 초대 카드
+// 대기 중 카드
 // ─────────────────────────────────────────────
-class _InvitationCard extends StatelessWidget {
-  final _Invitation invitation;
-  final VoidCallback onAccept;
-  final VoidCallback onReject;
+class _PendingUserCard extends StatelessWidget {
+  final Connection user;
 
-  const _InvitationCard({
-    required this.invitation,
-    required this.onAccept,
-    required this.onReject,
-  });
+  const _PendingUserCard({required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -552,113 +381,50 @@ class _InvitationCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          // 연결 요청 라벨
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: colors.warning.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(8),
+              color: colors.gray100,
+              shape: BoxShape.circle,
             ),
-            child: Text(
-              '연결 요청',
-              style: TextStyle(
-                fontFamily: 'Pretendard',
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: colors.warning,
-              ),
+            child: Icon(
+              CupertinoIcons.person_fill,
+              size: 22,
+              color: colors.gray400,
             ),
           ),
-          const Gap(12),
-
-          // 전화번호
-          Text(
-            invitation.userPhone,
-            style: textStyles.heading2,
-          ),
-          const Gap(6),
-          Text(
-            '이 번호에서 안부 보호자로 등록했습니다',
-            style: textStyles.caption,
-          ),
-          const Gap(16),
-
-          // 수락 / 거절 버튼
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: onAccept,
-                  child: Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          CupertinoIcons.checkmark_alt,
-                          size: 16,
-                          color: colors.surface,
-                        ),
-                        const Gap(6),
-                        Text(
-                          '수락',
-                          style: TextStyle(
-                            fontFamily: 'Pretendard',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: colors.surface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const Gap(10),
-              Expanded(
-                child: GestureDetector(
-                  onTap: onReject,
-                  child: Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: colors.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: colors.gray300,
-                        width: 1.5,
+          const Gap(14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.phone, style: textStyles.heading3),
+                const Gap(2),
+                Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: colors.warning,
+                        shape: BoxShape.circle,
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          CupertinoIcons.xmark,
-                          size: 14,
-                          color: colors.textSecondary,
-                        ),
-                        const Gap(6),
-                        Text(
-                          '거절',
-                          style: TextStyle(
-                            fontFamily: 'Pretendard',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
+                    const Gap(6),
+                    Text(
+                      '연결 대기 중',
+                      style: textStyles.caption.copyWith(
+                        color: colors.warning,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

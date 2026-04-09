@@ -1,3 +1,6 @@
+import 'package:duty_checker/connection/domain/entity/connection.dart';
+import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
+import 'package:duty_checker/core/date_time_utils.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,23 +9,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/widget/setting_button.dart';
-
-// ─────────────────────────────────────────────
-// 모델
-// ─────────────────────────────────────────────
-class ConnectedUser {
-  final String id;
-  final String nickname;
-  final String phone;
-  final DateTime? lastCheckIn;
-
-  const ConnectedUser({
-    required this.id,
-    required this.nickname,
-    required this.phone,
-    this.lastCheckIn,
-  });
-}
 
 enum UserStatus { normal, warning, critical }
 
@@ -53,81 +39,60 @@ class GuardianHomePage extends ConsumerStatefulWidget {
 class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
   bool _showCriticalAlert = false;
 
-  // TODO: 실제 데이터로 교체
-  final List<ConnectedUser> _connectedUsers = [
-    ConnectedUser(
-      id: '1',
-      nickname: '홍길동',
-      phone: '010-1234-5678',
-      lastCheckIn: DateTime.now().subtract(const Duration(hours: 2)),
-    ),
-    ConnectedUser(
-      id: '2',
-      nickname: '이순신',
-      phone: '010-9876-5432',
-      lastCheckIn: DateTime.now().subtract(const Duration(hours: 40)),
-    ),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final hasCritical = _connectedUsers.any(
-        (u) => _getUserStatus(u) == UserStatus.critical,
-      );
-      if (hasCritical) setState(() => _showCriticalAlert = true);
-    });
-  }
-
-  UserStatus _getUserStatus(ConnectedUser user) {
-    if (user.lastCheckIn == null) return UserStatus.critical;
+  UserStatus _getUserStatus(Connection user) {
+    if (user.latestCheckedAt == null) return UserStatus.critical;
     final hours =
-        DateTime.now().difference(user.lastCheckIn!).inMinutes / 60.0;
+        DateTime.now().difference(user.latestCheckedAt!).inMinutes / 60.0;
     if (hours <= 36) return UserStatus.normal;
     if (hours <= 48) return UserStatus.warning;
     return UserStatus.critical;
   }
 
-  String _formatLastCheckTime(DateTime? date) {
-    if (date == null) return '기록 없음';
+  @override
+  void initState() {
+    super.initState();
+    // 데이터 로드 완료 후 긴급 알림 체크 (1회만)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkCriticalAlert();
+    });
+  }
 
-    final now = DateTime.now();
-    final diff = now.difference(date);
-    final minutes = diff.inMinutes;
-
-    if (minutes < 1) return '방금 전';
-    if (minutes < 60) return '$minutes분 전';
-
-    final isToday = date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
-    final yesterday = now.subtract(const Duration(days: 1));
-    final isYesterday = date.year == yesterday.year &&
-        date.month == yesterday.month &&
-        date.day == yesterday.day;
-
-    final period = date.hour < 12 ? '오전' : '오후';
-    final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
-    final minute = date.minute.toString().padLeft(2, '0');
-    final timeStr = '$period $hour:$minute';
-
-    if (isToday) return '오늘 $timeStr';
-    if (isYesterday) return '어제 $timeStr';
-    return '${date.month}월 ${date.day}일 $timeStr';
+  void _checkCriticalAlert() {
+    final state = ref.read(connectionViewModelProvider);
+    final connectedUsers =
+        state.connections.where((c) => c.isConnected).toList();
+    final hasCritical =
+        connectedUsers.any((u) => _getUserStatus(u) == UserStatus.critical);
+    if (hasCritical && mounted && !_showCriticalAlert) {
+      setState(() => _showCriticalAlert = true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final hasUsers = _connectedUsers.isNotEmpty;
+    final connectionState = ref.watch(connectionViewModelProvider);
+    final connectedUsers = connectionState.connections
+        .where((c) => c.isConnected)
+        .toList();
+
+    // 데이터가 로드 완료되면 긴급 알림 재확인
+    ref.listen(connectionViewModelProvider, (prev, next) {
+      if (prev?.isLoading == true && !next.isLoading) {
+        _checkCriticalAlert();
+      }
+    });
 
     return CupertinoPageScaffold(
       backgroundColor: colors.background,
       child: Stack(
         children: [
           SafeArea(
-            child: hasUsers ? _buildMainContent() : _buildEmptyState(),
+            child: connectionState.isLoading
+                ? const Center(child: CupertinoActivityIndicator())
+                : connectedUsers.isNotEmpty
+                    ? _buildMainContent(connectedUsers)
+                    : _buildEmptyState(),
           ),
 
           // 긴급 알림 팝업
@@ -140,7 +105,7 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
     );
   }
 
-  Widget _buildMainContent() {
+  Widget _buildMainContent(List<Connection> connectedUsers) {
     final textStyles = context.appTextStyles;
 
     return ListView(
@@ -163,20 +128,20 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
 
         // 당사자 관리 카드
         _ManagementCard(
-          userCount: _connectedUsers.length,
+          userCount: connectedUsers.length,
           onTap: () => context.push('/guardian/management'),
         ),
         const Gap(20),
 
         // 당사자 상태 카드 목록
-        ..._connectedUsers.map((user) {
+        ...connectedUsers.map((user) {
           final status = _getUserStatus(user);
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: _UserStatusCard(
               user: user,
               status: status,
-              lastCheckTimeText: _formatLastCheckTime(user.lastCheckIn),
+              lastCheckTimeText: user.latestCheckedAt?.formatRelative() ?? '기록 없음',
             ),
           );
         }),
@@ -345,7 +310,7 @@ class _ManagementCard extends StatelessWidget {
 // 당사자 상태 카드
 // ─────────────────────────────────────────────
 class _UserStatusCard extends StatelessWidget {
-  final ConnectedUser user;
+  final Connection user;
   final UserStatus status;
   final String lastCheckTimeText;
 
@@ -392,7 +357,7 @@ class _UserStatusCard extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    user.nickname.isNotEmpty ? user.nickname[0] : '?',
+                    user.name.isNotEmpty ? user.name[0] : '?',
                     style: TextStyle(
                       fontFamily: 'Pretendard',
                       fontSize: 18,
@@ -403,7 +368,7 @@ class _UserStatusCard extends StatelessWidget {
                 ),
               ),
               const Gap(12),
-              Text(user.nickname, style: textStyles.heading3),
+              Text(user.name, style: textStyles.heading3),
               const Spacer(),
               if (cfg.label != null)
                 Container(

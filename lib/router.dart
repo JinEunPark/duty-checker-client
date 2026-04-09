@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/presentation/page/sign_up_complete_page.dart';
 import 'package:duty_checker/core/setting/presentation/page/setting_page.dart';
 import 'package:duty_checker/guardian/presentation/page/guardian_home_page.dart';
 import 'package:duty_checker/auth/presentation/page/landing_page.dart';
@@ -24,6 +25,17 @@ final router = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginPage(),
+    ),
+    GoRoute(
+      path: '/sign-up/complete',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return SignUpCompletePage(
+          phone: extra['phone'] as String,
+          role: extra['role'] as String,
+          guardianCount: extra['guardianCount'] as int? ?? 0,
+        );
+      },
     ),
     GoRoute(
       path: '/sign-up/:mode',

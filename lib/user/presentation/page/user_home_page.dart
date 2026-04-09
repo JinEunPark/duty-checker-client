@@ -1,3 +1,7 @@
+import 'package:duty_checker/check_in/presentation/view_model/check_in_view_model.dart';
+import 'package:duty_checker/connection/domain/entity/connection.dart';
+import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
+import 'package:duty_checker/core/date_time_utils.dart';
 import 'package:duty_checker/core/widget/setting_button.dart';
 import 'package:duty_checker/theme.dart';
 
@@ -18,7 +22,6 @@ class UserHomePage extends ConsumerStatefulWidget {
 
 class _UserHomePageState extends ConsumerState<UserHomePage>
     with TickerProviderStateMixin {
-  DateTime? _lastCheckTime;
   bool _justChecked = false;
 
   late final AnimationController _tapCtrl;
@@ -26,10 +29,6 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
 
   late final AnimationController _pulseCtrl;
   late final Animation<double> _pulseAnim;
-
-  // TODO: 실제 데이터로 교체
-  final int _pendingGuardians = 1;
-  final int _activeGuardians = 0;
 
   @override
   void initState() {
@@ -61,14 +60,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
   void _onCheckIn() {
     if (_justChecked) return;
 
-    setState(() {
-      _justChecked = true;
-      _lastCheckTime = DateTime.now();
-    });
-
+    setState(() => _justChecked = true);
     _pulseCtrl.stop();
 
-    // TODO: 서버에 안부 확인 요청
+    ref.read(checkInViewModelProvider.notifier).checkIn();
 
     Future.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) {
@@ -78,43 +73,19 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
     });
   }
 
-  String _formatLastCheckTime(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-    final minutes = diff.inMinutes;
 
-    if (minutes < 1) return '방금 전';
-    if (minutes < 60) return '$minutes분 전';
+  String _getConnectionStatusText(List<Connection> connections) {
+    final pending = connections.where((c) => c.isPending).length;
+    final active = connections.where((c) => c.isConnected).length;
 
-    final isToday = date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
-
-    final period = date.hour < 12 ? '오전' : '오후';
-    final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
-    final minute = date.minute.toString().padLeft(2, '0');
-    final timeStr = '$period $hour:$minute';
-
-    if (isToday) return '오늘 $timeStr';
-
-    final yesterday = now.subtract(const Duration(days: 1));
-    final isYesterday = date.year == yesterday.year &&
-        date.month == yesterday.month &&
-        date.day == yesterday.day;
-
-    if (isYesterday) return '어제 $timeStr';
-    return '${date.month}월 ${date.day}일 $timeStr';
-  }
-
-  String _getConnectionStatusText() {
-    if (_pendingGuardians > 0 && _activeGuardians == 0) {
-      return '보호자 $_pendingGuardians명 연결 대기 중';
+    if (pending > 0 && active == 0) {
+      return '보호자 $pending명 연결 대기 중';
     }
-    if (_activeGuardians > 0 && _pendingGuardians == 0) {
-      return '보호자 $_activeGuardians명 연결됨';
+    if (active > 0 && pending == 0) {
+      return '보호자 $active명 연결됨';
     }
-    if (_pendingGuardians > 0 && _activeGuardians > 0) {
-      return '보호자 $_activeGuardians명 연결됨, $_pendingGuardians명 대기 중';
+    if (pending > 0 && active > 0) {
+      return '보호자 $active명 연결됨, $pending명 대기 중';
     }
     return '아직 보호자가 등록되지 않았어요';
   }
@@ -123,6 +94,9 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
+    final connectionState = ref.watch(connectionViewModelProvider);
+    final checkInState = ref.watch(checkInViewModelProvider);
+    final lastCheckTime = checkInState.latestCheckedAt;
 
     return CupertinoPageScaffold(
       backgroundColor: colors.background,
@@ -153,7 +127,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
 
               // 보호자 관리 카드
               _GuardianManagementCard(
-                statusText: _getConnectionStatusText(),
+                statusText: _getConnectionStatusText(connectionState.connections),
                 onTap: () => context.push('/user/guardian-management'),
               ),
 
@@ -274,12 +248,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
                               key: const ValueKey('sent'),
                               style: textStyles.body2,
                             )
-                          : _lastCheckTime != null
+                          : lastCheckTime != null
                               ? _LastCheckChip(
                                   key: const ValueKey('chip'),
-                                  text: _formatLastCheckTime(
-                                    _lastCheckTime!,
-                                  ),
+                                  text: lastCheckTime.formatRelative(),
                                 )
                               : Text(
                                   '눌러서 안부를 전달해주세요',
