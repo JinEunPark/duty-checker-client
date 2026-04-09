@@ -146,7 +146,13 @@ flutter analyze
 
 ## 테스트 규칙 (필수)
 
-모든 feature 구현 시 테스트를 함께 작성한다. 테스트 작성 시 반드시 `docs/TEST.md`의 규칙을 따른다.
+모든 feature 구현 시 **TDD(Test-Driven Development)** 방식을 따른다. 테스트 작성 시 반드시 `docs/TEST.md`의 규칙을 따른다.
+
+### TDD 절차 (Red → Green → Refactor)
+
+1. **Red**: 구현할 기능에 대한 테스트를 먼저 작성한다. 테스트가 실패하는 것을 확인한다.
+2. **Green**: 테스트를 통과하는 최소한의 프로덕션 코드를 작성한다.
+3. **Refactor**: 테스트가 통과하는 상태를 유지하면서 코드를 정리한다.
 
 - **테스트 규칙 문서**: `docs/TEST.md` (Mock 패턴, 작성 패턴, 네이밍, 회귀 테스트 규칙)
 - **필수 대상**: DTO Model (fromJson/toDomain), UseCase, ViewModel
@@ -172,3 +178,4 @@ flutter test
 - ViewModel에서 Repository 직접 접근 금지 (UseCase를 통해서만)
 - feature 간 참조는 domain 레이어만 허용
 - 기존 페이지 UI는 최대한 유지하고, 더미 데이터/TODO 부분만 API 연결로 교체
+- 작업이 완료되면 todo.md 를 업데이트해서 최신 구현된 목록을 완료처리한다

@@ -36,6 +36,7 @@ class AuthRepositoryImpl implements AuthRepository {
       accessToken: result.token.accessToken,
       refreshToken: result.token.refreshToken,
     );
+    await _tokenStorage.saveRole(result.user.role.name.toUpperCase());
     return result;
   }
 

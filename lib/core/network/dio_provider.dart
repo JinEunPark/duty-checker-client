@@ -20,7 +20,7 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
-  dio.interceptors.add(AuthInterceptor(tokenStorage));
+  dio.interceptors.add(AuthInterceptor(tokenStorage, dio));
   dio.interceptors.add(LogInterceptor(
     requestBody: true,
     responseBody: true,

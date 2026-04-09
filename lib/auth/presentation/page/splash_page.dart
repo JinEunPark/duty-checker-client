@@ -31,13 +31,14 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     Future.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) {
-        final hasToken = ref.read(tokenStorageProvider).hasToken;
+        final tokenStorage = ref.read(tokenStorageProvider);
 
-        if (hasToken) {
+        if (tokenStorage.hasToken) {
           ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
+          context.go(tokenStorage.isGuardian ? '/guardian/home' : '/user/home');
+        } else {
+          context.go('/login');
         }
-
-        context.go(hasToken ? '/user/home' : '/login');
       }
     });
   }
