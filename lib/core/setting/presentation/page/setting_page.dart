@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -155,7 +156,34 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                   ),
                   const Gap(24),
 
-                  // 위험 영역
+                  // 약관 / 정책
+                  const _SectionHeader(title: '약관 및 정책'),
+                  _SettingsCard(
+                    children: [
+                      _TapItem(
+                        icon: CupertinoIcons.doc_text,
+                        iconColor: context.appColors.primary,
+                        title: '개인정보 처리방침',
+                        onTap: () => launchUrl(
+                          Uri.parse('https://jineunpark.github.io/duty-checker-client/privacy_docs/privacy-policy.html'),
+                          mode: LaunchMode.externalApplication,
+                        ),
+                      ),
+                      const _Divider(),
+                      _TapItem(
+                        icon: CupertinoIcons.doc_plaintext,
+                        iconColor: context.appColors.primary,
+                        title: '이용약관',
+                        onTap: () => launchUrl(
+                          Uri.parse('https://jineunpark.github.io/duty-checker-client/privacy_docs/terms-of-service.html'),
+                          mode: LaunchMode.externalApplication,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Gap(24),
+
+                  // 기타
                   const _SectionHeader(title: '기타'),
                   _SettingsCard(
                     children: [
