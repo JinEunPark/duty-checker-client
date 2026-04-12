@@ -76,7 +76,7 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
         .where((c) => c.isConnected)
         .toList();
 
-    // 데이터가 로드 완료되면 긴급 알림 재확인
+    // 데이터가 로드 완료되면 긴급 알림 및 연결 없음 확인
     ref.listen(connectionViewModelProvider, (prev, next) {
       if (prev?.isLoading == true && !next.isLoading) {
         _checkCriticalAlert();
@@ -153,11 +153,18 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const Gap(24),
+          Align(
+            alignment: Alignment.centerRight,
+            child: const SettingButton(),
+          ),
+          const Spacer(flex: 2),
+          Column(
+            mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 72,
@@ -181,53 +188,37 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
             ),
             const Gap(20),
             Text(
-              '아직 연결된 분이 없어요',
+              '아직 연결된 당사자가 없어요',
               style: textStyles.heading2,
               textAlign: TextAlign.center,
             ),
             const Gap(10),
             Text(
-              '안부를 확인할 분이 등록되면\n이곳에서 상태를 확인할 수 있어요.',
+              '당사자에게 연결 요청을 보내거나,\n당사자의 요청을 수락하면 연결돼요',
               style: textStyles.body2,
               textAlign: TextAlign.center,
             ),
-            const Gap(32),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.gray900.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    '안부 확인 요청을 기다리고 있어요',
-                    style: TextStyle(
-                      fontFamily: 'Pretendard',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  const Gap(6),
-                  Text(
-                    '당사자가 등록하면 자동으로 알려드릴게요',
-                    style: textStyles.caption,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+            const Gap(24),
+            CupertinoButton(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 24, vertical: 12),
+              color: colors.primary,
+              borderRadius: BorderRadius.circular(12),
+              onPressed: () => context.push('/guardian/management'),
+              child: Text(
+                '연결 요청하러 가기',
+                style: TextStyle(
+                  fontFamily: 'Pretendard',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: colors.surface,
+                ),
               ),
             ),
           ],
         ),
+          const Spacer(flex: 3),
+        ],
       ),
     );
   }

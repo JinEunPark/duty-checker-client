@@ -146,16 +146,6 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                   _SettingsCard(
                     children: [
                       _TapItem(
-                        icon: CupertinoIcons.arrow_right_arrow_left,
-                        iconColor: context.appColors.primary,
-                        title: '사용자 권한 전환',
-                        subtitle: '당사자 / 보호자 전환',
-                        onTap: () {
-                          // TODO: 권한 전환 로직
-                        },
-                      ),
-                      const _Divider(),
-                      _TapItem(
                         icon: CupertinoIcons.square_arrow_right,
                         iconColor: context.appColors.gray600,
                         title: '로그아웃',

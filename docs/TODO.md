@@ -100,11 +100,11 @@
 - [ ] 설정 화면에 "이용약관" 메뉴 추가
 
 #### A-4. PrivacyInfo.xcprivacy 파일 작성 (iOS 17+)
-- [ ] `ios/Runner/PrivacyInfo.xcprivacy` 생성
-  - [ ] NSPrivacyTracking: false
-  - [ ] NSPrivacyCollectedDataTypes 선언 (Phone Number, Device ID, Other User Content)
-  - [ ] NSPrivacyAccessedAPITypes 선언 (UserDefaults 등)
-- [ ] Xcode 프로젝트에 파일 등록
+- [x] `ios/Runner/PrivacyInfo.xcprivacy` 생성
+  - [x] NSPrivacyTracking: false
+  - [x] NSPrivacyCollectedDataTypes 선언 (Phone Number, Device ID, Other User Content)
+  - [x] NSPrivacyAccessedAPITypes 선언 (UserDefaults — CA92.1)
+- [x] Xcode 프로젝트에 파일 등록 (Copy Bundle Resources)
 
 #### A-5. App Store Connect 메타데이터
 - [ ] 앱 이름: "오늘안부" / "Duty Checker"

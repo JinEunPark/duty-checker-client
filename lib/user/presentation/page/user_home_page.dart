@@ -23,7 +23,6 @@ class UserHomePage extends ConsumerStatefulWidget {
 class _UserHomePageState extends ConsumerState<UserHomePage>
     with TickerProviderStateMixin {
   bool _justChecked = false;
-
   late final AnimationController _tapCtrl;
   late final Animation<double> _scaleAnim;
 
