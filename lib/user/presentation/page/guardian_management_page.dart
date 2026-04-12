@@ -1,14 +1,11 @@
 import 'package:duty_checker/connection/domain/entity/connection.dart';
 import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
+import 'package:duty_checker/core/widget/connection_widgets.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
-// ─────────────────────────────────────────────
-// 보호자 관리 페이지
-// ─────────────────────────────────────────────
 class GuardianManagementPage extends ConsumerStatefulWidget {
   const GuardianManagementPage({super.key});
 
@@ -18,7 +15,7 @@ class GuardianManagementPage extends ConsumerStatefulWidget {
 }
 
 class _GuardianManagementPageState
-    extends ConsumerState<GuardianManagementPage> {
+    extends ConsumerState<GuardianManagementPage> with ToastMixin {
   final _phoneController = TextEditingController();
 
   @override
@@ -34,10 +31,12 @@ class _GuardianManagementPageState
           guardianPhone: digits,
         );
     _phoneController.clear();
+    showToast('보호자 등록 요청을 보냈습니다');
   }
 
   void _editNickname(Connection guardian) {
     final controller = TextEditingController(text: guardian.name);
+    final colors = context.appColors;
 
     showCupertinoDialog<void>(
       context: context,
@@ -54,15 +53,15 @@ class _GuardianManagementPageState
             style: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 16,
-              color: context.appColors.textPrimary,
+              color: colors.textPrimary,
             ),
             placeholderStyle: TextStyle(
               fontFamily: 'Pretendard',
               fontSize: 16,
-              color: context.appColors.textTertiary,
+              color: colors.textTertiary,
             ),
             decoration: BoxDecoration(
-              color: context.appColors.gray100,
+              color: colors.gray100,
               borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.symmetric(
@@ -91,6 +90,7 @@ class _GuardianManagementPageState
                       id: guardian.id,
                       name: newNickname,
                     );
+                showToast('별칭이 변경되었습니다');
               }
               controller.dispose();
               Navigator.of(dialogContext).pop();
@@ -101,35 +101,49 @@ class _GuardianManagementPageState
     );
   }
 
-  void _confirmRemoveGuardian(Connection guardian) {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (dialogContext) => CupertinoAlertDialog(
-        title: const Text('보호자 삭제'),
-        content: Text('${guardian.name.isNotEmpty ? guardian.name : guardian.phone}을(를) 삭제하시겠습니까?'),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('취소'),
-            onPressed: () => Navigator.of(dialogContext).pop(),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: const Text('삭제'),
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              // TODO: DELETE /v1/connections/{id} API 추가 후 연동
-            },
-          ),
-        ],
-      ),
+  void _acceptConnection(Connection guardian) {
+    // TODO: 백엔드 API 추가 후 연동 (PATCH /v1/connections/{id}/accept)
+    showToast('${guardian.name.isNotEmpty ? guardian.name : guardian.phone} 연결을 수락했습니다');
+  }
+
+  Future<void> _rejectConnection(Connection guardian) async {
+    final displayName =
+        guardian.name.isNotEmpty ? guardian.name : guardian.phone;
+    final confirmed = await showDestructiveConfirmDialog(
+      context,
+      title: '연결 거절',
+      content: '$displayName의 연결 요청을 거절하시겠습니까?',
+      destructiveLabel: '거절',
     );
+    if (confirmed) {
+      // TODO: 백엔드 API 추가 후 연동 (DELETE /v1/connections/{id})
+      showToast('연결 요청을 거절했습니다');
+    }
+  }
+
+  Future<void> _confirmRemoveGuardian(Connection guardian) async {
+    final displayName =
+        guardian.name.isNotEmpty ? guardian.name : guardian.phone;
+    final confirmed = await showDestructiveConfirmDialog(
+      context,
+      title: '보호자 삭제',
+      content: '$displayName을(를) 삭제하시겠습니까?',
+    );
+    if (confirmed) {
+      // TODO: DELETE /v1/connections/{id} API 추가 후 연동
+      showToast('보호자가 삭제되었습니다');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final connectionState = ref.watch(connectionViewModelProvider);
-    final guardians = connectionState.connections;
+    final connectedGuardians =
+        connectionState.connections.where((c) => c.isConnected).toList();
+    final pendingGuardians =
+        connectionState.connections.where((c) => c.isPending).toList();
+    final totalCount = connectedGuardians.length + pendingGuardians.length;
 
     return CupertinoPageScaffold(
       backgroundColor: colors.background,
@@ -157,132 +171,73 @@ class _GuardianManagementPageState
           ),
         ),
       ),
-      child: SafeArea(
-        child: connectionState.isLoading
-            ? const Center(child: CupertinoActivityIndicator())
-            : ListView(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 20),
-                children: [
-                  _AddGuardianCard(
-                    controller: _phoneController,
-                    guardianCount: guardians.length,
-                    onAdd: _addGuardian,
-                  ),
-                  const Gap(16),
-                  if (guardians.isEmpty)
-                    const _EmptyState()
-                  else
-                    ...guardians.map((guardian) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _GuardianCard(
-                          guardian: guardian,
-                          onEditNickname: () => _editNickname(guardian),
-                          onDelete: () => _confirmRemoveGuardian(guardian),
-                        ),
-                      );
-                    }),
-                ],
-              ),
-      ),
-    );
-  }
-}
-
-
-// ─────────────────────────────────────────────
-// 보호자 추가 입력 카드
-// ─────────────────────────────────────────────
-class _AddGuardianCard extends StatelessWidget {
-  final TextEditingController controller;
-  final int guardianCount;
-  final VoidCallback onAdd;
-
-  const _AddGuardianCard({
-    required this.controller,
-    required this.guardianCount,
-    required this.onAdd,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final textStyles = context.appTextStyles;
-    final isFull = guardianCount >= 3;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: colors.gray900.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: CupertinoTextField(
-                  controller: controller,
-                  enabled: !isFull,
-                  keyboardType: TextInputType.phone,
-                  placeholder: '전화번호 입력',
-                  placeholderStyle: TextStyle(
-                    fontFamily: 'Pretendard',
-                    fontSize: 16,
-                    color: colors.textTertiary,
+          SafeArea(
+            child: connectionState.isLoading
+                ? const Center(child: CupertinoActivityIndicator())
+                : ListView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    children: [
+                      AddConnectionCard(
+                        controller: _phoneController,
+                        connectionCount: totalCount,
+                        onAdd: _addGuardian,
+                      ),
+                      const Gap(16),
+                      if (pendingGuardians.isNotEmpty) ...[
+                        ConnectionSectionHeader(
+                          title: '대기 중인 연결',
+                          count: pendingGuardians.length,
+                        ),
+                        const Gap(10),
+                        ...pendingGuardians.map((guardian) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: PendingConnectionCard(
+                              connection: guardian,
+                              onAccept: () => _acceptConnection(guardian),
+                              onReject: () => _rejectConnection(guardian),
+                            ),
+                          );
+                        }),
+                        const Gap(8),
+                      ],
+                      if (connectedGuardians.isNotEmpty) ...[
+                        ConnectionSectionHeader(
+                          title: '연결된 보호자',
+                          count: connectedGuardians.length,
+                        ),
+                        const Gap(10),
+                        ...connectedGuardians.map((guardian) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _GuardianCard(
+                              guardian: guardian,
+                              onEditNickname: () => _editNickname(guardian),
+                              onDelete: () =>
+                                  _confirmRemoveGuardian(guardian),
+                            ),
+                          );
+                        }),
+                      ],
+                      if (connectedGuardians.isEmpty &&
+                          pendingGuardians.isEmpty)
+                        const ConnectionEmptyState(
+                          title: '아직 보호자가 없어요',
+                          subtitle: '보호자를 등록하면 안부를 전달받을 수 있어요',
+                        ),
+                    ],
                   ),
-                  style: TextStyle(
-                    fontFamily: 'Pretendard',
-                    fontSize: 16,
-                    color: colors.textPrimary,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.gray100,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    _PhoneFormatter(),
-                  ],
-                ),
-              ),
-              const Gap(10),
-              GestureDetector(
-                onTap: isFull ? null : onAdd,
-                child: Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: isFull ? colors.gray200 : colors.primary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    CupertinoIcons.add,
-                    size: 22,
-                    color: isFull ? colors.gray400 : colors.surface,
-                  ),
-                ),
-              ),
-            ],
           ),
-          const Gap(10),
-          Text(
-            '최대 3명까지 등록 가능 · $guardianCount/3',
-            style: textStyles.caption,
-          ),
+          if (toastMessage != null)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+              left: 0,
+              right: 0,
+              child: AppToast(message: toastMessage!),
+            ),
         ],
       ),
     );
@@ -290,7 +245,7 @@ class _AddGuardianCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-// 보호자 개별 카드
+// 연결된 보호자 카드
 // ─────────────────────────────────────────────
 class _GuardianCard extends StatelessWidget {
   final Connection guardian;
@@ -307,7 +262,6 @@ class _GuardianCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
-    final isConnected = guardian.isConnected;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -324,7 +278,6 @@ class _GuardianCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 아바타
           Container(
             width: 48,
             height: 48,
@@ -339,13 +292,10 @@ class _GuardianCard extends StatelessWidget {
             ),
           ),
           const Gap(14),
-
-          // 정보
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 별칭 + 수정 버튼
                 GestureDetector(
                   onTap: onEditNickname,
                   child: Row(
@@ -372,19 +322,15 @@ class _GuardianCard extends StatelessWidget {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: isConnected
-                            ? colors.success
-                            : colors.warning,
+                        color: colors.success,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const Gap(6),
                     Text(
-                      isConnected ? '연결됨' : '연결 대기 중',
+                      '연결됨',
                       style: textStyles.caption.copyWith(
-                        color: isConnected
-                            ? colors.success
-                            : colors.warning,
+                        color: colors.success,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -393,8 +339,6 @@ class _GuardianCard extends StatelessWidget {
               ],
             ),
           ),
-
-          // 삭제 버튼
           CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: onDelete,
@@ -406,76 +350,6 @@ class _GuardianCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 빈 상태 화면
-// ─────────────────────────────────────────────
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final textStyles = context.appTextStyles;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 60),
-      child: Column(
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: colors.gray100,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              CupertinoIcons.person_2_fill,
-              size: 32,
-              color: colors.gray400,
-            ),
-          ),
-          const Gap(20),
-          Text('아직 보호자가 없어요', style: textStyles.heading2),
-          const Gap(8),
-          Text(
-            '보호자를 등록하면 안부를 전달받을 수 있어요',
-            style: textStyles.body2,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// 전화번호 자동 포매터 (010-XXXX-XXXX)
-// ─────────────────────────────────────────────
-class _PhoneFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final digits = newValue.text.replaceAll('-', '');
-    final limited = digits.length > 11 ? digits.substring(0, 11) : digits;
-
-    String formatted;
-    if (limited.length <= 3) {
-      formatted = limited;
-    } else if (limited.length <= 7) {
-      formatted = '${limited.substring(0, 3)}-${limited.substring(3)}';
-    } else {
-      formatted =
-          '${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited.substring(7)}';
-    }
-
-    return newValue.copyWith(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }
