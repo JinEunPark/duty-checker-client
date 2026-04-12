@@ -88,16 +88,14 @@
 - [ ] 단위 테스트 추가
 
 #### A-2. 개인정보 처리방침 (Privacy Policy)
-- [ ] 개인정보 처리방침 작성 (수집 항목, 이용 목적, 보관 기간, 제3자 제공)
-- [ ] 호스팅 (GitHub Pages, Notion 등)
+- [x] 개인정보 처리방침 작성 (수집 항목, 이용 목적, 보관 기간, 제3자 제공)
+- [x] 호스팅 (GitHub Pages) — https://jineunpark.github.io/duty-checker-client/privacy_docs/privacy-policy.html
 - [ ] App Store Connect에 Privacy Policy URL 입력
-- [ ] 앱 내 설정 화면에 "개인정보 처리방침" 메뉴 추가
-- [ ] 회원가입 화면에 동의 체크박스 + 링크
+- [x] 앱 내 설정 화면에 "개인정보 처리방침" 메뉴 추가
 
 #### A-3. 이용약관 (Terms of Service)
-- [ ] 이용약관 작성 및 호스팅
-- [ ] 회원가입 화면에 동의 체크박스 추가
-- [ ] 설정 화면에 "이용약관" 메뉴 추가
+- [x] 이용약관 작성 및 호스팅 — https://jineunpark.github.io/duty-checker-client/privacy_docs/terms-of-service.html
+- [x] 설정 화면에 "이용약관" 메뉴 추가
 
 #### A-4. PrivacyInfo.xcprivacy 파일 작성 (iOS 17+)
 - [x] `ios/Runner/PrivacyInfo.xcprivacy` 생성
@@ -224,10 +222,11 @@
 
 ### F. Firebase App Distribution (테스트 배포)
 
-- [ ] Firebase 프로젝트에 App Distribution 활성화
-- [ ] iOS 테스트 빌드 (`flutter build ipa --release`)
-- [ ] Firebase CLI로 배포 (`firebase appdistribution:distribute`)
-- [ ] 테스터 그룹 생성 및 초대
+- [x] Firebase 프로젝트에 App Distribution 활성화
+- [x] Distribution Certificate + Ad Hoc Provisioning Profile 생성
+- [x] iOS 테스트 빌드 (`flutter build ipa --release --export-method ad-hoc`)
+- [x] Firebase CLI로 배포 (`firebase appdistribution:distribute`)
+- [x] 테스터 그룹 생성 (`testers`)
 - [ ] 테스터 실기기 설치 및 전체 플로우 검증
   - [ ] 회원가입 (당사자/보호자)
   - [ ] 로그인 / 자동 로그인
