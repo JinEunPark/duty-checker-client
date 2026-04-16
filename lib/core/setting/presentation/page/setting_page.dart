@@ -1,5 +1,5 @@
 import 'package:duty_checker/auth/domain/use_case/auth_use_case_providers.dart';
-import 'package:duty_checker/core/network/token_storage.dart';
+import 'package:duty_checker/user/domain/use_case/user_use_case_providers.dart';
 import 'package:duty_checker/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,11 +67,16 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           CupertinoDialogAction(
             isDestructiveAction: true,
             child: const Text('탈퇴하기'),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              // TODO: 회원 탈퇴 API 호출
-              ref.read(tokenStorageProvider).clear();
-              context.go('/login');
+              try {
+                await ref.read(deleteAccountUseCaseProvider).call();
+              } catch (e) {
+                // 서버 탈퇴 실패해도 로컬 토큰은 이미 삭제됨 (RepositoryImpl에서 처리)
+              }
+              if (mounted) {
+                context.go('/login');
+              }
             },
           ),
         ],
@@ -146,6 +151,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                   const _SectionHeader(title: '계정'),
                   _SettingsCard(
                     children: [
+                      _TapItem(
+                        icon: CupertinoIcons.lock_rotation,
+                        iconColor: context.appColors.primary,
+                        title: '비밀번호 변경',
+                        onTap: () => context.push('/reset-password'),
+                      ),
+                      const _Divider(),
                       _TapItem(
                         icon: CupertinoIcons.square_arrow_right,
                         iconColor: context.appColors.gray600,

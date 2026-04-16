@@ -7,7 +7,7 @@ part of 'connection_view_model.dart';
 // **************************************************************************
 
 String _$connectionViewModelHash() =>
-    r'1c7fdb33e752c9eb32b49535f258d7bf1325a614';
+    r'513aed9173a3d59c27f9080277d3c69a746c17bb';
 
 /// See also [ConnectionViewModel].
 @ProviderFor(ConnectionViewModel)

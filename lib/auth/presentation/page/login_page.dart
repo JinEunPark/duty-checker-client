@@ -260,6 +260,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ),
                                 ),
                               ),
+                              const Gap(12),
+
+                              // 비밀번호 찾기
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: CupertinoButton(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  onPressed: () => context.push('/reset-password'),
+                                  child: Text(
+                                    '비밀번호를 잊으셨나요?',
+                                    style: TextStyle(
+                                      fontFamily: 'Pretendard',
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: context.appColors.textTertiary,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),

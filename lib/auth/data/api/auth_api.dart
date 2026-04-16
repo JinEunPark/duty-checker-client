@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:duty_checker/auth/data/model/check_phone_resp_model.dart';
 import 'package:duty_checker/auth/data/model/login_req_model.dart';
 import 'package:duty_checker/auth/data/model/login_resp_model.dart';
 import 'package:duty_checker/auth/data/model/refresh_token_req_model.dart';
@@ -31,6 +32,9 @@ abstract class AuthApi {
   @POST('/v1/auth/refresh')
   Future<RefreshTokenRespModel> refresh(@Body() RefreshTokenReqModel body);
 
-  @POST('/v1/auth/logout')
+  @POST('/v1/users/logout')
   Future<void> logout();
+
+  @GET('/v1/auth/check-phone')
+  Future<CheckPhoneRespModel> checkPhone(@Query('phone') String phone);
 }

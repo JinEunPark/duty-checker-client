@@ -75,17 +75,17 @@
 ### A. 심사 거절 직결 항목 (반드시 해야 함)
 
 #### A-1. 회원 탈퇴 기능 구현
-- [ ] 백엔드: 회원 탈퇴 API 추가 요청 (`DELETE /v1/users/me`)
-- [ ] 클라이언트: `user` feature 추가
-  - [ ] `user/domain/repository/user_repository.dart` (interface)
-  - [ ] `user/domain/use_case/delete_account_use_case.dart`
-  - [ ] `user/data/api/user_api.dart` (Retrofit)
-  - [ ] `user/data/datasource/user_remote_datasource.dart`
-  - [ ] `user/data/repository/user_repository_impl.dart`
-- [ ] `setting_page.dart` `_onDeleteAccount()` 수정
-  - [ ] `DeleteAccountUseCase` 호출 → 토큰 삭제 → `/login` 이동
-  - [ ] 확인 다이얼로그 문구 강화
-- [ ] 단위 테스트 추가
+- [x] 백엔드: 회원 탈퇴 API 추가 요청 (`DELETE /v1/users/me`)
+- [x] 클라이언트: `user` feature 추가
+  - [x] `user/domain/repository/user_repository.dart` (interface)
+  - [x] `user/domain/use_case/delete_account_use_case.dart`
+  - [x] `user/data/api/user_api.dart` (Retrofit)
+  - [x] `user/data/datasource/user_remote_datasource.dart`
+  - [x] `user/data/repository/user_repository_impl.dart`
+- [x] `setting_page.dart` `_onDeleteAccount()` 수정
+  - [x] `DeleteAccountUseCase` 호출 → 토큰 삭제 → `/login` 이동
+  - [x] 확인 다이얼로그 문구 강화
+- [x] 단위 테스트 추가
 
 #### A-2. 개인정보 처리방침 (Privacy Policy)
 - [x] 개인정보 처리방침 작성 (수집 항목, 이용 목적, 보관 기간, 제3자 제공)
@@ -198,15 +198,9 @@
 #### D-4.1. 연결 수락/거절 UI
 - [x] `user_management_page.dart` (보호자용) — 대기 중 카드에 수락/거절 버튼 추가
 - [x] `guardian_management_page.dart` (당사자용) — 대기 중 카드에 수락/거절 버튼 추가, 섹션 분리
-- [ ] 백엔드 수락/거절/삭제 API 연동 — [#11](https://github.com/JinEunPark/duty-checker-client/issues/11)
+- [x] 백엔드 수락/거절/삭제 API 연동 — [#11](https://github.com/JinEunPark/duty-checker-client/issues/11)
 
-#### D-5. 회원가입 약관 동의 UI
-- [ ] 만 14세 이상 동의 (필수)
-- [ ] 이용약관 동의 (필수, 링크)
-- [ ] 개인정보 처리방침 동의 (필수, 링크)
-- [ ] 마케팅 정보 수신 동의 (선택)
-
-#### D-6. 푸시 알림 권한 거부 시 처리
+#### D-5. 푸시 알림 권한 거부 시 처리
 - [ ] 권한 거부 상태에서도 앱 사용 가능하도록 안내
 - [ ] 설정 화면에서 알림 권한 상태 표시 + iOS 설정 이동 버튼
 
@@ -217,6 +211,30 @@
 - [ ] 앱 종료 상태에서 알림 수신 확인
 - [ ] 알림 탭 시 앱 진입 동작 확인
 - [ ] FCM 토큰 갱신 후에도 알림 정상 수신 확인
+
+---
+
+### E. 백엔드 API 대기 후 구현
+
+#### E-1. 연결 요청 방향 구분 — [duty-checker#76](https://github.com/JinEunPark/duty-checker/issues/76)
+- [ ] 백엔드: `ConnectionItemDto`에 `isRequester` 필드 추가
+- [ ] 클라이언트: `ConnectionRespModel` / `Connection` 엔티티에 `isRequester` 필드 추가
+- [ ] `PendingConnectionCard`에서 `showActions: !connection.isRequester`로 분기
+- [ ] 내가 보낸 요청 → "수락 대기 중" 표시만, 상대가 보낸 요청 → 수락/거절 버튼
+- [ ] 단위 테스트 추가
+
+#### E-2. 비밀번호 재설정 — [duty-checker#77](https://github.com/JinEunPark/duty-checker/issues/77)
+- [ ] 백엔드: `POST /v1/auth/reset-password` API 추가
+- [ ] `reset_password_req_model.dart` — `{ phone, newPassword }`
+- [ ] `auth_api.dart`에 `@POST('/v1/auth/reset-password')` 추가
+- [ ] `auth_remote_datasource.dart` / `auth_repository.dart` / `auth_repository_impl.dart`에 `resetPassword()` 추가
+- [ ] `ResetPasswordUseCase` + provider
+- [ ] `ResetPasswordState` (freezed) — 단계별 상태 관리
+- [ ] `ResetPasswordViewModel` — checkPhone → sendCode → verifyCode → resetPassword
+- [ ] `reset_password_page.dart` — UI 구현
+- [ ] `go_router`에 `/reset-password` 경로 추가
+- [ ] 로그인 화면에 "비밀번호를 잊으셨나요?" 링크 추가
+- [ ] 단위 테스트 추가
 
 ---
 
@@ -265,25 +283,33 @@
 
 ## 우선순위 요약
 
-### 반드시 해야 함 (심사 거절 직결)
-1. [ ] 회원 탈퇴 기능 구현 (서버 API + 클라이언트)
-2. [ ] 개인정보 처리방침 작성 + URL 제공
-3. [ ] 이용약관 작성 + 회원가입 동의 UI
-4. [ ] PrivacyInfo.xcprivacy 작성
-5. [ ] 테스트 계정 제공 또는 SMS 인증 우회 방법
+### 완료
+- [x] 회원 탈퇴 기능 구현 (A-1)
+- [x] 개인정보 처리방침 / 이용약관 작성 및 호스팅 (A-2, A-3)
+- [x] PrivacyInfo.xcprivacy (A-4)
+- [x] 연결 수락/거절/삭제 API 연동 (D-4.1)
+- [x] `check-phone` API 연동 (회원가입 시 중복 번호 검사)
+
+### 심사 전 필수
+1. [ ] App Store Connect에 Privacy Policy URL 입력 (A-2)
+2. [ ] App Store Connect 메타데이터 입력 (A-5)
+3. [ ] 스크린샷 제작 (A-6)
+4. [ ] 테스트 계정 제공 또는 SMS 인증 우회 방법 (G-3)
+5. [ ] Info.plist 권한 설명 추가 (B-1)
 
 ### 빌드/배포에 필요
-6. [ ] App Store Connect 앱 등록 + 메타데이터 입력
-7. [ ] 스크린샷 제작
-8. [ ] 1024 아이콘 alpha 채널 확인
-9. [ ] 런치 스크린 실제 이미지 교체
-10. [ ] Distribution 인증서/프로비저닝 프로파일
+6. [ ] App Store Connect 앱 등록 + 서명 설정 (C-2)
+7. [ ] 런치 스크린 실제 이미지 교체 (C-4)
+8. [ ] 마케팅 아이콘 alpha 채널 확인 (C-5)
+
+### 백엔드 API 대기 후 구현
+9. [ ] 연결 요청 방향 구분 — isRequester 필드 (E-1, [duty-checker#76](https://github.com/JinEunPark/duty-checker/issues/76))
+10. [ ] 비밀번호 재설정 기능 (E-2, [duty-checker#77](https://github.com/JinEunPark/duty-checker/issues/77))
 
 ### 권장 (심사 통과 후 개선)
-11. [ ] 이미 체크인 상태 UX 개선
-12. [ ] 푸시 권한 요청 시점 개선
-13. [ ] 네트워크 에러 / 빈 상태 UI
-14. [ ] 약관 동의 화면
+11. [ ] 이미 체크인 상태 UX 개선 (D-1)
+12. [ ] 푸시 권한 요청 시점 개선 (B-2)
+13. [ ] 네트워크 에러 / 빈 상태 UI (D-2, D-3)
 
 ---
 

@@ -7,11 +7,11 @@ class AddConnectionUseCase {
   final ConnectionRepository _repository;
 
   Future<Connection> call({
-    required String guardianPhone,
+    required String targetPhone,
     String? name,
   }) {
     return _repository.addConnection(
-      guardianPhone: guardianPhone,
+      targetPhone: targetPhone,
       name: name,
     );
   }

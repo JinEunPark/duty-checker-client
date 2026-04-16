@@ -93,4 +93,9 @@ class AuthRepositoryImpl implements AuthRepository {
       await _tokenStorage.clear();
     }
   }
+
+  @override
+  Future<bool> checkPhone({required String phone}) {
+    return _remoteDataSource.checkPhone(phone: phone);
+  }
 }

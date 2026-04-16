@@ -28,7 +28,7 @@ class _GuardianManagementPageState
     final digits = _phoneController.text.replaceAll('-', '');
     if (digits.length < 10) return;
     ref.read(connectionViewModelProvider.notifier).addConnection(
-          guardianPhone: digits,
+          targetPhone: digits,
         );
     _phoneController.clear();
     showToast('보호자 등록 요청을 보냈습니다');
@@ -102,8 +102,8 @@ class _GuardianManagementPageState
   }
 
   void _acceptConnection(Connection guardian) {
-    // TODO: 백엔드 API 추가 후 연동 (PATCH /v1/connections/{id}/accept)
-    showToast('${guardian.name.isNotEmpty ? guardian.name : guardian.phone} 연결을 수락했습니다');
+    ref.read(connectionViewModelProvider.notifier).acceptConnection(id: guardian.id);
+    showToast('연결을 수락했습니다');
   }
 
   Future<void> _rejectConnection(Connection guardian) async {
@@ -116,7 +116,7 @@ class _GuardianManagementPageState
       destructiveLabel: '거절',
     );
     if (confirmed) {
-      // TODO: 백엔드 API 추가 후 연동 (DELETE /v1/connections/{id})
+      ref.read(connectionViewModelProvider.notifier).rejectConnection(id: guardian.id);
       showToast('연결 요청을 거절했습니다');
     }
   }
@@ -130,7 +130,7 @@ class _GuardianManagementPageState
       content: '$displayName을(를) 삭제하시겠습니까?',
     );
     if (confirmed) {
-      // TODO: DELETE /v1/connections/{id} API 추가 후 연동
+      ref.read(connectionViewModelProvider.notifier).deleteConnection(id: guardian.id);
       showToast('보호자가 삭제되었습니다');
     }
   }

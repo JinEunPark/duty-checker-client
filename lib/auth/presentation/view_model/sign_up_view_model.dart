@@ -13,6 +13,15 @@ class SignUpViewModel extends _$SignUpViewModel {
   Future<void> sendCode({required String phone}) async {
     state = state.copyWith(isSendingCode: true, error: null);
     try {
+      // 이미 가입된 번호인지 확인
+      final checkPhoneUseCase = ref.read(checkPhoneUseCaseProvider);
+      final exists = await checkPhoneUseCase(phone: phone);
+      if (exists) {
+        const message = '이미 가입된 전화번호입니다. 로그인 화면에서 로그인해주세요.';
+        state = state.copyWith(isSendingCode: false, error: message);
+        throw AppError(type: AppErrorType.conflict, message: message);
+      }
+
       final useCase = ref.read(sendCodeUseCaseProvider);
       final expiresAt = await useCase(phone: phone);
       state = state.copyWith(
@@ -20,6 +29,8 @@ class SignUpViewModel extends _$SignUpViewModel {
         codeSent: true,
         codeExpiresAt: expiresAt,
       );
+    } on AppError {
+      rethrow;
     } catch (e) {
       final appError = AppError.from(e);
       state = state.copyWith(isSendingCode: false, error: appError.message);

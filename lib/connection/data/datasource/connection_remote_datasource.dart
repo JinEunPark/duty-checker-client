@@ -3,6 +3,7 @@ import 'package:duty_checker/connection/data/model/connection_req_model.dart';
 import 'package:duty_checker/connection/data/model/connection_resp_model.dart';
 import 'package:duty_checker/connection/data/model/get_connections_resp_model.dart';
 import 'package:duty_checker/connection/data/model/update_connection_name_req_model.dart';
+import 'package:duty_checker/connection/data/model/update_connection_status_req_model.dart';
 import 'package:duty_checker/core/network/dio_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,11 +22,11 @@ class ConnectionRemoteDataSource {
   }
 
   Future<ConnectionRespModel> addConnection({
-    required String guardianPhone,
+    required String targetPhone,
     String? name,
   }) {
     return _api.addConnection(
-      ConnectionReqModel(guardianPhone: guardianPhone, name: name),
+      ConnectionReqModel(targetPhone: targetPhone, name: name),
     );
   }
 
@@ -37,5 +38,19 @@ class ConnectionRemoteDataSource {
       id,
       UpdateConnectionNameReqModel(name: name),
     );
+  }
+
+  Future<void> updateConnectionStatus({
+    required int id,
+    required String status,
+  }) {
+    return _api.updateConnectionStatus(
+      id,
+      UpdateConnectionStatusReqModel(status: status),
+    );
+  }
+
+  Future<void> deleteConnection({required int id}) {
+    return _api.deleteConnection(id);
   }
 }

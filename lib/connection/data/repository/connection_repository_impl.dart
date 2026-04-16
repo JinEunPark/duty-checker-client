@@ -23,11 +23,11 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
 
   @override
   Future<Connection> addConnection({
-    required String guardianPhone,
+    required String targetPhone,
     String? name,
   }) async {
     final resp = await _remoteDataSource.addConnection(
-      guardianPhone: guardianPhone,
+      targetPhone: targetPhone,
       name: name,
     );
     return resp.toDomain();
@@ -43,6 +43,27 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
       name: name,
     );
     return resp.toDomain();
+  }
+
+  @override
+  Future<void> acceptConnection({required int id}) {
+    return _remoteDataSource.updateConnectionStatus(
+      id: id,
+      status: 'CONNECTED',
+    );
+  }
+
+  @override
+  Future<void> rejectConnection({required int id}) {
+    return _remoteDataSource.updateConnectionStatus(
+      id: id,
+      status: 'REJECTED',
+    );
+  }
+
+  @override
+  Future<void> deleteConnection({required int id}) {
+    return _remoteDataSource.deleteConnection(id: id);
   }
 }
 

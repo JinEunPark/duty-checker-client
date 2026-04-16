@@ -30,14 +30,14 @@ class ConnectionViewModel extends _$ConnectionViewModel {
   }
 
   Future<void> addConnection({
-    required String guardianPhone,
+    required String targetPhone,
     String? name,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final useCase = ref.read(addConnectionUseCaseProvider);
       final newConnection =
-          await useCase(guardianPhone: guardianPhone, name: name);
+          await useCase(targetPhone: targetPhone, name: name);
       state = ConnectionState(
         connections: [...state.connections, newConnection],
       );
@@ -59,6 +59,46 @@ class ConnectionViewModel extends _$ConnectionViewModel {
         return c.id == updated.id ? updated : c;
       }).toList();
       state = state.copyWith(connections: newList);
+    } catch (e) {
+      final appError = AppError.from(e);
+      state = state.copyWith(error: appError.message);
+    }
+  }
+
+  Future<void> acceptConnection({required int id}) async {
+    state = state.copyWith(error: null);
+    try {
+      final useCase = ref.read(acceptConnectionUseCaseProvider);
+      await useCase(id: id);
+      await refresh();
+    } catch (e) {
+      final appError = AppError.from(e);
+      state = state.copyWith(error: appError.message);
+    }
+  }
+
+  Future<void> rejectConnection({required int id}) async {
+    state = state.copyWith(error: null);
+    try {
+      final useCase = ref.read(rejectConnectionUseCaseProvider);
+      await useCase(id: id);
+      state = state.copyWith(
+        connections: state.connections.where((c) => c.id != id).toList(),
+      );
+    } catch (e) {
+      final appError = AppError.from(e);
+      state = state.copyWith(error: appError.message);
+    }
+  }
+
+  Future<void> deleteConnection({required int id}) async {
+    state = state.copyWith(error: null);
+    try {
+      final useCase = ref.read(deleteConnectionUseCaseProvider);
+      await useCase(id: id);
+      state = state.copyWith(
+        connections: state.connections.where((c) => c.id != id).toList(),
+      );
     } catch (e) {
       final appError = AppError.from(e);
       state = state.copyWith(error: appError.message);

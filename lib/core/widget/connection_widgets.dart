@@ -41,14 +41,16 @@ class ConnectionSectionHeader extends StatelessWidget {
 // ─────────────────────────────────────────────
 class PendingConnectionCard extends StatelessWidget {
   final Connection connection;
-  final VoidCallback onAccept;
-  final VoidCallback onReject;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
+  final bool showActions;
 
   const PendingConnectionCard({
     super.key,
     required this.connection,
-    required this.onAccept,
-    required this.onReject,
+    this.onAccept,
+    this.onReject,
+    this.showActions = true,
   });
 
   @override
@@ -125,46 +127,48 @@ class PendingConnectionCard extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(14),
-          Row(
-            children: [
-              Expanded(
-                child: CupertinoButton(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  color: colors.gray100,
-                  borderRadius: BorderRadius.circular(10),
-                  onPressed: onReject,
-                  child: Text(
-                    '거절',
-                    style: TextStyle(
-                      fontFamily: 'Pretendard',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textSecondary,
+          if (showActions) ...[
+            const Gap(14),
+            Row(
+              children: [
+                Expanded(
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    color: colors.gray100,
+                    borderRadius: BorderRadius.circular(10),
+                    onPressed: onReject,
+                    child: Text(
+                      '거절',
+                      style: TextStyle(
+                        fontFamily: 'Pretendard',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textSecondary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const Gap(10),
-              Expanded(
-                child: CupertinoButton(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  color: colors.primary,
-                  borderRadius: BorderRadius.circular(10),
-                  onPressed: onAccept,
-                  child: Text(
-                    '수락',
-                    style: TextStyle(
-                      fontFamily: 'Pretendard',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.surface,
+                const Gap(10),
+                Expanded(
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    onPressed: onAccept,
+                    child: Text(
+                      '수락',
+                      style: TextStyle(
+                        fontFamily: 'Pretendard',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.surface,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -194,7 +198,7 @@ class AddConnectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
-    final isFull = connectionCount >= 3;
+    final isFull = connectionCount >= 5;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -265,7 +269,7 @@ class AddConnectionCard extends StatelessWidget {
           ),
           const Gap(10),
           Text(
-            '최대 3명까지 등록 가능 · $connectionCount/3',
+            '최대 5명까지 등록 가능 · $connectionCount/5',
             style: textStyles.caption,
           ),
         ],

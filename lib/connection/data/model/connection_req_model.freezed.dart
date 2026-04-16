@@ -21,7 +21,7 @@ ConnectionReqModel _$ConnectionReqModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ConnectionReqModel {
-  String get guardianPhone => throw _privateConstructorUsedError;
+  String get targetPhone => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
 
   /// Serializes this ConnectionReqModel to a JSON map.
@@ -41,7 +41,7 @@ abstract class $ConnectionReqModelCopyWith<$Res> {
     $Res Function(ConnectionReqModel) then,
   ) = _$ConnectionReqModelCopyWithImpl<$Res, ConnectionReqModel>;
   @useResult
-  $Res call({String guardianPhone, String? name});
+  $Res call({String targetPhone, String? name});
 }
 
 /// @nodoc
@@ -58,12 +58,12 @@ class _$ConnectionReqModelCopyWithImpl<$Res, $Val extends ConnectionReqModel>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? guardianPhone = null, Object? name = freezed}) {
+  $Res call({Object? targetPhone = null, Object? name = freezed}) {
     return _then(
       _value.copyWith(
-            guardianPhone: null == guardianPhone
-                ? _value.guardianPhone
-                : guardianPhone // ignore: cast_nullable_to_non_nullable
+            targetPhone: null == targetPhone
+                ? _value.targetPhone
+                : targetPhone // ignore: cast_nullable_to_non_nullable
                       as String,
             name: freezed == name
                 ? _value.name
@@ -84,7 +84,7 @@ abstract class _$$ConnectionReqModelImplCopyWith<$Res>
   ) = __$$ConnectionReqModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String guardianPhone, String? name});
+  $Res call({String targetPhone, String? name});
 }
 
 /// @nodoc
@@ -100,12 +100,12 @@ class __$$ConnectionReqModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? guardianPhone = null, Object? name = freezed}) {
+  $Res call({Object? targetPhone = null, Object? name = freezed}) {
     return _then(
       _$ConnectionReqModelImpl(
-        guardianPhone: null == guardianPhone
-            ? _value.guardianPhone
-            : guardianPhone // ignore: cast_nullable_to_non_nullable
+        targetPhone: null == targetPhone
+            ? _value.targetPhone
+            : targetPhone // ignore: cast_nullable_to_non_nullable
                   as String,
         name: freezed == name
             ? _value.name
@@ -119,19 +119,19 @@ class __$$ConnectionReqModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ConnectionReqModelImpl implements _ConnectionReqModel {
-  const _$ConnectionReqModelImpl({required this.guardianPhone, this.name});
+  const _$ConnectionReqModelImpl({required this.targetPhone, this.name});
 
   factory _$ConnectionReqModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ConnectionReqModelImplFromJson(json);
 
   @override
-  final String guardianPhone;
+  final String targetPhone;
   @override
   final String? name;
 
   @override
   String toString() {
-    return 'ConnectionReqModel(guardianPhone: $guardianPhone, name: $name)';
+    return 'ConnectionReqModel(targetPhone: $targetPhone, name: $name)';
   }
 
   @override
@@ -139,14 +139,14 @@ class _$ConnectionReqModelImpl implements _ConnectionReqModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ConnectionReqModelImpl &&
-            (identical(other.guardianPhone, guardianPhone) ||
-                other.guardianPhone == guardianPhone) &&
+            (identical(other.targetPhone, targetPhone) ||
+                other.targetPhone == targetPhone) &&
             (identical(other.name, name) || other.name == name));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, guardianPhone, name);
+  int get hashCode => Object.hash(runtimeType, targetPhone, name);
 
   /// Create a copy of ConnectionReqModel
   /// with the given fields replaced by the non-null parameter values.
@@ -167,7 +167,7 @@ class _$ConnectionReqModelImpl implements _ConnectionReqModel {
 
 abstract class _ConnectionReqModel implements ConnectionReqModel {
   const factory _ConnectionReqModel({
-    required final String guardianPhone,
+    required final String targetPhone,
     final String? name,
   }) = _$ConnectionReqModelImpl;
 
@@ -175,7 +175,7 @@ abstract class _ConnectionReqModel implements ConnectionReqModel {
       _$ConnectionReqModelImpl.fromJson;
 
   @override
-  String get guardianPhone;
+  String get targetPhone;
   @override
   String? get name;
 

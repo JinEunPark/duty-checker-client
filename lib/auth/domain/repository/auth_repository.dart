@@ -24,4 +24,6 @@ abstract interface class AuthRepository {
   Future<AuthToken> refresh({required String refreshToken});
 
   Future<void> logout();
+
+  Future<bool> checkPhone({required String phone});
 }

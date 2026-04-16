@@ -55,4 +55,9 @@ class AuthRemoteDataSource {
   }
 
   Future<void> logout() => _api.logout();
+
+  Future<bool> checkPhone({required String phone}) async {
+    final resp = await _api.checkPhone(phone);
+    return resp.exists;
+  }
 }

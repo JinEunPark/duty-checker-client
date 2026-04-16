@@ -4,7 +4,7 @@ abstract interface class ConnectionRepository {
   Future<ConnectionList> getConnections();
 
   Future<Connection> addConnection({
-    required String guardianPhone,
+    required String targetPhone,
     String? name,
   });
 
@@ -12,4 +12,10 @@ abstract interface class ConnectionRepository {
     required int id,
     required String name,
   });
+
+  Future<void> acceptConnection({required int id});
+
+  Future<void> rejectConnection({required int id});
+
+  Future<void> deleteConnection({required int id});
 }

@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/presentation/page/reset_password_page.dart';
 import 'package:duty_checker/auth/presentation/page/sign_up_complete_page.dart';
 import 'package:duty_checker/core/setting/presentation/page/setting_page.dart';
 import 'package:duty_checker/guardian/presentation/page/guardian_home_page.dart';
@@ -25,6 +26,10 @@ final router = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginPage(),
+    ),
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) => const ResetPasswordPage(),
     ),
     GoRoute(
       path: '/sign-up/complete',

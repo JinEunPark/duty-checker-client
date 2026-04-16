@@ -261,6 +261,20 @@ void main() {
       expect(find.text('거절'), findsOneWidget);
     });
 
+    testWidgets('showActions가 false이면 수락/거절 버튼이 표시되지 않는다', (tester) async {
+      await tester.pumpWidget(
+        _testApp(PendingConnectionCard(
+          connection: connection,
+          showActions: false,
+        )),
+      );
+
+      expect(find.text('테스트'), findsOneWidget);
+      expect(find.text('연결 대기 중'), findsOneWidget);
+      expect(find.text('수락'), findsNothing);
+      expect(find.text('거절'), findsNothing);
+    });
+
     testWidgets('이름이 없으면 전화번호가 대표 이름으로 표시된다', (tester) async {
       final noName = Connection(
         id: 2,
@@ -327,7 +341,7 @@ void main() {
       );
 
       expect(find.text('전화번호 입력'), findsOneWidget);
-      expect(find.text('최대 3명까지 등록 가능 · 0/3'), findsOneWidget);
+      expect(find.text('최대 5명까지 등록 가능 · 0/5'), findsOneWidget);
     });
 
     testWidgets('커스텀 placeholder가 표시된다', (tester) async {
@@ -344,22 +358,22 @@ void main() {
       );
 
       expect(find.text('당사자 전화번호 입력'), findsOneWidget);
-      expect(find.text('최대 3명까지 등록 가능 · 1/3'), findsOneWidget);
+      expect(find.text('최대 5명까지 등록 가능 · 1/5'), findsOneWidget);
     });
 
-    testWidgets('3명 이상이면 입력 필드가 비활성화된다', (tester) async {
+    testWidgets('5명 이상이면 입력 필드가 비활성화된다', (tester) async {
       final controller = TextEditingController();
       addTearDown(controller.dispose);
 
       await tester.pumpWidget(
         _testApp(AddConnectionCard(
           controller: controller,
-          connectionCount: 3,
+          connectionCount: 5,
           onAdd: () {},
         )),
       );
 
-      expect(find.text('최대 3명까지 등록 가능 · 3/3'), findsOneWidget);
+      expect(find.text('최대 5명까지 등록 가능 · 5/5'), findsOneWidget);
 
       final textField =
           tester.widget<CupertinoTextField>(find.byType(CupertinoTextField));

@@ -9,13 +9,13 @@ part of 'connection_req_model.dart';
 _$ConnectionReqModelImpl _$$ConnectionReqModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$ConnectionReqModelImpl(
-  guardianPhone: json['guardianPhone'] as String,
+  targetPhone: json['targetPhone'] as String,
   name: json['name'] as String?,
 );
 
 Map<String, dynamic> _$$ConnectionReqModelImplToJson(
   _$ConnectionReqModelImpl instance,
 ) => <String, dynamic>{
-  'guardianPhone': instance.guardianPhone,
+  'targetPhone': instance.targetPhone,
   'name': instance.name,
 };

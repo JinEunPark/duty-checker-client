@@ -1,4 +1,5 @@
 import 'package:duty_checker/auth/data/repository/auth_repository_impl.dart';
+import 'package:duty_checker/auth/domain/use_case/check_phone_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/login_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/logout_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/refresh_token_use_case.dart';
@@ -29,4 +30,8 @@ final refreshTokenUseCaseProvider = Provider<RefreshTokenUseCase>((ref) {
 
 final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
   return LogoutUseCase(ref.watch(authRepositoryProvider));
+});
+
+final checkPhoneUseCaseProvider = Provider<CheckPhoneUseCase>((ref) {
+  return CheckPhoneUseCase(ref.watch(authRepositoryProvider));
 });

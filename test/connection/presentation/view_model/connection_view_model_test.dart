@@ -12,11 +12,17 @@ void main() {
   late MockGetConnectionsUseCase mockGetConnections;
   late MockAddConnectionUseCase mockAddConnection;
   late MockUpdateConnectionNameUseCase mockUpdateName;
+  late MockAcceptConnectionUseCase mockAcceptConnection;
+  late MockRejectConnectionUseCase mockRejectConnection;
+  late MockDeleteConnectionUseCase mockDeleteConnection;
 
   setUp(() {
     mockGetConnections = MockGetConnectionsUseCase();
     mockAddConnection = MockAddConnectionUseCase();
     mockUpdateName = MockUpdateConnectionNameUseCase();
+    mockAcceptConnection = MockAcceptConnectionUseCase();
+    mockRejectConnection = MockRejectConnectionUseCase();
+    mockDeleteConnection = MockDeleteConnectionUseCase();
   });
 
   ProviderContainer createContainer() {
@@ -25,6 +31,9 @@ void main() {
         getConnectionsUseCaseProvider.overrideWithValue(mockGetConnections),
         addConnectionUseCaseProvider.overrideWithValue(mockAddConnection),
         updateConnectionNameUseCaseProvider.overrideWithValue(mockUpdateName),
+        acceptConnectionUseCaseProvider.overrideWithValue(mockAcceptConnection),
+        rejectConnectionUseCaseProvider.overrideWithValue(mockRejectConnection),
+        deleteConnectionUseCaseProvider.overrideWithValue(mockDeleteConnection),
       ],
     );
   }
@@ -70,7 +79,7 @@ void main() {
       when(() => mockGetConnections())
           .thenAnswer((_) async => testConnectionList);
       when(() => mockAddConnection(
-            guardianPhone: any(named: 'guardianPhone'),
+            targetPhone: any(named: 'targetPhone'),
             name: any(named: 'name'),
           )).thenAnswer((_) async => testPendingConnection);
 
@@ -81,7 +90,7 @@ void main() {
         final notifier = container.read(connectionViewModelProvider.notifier);
         async.flushMicrotasks();
 
-        notifier.addConnection(guardianPhone: '01087654321');
+        notifier.addConnection(targetPhone: '01087654321');
         async.flushMicrotasks();
 
         final state = container.read(connectionViewModelProvider);
@@ -95,7 +104,7 @@ void main() {
       when(() => mockGetConnections())
           .thenAnswer((_) async => testConnectionList);
       when(() => mockAddConnection(
-            guardianPhone: any(named: 'guardianPhone'),
+            targetPhone: any(named: 'targetPhone'),
             name: any(named: 'name'),
           )).thenThrow(Exception('이미 연결됨'));
 
@@ -106,7 +115,7 @@ void main() {
         final notifier = container.read(connectionViewModelProvider.notifier);
         async.flushMicrotasks();
 
-        notifier.addConnection(guardianPhone: '01087654321');
+        notifier.addConnection(targetPhone: '01087654321');
         async.flushMicrotasks();
 
         final state = container.read(connectionViewModelProvider);
@@ -164,6 +173,114 @@ void main() {
         async.flushMicrotasks();
 
         notifier.updateConnectionName(id: 999, name: '테스트');
+        async.flushMicrotasks();
+
+        final state = container.read(connectionViewModelProvider);
+        expect(state.error, isNotNull);
+      });
+    });
+
+    test('acceptConnection 성공 시 목록을 새로고침한다', () {
+      when(() => mockGetConnections())
+          .thenAnswer((_) async => testConnectionList);
+      when(() => mockAcceptConnection(id: any(named: 'id')))
+          .thenAnswer((_) async {});
+
+      fakeAsync((async) {
+        final container = createContainer();
+        addTearDown(container.dispose);
+
+        final notifier = container.read(connectionViewModelProvider.notifier);
+        async.flushMicrotasks();
+
+        notifier.acceptConnection(id: 2);
+        async.flushMicrotasks();
+
+        verify(() => mockAcceptConnection(id: 2)).called(1);
+        // refresh 호출로 getConnections가 2번 호출됨 (초기 + refresh)
+        verify(() => mockGetConnections()).called(2);
+      });
+    });
+
+    test('acceptConnection 실패 시 error가 설정된다', () {
+      when(() => mockGetConnections())
+          .thenAnswer((_) async => testConnectionList);
+      when(() => mockAcceptConnection(id: any(named: 'id')))
+          .thenThrow(Exception('403 Forbidden'));
+
+      fakeAsync((async) {
+        final container = createContainer();
+        addTearDown(container.dispose);
+
+        final notifier = container.read(connectionViewModelProvider.notifier);
+        async.flushMicrotasks();
+
+        notifier.acceptConnection(id: 1);
+        async.flushMicrotasks();
+
+        final state = container.read(connectionViewModelProvider);
+        expect(state.error, isNotNull);
+      });
+    });
+
+    test('rejectConnection 성공 시 리스트에서 제거된다', () {
+      when(() => mockGetConnections())
+          .thenAnswer((_) async => testConnectionList);
+      when(() => mockRejectConnection(id: any(named: 'id')))
+          .thenAnswer((_) async {});
+
+      fakeAsync((async) {
+        final container = createContainer();
+        addTearDown(container.dispose);
+
+        final notifier = container.read(connectionViewModelProvider.notifier);
+        async.flushMicrotasks();
+
+        notifier.rejectConnection(id: 2);
+        async.flushMicrotasks();
+
+        final state = container.read(connectionViewModelProvider);
+        expect(state.connections, hasLength(1));
+        expect(state.connections.any((c) => c.id == 2), isFalse);
+      });
+    });
+
+    test('deleteConnection 성공 시 리스트에서 제거된다', () {
+      when(() => mockGetConnections())
+          .thenAnswer((_) async => testConnectionList);
+      when(() => mockDeleteConnection(id: any(named: 'id')))
+          .thenAnswer((_) async {});
+
+      fakeAsync((async) {
+        final container = createContainer();
+        addTearDown(container.dispose);
+
+        final notifier = container.read(connectionViewModelProvider.notifier);
+        async.flushMicrotasks();
+
+        notifier.deleteConnection(id: 1);
+        async.flushMicrotasks();
+
+        final state = container.read(connectionViewModelProvider);
+        expect(state.connections, hasLength(1));
+        expect(state.connections.any((c) => c.id == 1), isFalse);
+      });
+    });
+
+    test('deleteConnection 실패 시 error가 설정된다', () {
+      when(() => mockGetConnections())
+          .thenAnswer((_) async => testConnectionList);
+      when(() => mockDeleteConnection(id: any(named: 'id')))
+          .thenThrow(Exception('존재하지 않는 연결'));
+
+      fakeAsync((async) {
+        final container = createContainer();
+        addTearDown(container.dispose);
+
+        final notifier = container.read(connectionViewModelProvider.notifier);
+        async.flushMicrotasks();
+
+        notifier.deleteConnection(id: 999);
         async.flushMicrotasks();
 
         final state = container.read(connectionViewModelProvider);

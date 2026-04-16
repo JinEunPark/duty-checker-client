@@ -6,7 +6,7 @@ part 'connection_req_model.g.dart';
 @freezed
 class ConnectionReqModel with _$ConnectionReqModel {
   const factory ConnectionReqModel({
-    required String guardianPhone,
+    required String targetPhone,
     String? name,
   }) = _ConnectionReqModel;
 

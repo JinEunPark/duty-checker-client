@@ -2,6 +2,7 @@ import 'package:duty_checker/auth/domain/entity/auth_token.dart';
 import 'package:duty_checker/auth/domain/entity/login_result.dart';
 import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:duty_checker/auth/domain/repository/auth_repository.dart';
+import 'package:duty_checker/auth/domain/use_case/check_phone_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/login_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/register_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/send_code_use_case.dart';
@@ -17,6 +18,8 @@ class MockRegisterUseCase extends Mock implements RegisterUseCase {}
 class MockSendCodeUseCase extends Mock implements SendCodeUseCase {}
 
 class MockVerifyCodeUseCase extends Mock implements VerifyCodeUseCase {}
+
+class MockCheckPhoneUseCase extends Mock implements CheckPhoneUseCase {}
 
 // 테스트용 고정 데이터
 final testUser = const User(id: 1, phone: '01012345678', role: UserRole.subject);

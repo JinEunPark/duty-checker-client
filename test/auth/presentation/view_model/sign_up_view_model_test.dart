@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import '../../../mocks/mock_auth.dart';
 
 void main() {
+  late MockCheckPhoneUseCase mockCheckPhone;
   late MockSendCodeUseCase mockSendCode;
   late MockVerifyCodeUseCase mockVerifyCode;
   late MockRegisterUseCase mockRegister;
@@ -16,12 +17,14 @@ void main() {
   late ProviderContainer container;
 
   setUp(() {
+    mockCheckPhone = MockCheckPhoneUseCase();
     mockSendCode = MockSendCodeUseCase();
     mockVerifyCode = MockVerifyCodeUseCase();
     mockRegister = MockRegisterUseCase();
     mockLogin = MockLoginUseCase();
     container = ProviderContainer(
       overrides: [
+        checkPhoneUseCaseProvider.overrideWithValue(mockCheckPhone),
         sendCodeUseCaseProvider.overrideWithValue(mockSendCode),
         verifyCodeUseCaseProvider.overrideWithValue(mockVerifyCode),
         registerUseCaseProvider.overrideWithValue(mockRegister),
@@ -34,6 +37,8 @@ void main() {
 
   group('SignUpViewModel - sendCode', () {
     test('성공 시 codeSent가 true가 된다', () async {
+      when(() => mockCheckPhone(phone: any(named: 'phone')))
+          .thenAnswer((_) async => false);
       when(() => mockSendCode(phone: any(named: 'phone')))
           .thenAnswer((_) async => DateTime(2026, 4, 7));
 
@@ -46,7 +51,29 @@ void main() {
       expect(state.error, isNull);
     });
 
+    test('이미 가입된 번호이면 에러를 throw하고 인증코드를 보내지 않는다', () async {
+      when(() => mockCheckPhone(phone: any(named: 'phone')))
+          .thenAnswer((_) async => true);
+
+      final notifier = container.read(signUpViewModelProvider.notifier);
+
+      try {
+        await notifier.sendCode(phone: '01012345678');
+        fail('예외가 발생해야 합니다');
+      } catch (e) {
+        expect(e, isA<AppError>());
+        expect((e as AppError).message, contains('이미 가입된'));
+      }
+
+      final state = container.read(signUpViewModelProvider);
+      expect(state.codeSent, false);
+      expect(state.error, contains('이미 가입된'));
+      verifyNever(() => mockSendCode(phone: any(named: 'phone')));
+    });
+
     test('실패 시 AppError를 throw한다', () async {
+      when(() => mockCheckPhone(phone: any(named: 'phone')))
+          .thenAnswer((_) async => false);
       when(() => mockSendCode(phone: any(named: 'phone')))
           .thenThrow(Exception('발송 실패'));
 
@@ -59,6 +86,8 @@ void main() {
     });
 
     test('DioException 400 INVALID_PHONE_FORMAT 시 친절한 메시지로 변환된다', () async {
+      when(() => mockCheckPhone(phone: any(named: 'phone')))
+          .thenAnswer((_) async => false);
       when(() => mockSendCode(phone: any(named: 'phone'))).thenThrow(
         DioException(
           type: DioExceptionType.badResponse,
@@ -83,6 +112,8 @@ void main() {
     });
 
     test('DioException 429 RESEND_COOLDOWN 시 재시도 안내 메시지', () async {
+      when(() => mockCheckPhone(phone: any(named: 'phone')))
+          .thenAnswer((_) async => false);
       when(() => mockSendCode(phone: any(named: 'phone'))).thenThrow(
         DioException(
           type: DioExceptionType.badResponse,

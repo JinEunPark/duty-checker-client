@@ -28,15 +28,15 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage>
     final digits = _phoneController.text.replaceAll('-', '');
     if (digits.length < 10) return;
     ref.read(connectionViewModelProvider.notifier).addConnection(
-          guardianPhone: digits,
+          targetPhone: digits,
         );
     _phoneController.clear();
     showToast('당사자 등록 요청을 보냈습니다');
   }
 
   void _acceptConnection(Connection user) {
-    // TODO: 백엔드 API 추가 후 연동 (PATCH /v1/connections/{id}/accept)
-    showToast('${user.phone} 연결을 수락했습니다');
+    ref.read(connectionViewModelProvider.notifier).acceptConnection(id: user.id);
+    showToast('연결을 수락했습니다');
   }
 
   Future<void> _rejectConnection(Connection user) async {
@@ -47,7 +47,7 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage>
       destructiveLabel: '거절',
     );
     if (confirmed) {
-      // TODO: 백엔드 API 추가 후 연동 (DELETE /v1/connections/{id})
+      ref.read(connectionViewModelProvider.notifier).rejectConnection(id: user.id);
       showToast('연결 요청을 거절했습니다');
     }
   }
@@ -61,7 +61,7 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage>
       destructiveLabel: '해제',
     );
     if (confirmed) {
-      // TODO: 백엔드 API 추가 후 연동 (DELETE /v1/connections/{id})
+      ref.read(connectionViewModelProvider.notifier).deleteConnection(id: user.id);
       showToast('연결이 해제되었습니다');
     }
   }

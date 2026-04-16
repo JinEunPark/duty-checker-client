@@ -1,7 +1,10 @@
 import 'package:duty_checker/connection/domain/entity/connection.dart';
 import 'package:duty_checker/connection/domain/repository/connection_repository.dart';
+import 'package:duty_checker/connection/domain/use_case/accept_connection_use_case.dart';
 import 'package:duty_checker/connection/domain/use_case/add_connection_use_case.dart';
+import 'package:duty_checker/connection/domain/use_case/delete_connection_use_case.dart';
 import 'package:duty_checker/connection/domain/use_case/get_connections_use_case.dart';
+import 'package:duty_checker/connection/domain/use_case/reject_connection_use_case.dart';
 import 'package:duty_checker/connection/domain/use_case/update_connection_name_use_case.dart';
 import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,6 +17,15 @@ class MockAddConnectionUseCase extends Mock implements AddConnectionUseCase {}
 
 class MockUpdateConnectionNameUseCase extends Mock
     implements UpdateConnectionNameUseCase {}
+
+class MockAcceptConnectionUseCase extends Mock
+    implements AcceptConnectionUseCase {}
+
+class MockRejectConnectionUseCase extends Mock
+    implements RejectConnectionUseCase {}
+
+class MockDeleteConnectionUseCase extends Mock
+    implements DeleteConnectionUseCase {}
 
 // 테스트용 고정 데이터
 const testConnection = Connection(
