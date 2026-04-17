@@ -114,7 +114,7 @@ class PendingConnectionCard extends StatelessWidget {
                         ),
                         const Gap(6),
                         Text(
-                          '연결 대기 중',
+                          showActions ? '연결 대기 중' : '수락 대기 중',
                           style: textStyles.caption.copyWith(
                             color: colors.warning,
                             fontWeight: FontWeight.w500,

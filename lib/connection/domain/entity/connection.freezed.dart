@@ -23,6 +23,7 @@ mixin _$Connection {
   ConnectionStatus get status => throw _privateConstructorUsedError;
   DateTime? get latestCheckedAt => throw _privateConstructorUsedError;
   bool get isTodayChecked => throw _privateConstructorUsedError;
+  UserRole? get requesterRole => throw _privateConstructorUsedError;
 
   /// Create a copy of Connection
   /// with the given fields replaced by the non-null parameter values.
@@ -45,6 +46,7 @@ abstract class $ConnectionCopyWith<$Res> {
     ConnectionStatus status,
     DateTime? latestCheckedAt,
     bool isTodayChecked,
+    UserRole? requesterRole,
   });
 }
 
@@ -69,6 +71,7 @@ class _$ConnectionCopyWithImpl<$Res, $Val extends Connection>
     Object? status = null,
     Object? latestCheckedAt = freezed,
     Object? isTodayChecked = null,
+    Object? requesterRole = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -96,6 +99,10 @@ class _$ConnectionCopyWithImpl<$Res, $Val extends Connection>
                 ? _value.isTodayChecked
                 : isTodayChecked // ignore: cast_nullable_to_non_nullable
                       as bool,
+            requesterRole: freezed == requesterRole
+                ? _value.requesterRole
+                : requesterRole // ignore: cast_nullable_to_non_nullable
+                      as UserRole?,
           )
           as $Val,
     );
@@ -118,6 +125,7 @@ abstract class _$$ConnectionImplCopyWith<$Res>
     ConnectionStatus status,
     DateTime? latestCheckedAt,
     bool isTodayChecked,
+    UserRole? requesterRole,
   });
 }
 
@@ -141,6 +149,7 @@ class __$$ConnectionImplCopyWithImpl<$Res>
     Object? status = null,
     Object? latestCheckedAt = freezed,
     Object? isTodayChecked = null,
+    Object? requesterRole = freezed,
   }) {
     return _then(
       _$ConnectionImpl(
@@ -168,6 +177,10 @@ class __$$ConnectionImplCopyWithImpl<$Res>
             ? _value.isTodayChecked
             : isTodayChecked // ignore: cast_nullable_to_non_nullable
                   as bool,
+        requesterRole: freezed == requesterRole
+            ? _value.requesterRole
+            : requesterRole // ignore: cast_nullable_to_non_nullable
+                  as UserRole?,
       ),
     );
   }
@@ -183,6 +196,7 @@ class _$ConnectionImpl extends _Connection {
     required this.status,
     this.latestCheckedAt,
     required this.isTodayChecked,
+    this.requesterRole,
   }) : super._();
 
   @override
@@ -197,10 +211,12 @@ class _$ConnectionImpl extends _Connection {
   final DateTime? latestCheckedAt;
   @override
   final bool isTodayChecked;
+  @override
+  final UserRole? requesterRole;
 
   @override
   String toString() {
-    return 'Connection(id: $id, phone: $phone, name: $name, status: $status, latestCheckedAt: $latestCheckedAt, isTodayChecked: $isTodayChecked)';
+    return 'Connection(id: $id, phone: $phone, name: $name, status: $status, latestCheckedAt: $latestCheckedAt, isTodayChecked: $isTodayChecked, requesterRole: $requesterRole)';
   }
 
   @override
@@ -215,7 +231,9 @@ class _$ConnectionImpl extends _Connection {
             (identical(other.latestCheckedAt, latestCheckedAt) ||
                 other.latestCheckedAt == latestCheckedAt) &&
             (identical(other.isTodayChecked, isTodayChecked) ||
-                other.isTodayChecked == isTodayChecked));
+                other.isTodayChecked == isTodayChecked) &&
+            (identical(other.requesterRole, requesterRole) ||
+                other.requesterRole == requesterRole));
   }
 
   @override
@@ -227,6 +245,7 @@ class _$ConnectionImpl extends _Connection {
     status,
     latestCheckedAt,
     isTodayChecked,
+    requesterRole,
   );
 
   /// Create a copy of Connection
@@ -246,6 +265,7 @@ abstract class _Connection extends Connection {
     required final ConnectionStatus status,
     final DateTime? latestCheckedAt,
     required final bool isTodayChecked,
+    final UserRole? requesterRole,
   }) = _$ConnectionImpl;
   const _Connection._() : super._();
 
@@ -261,6 +281,8 @@ abstract class _Connection extends Connection {
   DateTime? get latestCheckedAt;
   @override
   bool get isTodayChecked;
+  @override
+  UserRole? get requesterRole;
 
   /// Create a copy of Connection
   /// with the given fields replaced by the non-null parameter values.

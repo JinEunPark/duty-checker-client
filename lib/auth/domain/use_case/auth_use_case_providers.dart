@@ -4,6 +4,7 @@ import 'package:duty_checker/auth/domain/use_case/login_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/logout_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/refresh_token_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/register_use_case.dart';
+import 'package:duty_checker/auth/domain/use_case/reset_password_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/send_code_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/verify_code_use_case.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,4 +35,8 @@ final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
 
 final checkPhoneUseCaseProvider = Provider<CheckPhoneUseCase>((ref) {
   return CheckPhoneUseCase(ref.watch(authRepositoryProvider));
+});
+
+final resetPasswordUseCaseProvider = Provider<ResetPasswordUseCase>((ref) {
+  return ResetPasswordUseCase(ref.watch(authRepositoryProvider));
 });

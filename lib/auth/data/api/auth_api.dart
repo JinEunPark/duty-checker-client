@@ -8,6 +8,7 @@ import 'package:duty_checker/auth/data/model/register_req_model.dart';
 import 'package:duty_checker/auth/data/model/register_resp_model.dart';
 import 'package:duty_checker/auth/data/model/send_code_req_model.dart';
 import 'package:duty_checker/auth/data/model/send_code_resp_model.dart';
+import 'package:duty_checker/auth/data/model/reset_password_req_model.dart';
 import 'package:duty_checker/auth/data/model/verify_code_req_model.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -37,4 +38,7 @@ abstract class AuthApi {
 
   @GET('/v1/auth/check-phone')
   Future<CheckPhoneRespModel> checkPhone(@Query('phone') String phone);
+
+  @PATCH('/v1/auth/password')
+  Future<void> resetPassword(@Body() ResetPasswordReqModel body);
 }

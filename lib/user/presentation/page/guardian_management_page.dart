@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:duty_checker/connection/domain/entity/connection.dart';
 import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
 import 'package:duty_checker/core/widget/connection_widgets.dart';
@@ -193,10 +194,13 @@ class _GuardianManagementPageState
                         ),
                         const Gap(10),
                         ...pendingGuardians.map((guardian) {
+                          final isMine =
+                              guardian.requesterRole == UserRole.subject;
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: PendingConnectionCard(
                               connection: guardian,
+                              showActions: !isMine,
                               onAccept: () => _acceptConnection(guardian),
                               onReject: () => _rejectConnection(guardian),
                             ),

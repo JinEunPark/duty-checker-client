@@ -26,4 +26,9 @@ abstract interface class AuthRepository {
   Future<void> logout();
 
   Future<bool> checkPhone({required String phone});
+
+  Future<void> resetPassword({
+    required String phone,
+    required String newPassword,
+  });
 }

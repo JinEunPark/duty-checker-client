@@ -16,6 +16,7 @@ class Connection with _$Connection {
     required ConnectionStatus status,
     DateTime? latestCheckedAt,
     required bool isTodayChecked,
+    UserRole? requesterRole,
   }) = _Connection;
 
   bool get isPending => status == ConnectionStatus.pending;

@@ -20,10 +20,23 @@ class AuthInterceptor extends Interceptor {
 
   bool _isRefreshing = false;
 
+  static const _publicPaths = [
+    '/v1/auth/login',
+    '/v1/auth/register',
+    '/v1/auth/send-code',
+    '/v1/auth/verify-code',
+    '/v1/auth/refresh',
+    '/v1/auth/check-phone',
+    '/v1/auth/password',
+  ];
+
+  bool _isPublic(String path) =>
+      _publicPaths.any((p) => path.contains(p));
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final token = _tokenStorage.accessToken;
-    if (token != null) {
+    if (token != null && !_isPublic(options.path)) {
       options.headers['Authorization'] = 'Bearer $token';
     }
     handler.next(options);

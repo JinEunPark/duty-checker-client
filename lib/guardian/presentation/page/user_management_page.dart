@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:duty_checker/connection/domain/entity/connection.dart';
 import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
 import 'package:duty_checker/core/widget/connection_widgets.dart';
@@ -207,14 +208,19 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage>
                         ),
                         const Gap(10),
                         ...pendingUsers.map(
-                          (user) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: PendingConnectionCard(
-                              connection: user,
-                              onAccept: () => _acceptConnection(user),
-                              onReject: () => _rejectConnection(user),
-                            ),
-                          ),
+                          (user) {
+                            final isMine =
+                                user.requesterRole == UserRole.guardian;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: PendingConnectionCard(
+                                connection: user,
+                                showActions: !isMine,
+                                onAccept: () => _acceptConnection(user),
+                                onReject: () => _rejectConnection(user),
+                              ),
+                            );
+                          },
                         ),
                       ],
                       if (connectedUsers.isEmpty && pendingUsers.isEmpty)

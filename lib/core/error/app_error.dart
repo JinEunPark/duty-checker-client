@@ -143,6 +143,23 @@ class AppError implements Exception {
     // 회원가입
     'PHONE_ALREADY_REGISTERED': (AppErrorType.conflict, '이미 가입된 전화번호예요.'),
     'PHONE_NOT_VERIFIED': (AppErrorType.badRequest, '전화번호 인증을 먼저 완료해주세요.'),
+
+    // 연결
+    'SAME_ROLE_CONNECTION': (AppErrorType.badRequest, '같은 역할끼리는 연결할 수 없어요.'),
+    'USER_NOT_FOUND': (AppErrorType.notFound, '해당 사용자를 찾을 수 없어요.'),
+    'CONNECTION_ALREADY_EXISTS': (AppErrorType.conflict, '이미 연결 요청을 보냈어요.'),
+    'INVALID_CONNECTION_STATUS': (AppErrorType.badRequest, '유효하지 않은 연결 상태예요.'),
+    'OWN_CONNECTION_REQUEST': (AppErrorType.forbidden, '본인의 연결 요청은 직접 처리할 수 없어요.'),
+    'CONNECTION_NOT_FOUND': (AppErrorType.notFound, '연결 정보를 찾을 수 없어요.'),
+    'CONNECTION_ALREADY_PROCESSED': (AppErrorType.conflict, '이미 처리된 연결 요청이에요.'),
+    'NOT_CONNECTION_OWNER': (AppErrorType.forbidden, '본인의 연결만 수정할 수 있어요.'),
+    'NOT_RELATED_CONNECTION': (AppErrorType.forbidden, '본인과 관련된 연결이 아니에요.'),
+
+    // 체크인
+    'ALREADY_CHECKED_IN': (AppErrorType.badRequest, '오늘은 이미 안부를 전달했어요.'),
+
+    // 비밀번호 재설정
+    'PHONE_NOT_AUTHENTICATED': (AppErrorType.unauthorized, '전화번호 인증을 먼저 완료해주세요.'),
   };
 
   static AppErrorType _typeFromStatusCode(int? code) {

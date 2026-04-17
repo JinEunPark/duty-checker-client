@@ -270,7 +270,7 @@ void main() {
       );
 
       expect(find.text('테스트'), findsOneWidget);
-      expect(find.text('연결 대기 중'), findsOneWidget);
+      expect(find.text('수락 대기 중'), findsOneWidget);
       expect(find.text('수락'), findsNothing);
       expect(find.text('거절'), findsNothing);
     });

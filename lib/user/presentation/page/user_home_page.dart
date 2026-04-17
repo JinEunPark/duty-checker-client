@@ -59,6 +59,11 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
   void _onCheckIn() {
     if (_justChecked) return;
 
+    if (ref.read(checkInViewModelProvider).todayChecked) {
+      _showAlreadyCheckedMessage();
+      return;
+    }
+
     setState(() => _justChecked = true);
     _pulseCtrl.stop();
 
@@ -66,10 +71,33 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
 
     Future.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) {
+        final checkInState = ref.read(checkInViewModelProvider);
+        if (checkInState.error != null) {
+          _showErrorMessage(checkInState.error!);
+        }
         setState(() => _justChecked = false);
         _pulseCtrl.repeat(reverse: true);
       }
     });
+  }
+
+  void _showAlreadyCheckedMessage() {
+    _showErrorMessage('오늘은 이미 안부를 전달했어요.');
+  }
+
+  void _showErrorMessage(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('확인'),
+            onPressed: () => Navigator.of(ctx).pop(),
+          ),
+        ],
+      ),
+    );
   }
 
 

@@ -7,7 +7,7 @@ part of 'reset_password_view_model.dart';
 // **************************************************************************
 
 String _$resetPasswordViewModelHash() =>
-    r'6be5050f024efd516d3ac23d45522f5c6f09b745';
+    r'71f0019b79c4b6d1953002017d4f4d0412040033';
 
 /// See also [ResetPasswordViewModel].
 @ProviderFor(ResetPasswordViewModel)

@@ -27,8 +27,14 @@ class CheckInViewModel extends _$CheckInViewModel {
     }
   }
 
+  static const _alreadyCheckedMessage = '오늘은 이미 안부를 전달했어요.';
+
   Future<void> checkIn() async {
-    if (state.todayChecked || state.isLoading) return;
+    if (state.isLoading) return;
+    if (state.todayChecked) {
+      state = state.copyWith(error: _alreadyCheckedMessage);
+      return;
+    }
     state = state.copyWith(isLoading: true, error: null);
     try {
       final useCase = ref.read(createCheckInUseCaseProvider);
@@ -40,7 +46,16 @@ class CheckInViewModel extends _$CheckInViewModel {
       );
     } catch (e) {
       final appError = AppError.from(e);
-      state = state.copyWith(isLoading: false, error: appError.message);
+      if (appError.type == AppErrorType.conflict ||
+          appError.statusCode == 400) {
+        state = state.copyWith(
+          isLoading: false,
+          todayChecked: true,
+          error: _alreadyCheckedMessage,
+        );
+      } else {
+        state = state.copyWith(isLoading: false, error: appError.message);
+      }
     }
   }
 }

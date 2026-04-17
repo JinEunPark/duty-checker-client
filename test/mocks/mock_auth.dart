@@ -5,6 +5,7 @@ import 'package:duty_checker/auth/domain/repository/auth_repository.dart';
 import 'package:duty_checker/auth/domain/use_case/check_phone_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/login_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/register_use_case.dart';
+import 'package:duty_checker/auth/domain/use_case/reset_password_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/send_code_use_case.dart';
 import 'package:duty_checker/auth/domain/use_case/verify_code_use_case.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,6 +21,8 @@ class MockSendCodeUseCase extends Mock implements SendCodeUseCase {}
 class MockVerifyCodeUseCase extends Mock implements VerifyCodeUseCase {}
 
 class MockCheckPhoneUseCase extends Mock implements CheckPhoneUseCase {}
+
+class MockResetPasswordUseCase extends Mock implements ResetPasswordUseCase {}
 
 // 테스트용 고정 데이터
 final testUser = const User(id: 1, phone: '01012345678', role: UserRole.subject);

@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/domain/use_case/auth_use_case_providers.dart';
 import 'package:duty_checker/core/fcm/fcm_service.dart';
 import 'package:duty_checker/core/network/dio_provider.dart';
 import 'package:duty_checker/core/network/token_storage.dart';
@@ -30,17 +31,40 @@ class _SplashPageState extends ConsumerState<SplashPage>
     _controller.forward();
 
     Future.delayed(const Duration(milliseconds: 1800), () {
-      if (mounted) {
-        final tokenStorage = ref.read(tokenStorageProvider);
-
-        if (tokenStorage.hasToken) {
-          ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
-          context.go(tokenStorage.isGuardian ? '/guardian/home' : '/user/home');
-        } else {
-          context.go('/login');
-        }
-      }
+      if (mounted) _tryAutoLogin();
     });
+  }
+
+  Future<void> _tryAutoLogin() async {
+    final tokenStorage = ref.read(tokenStorageProvider);
+
+    if (!tokenStorage.hasToken) {
+      if (mounted) context.go('/login');
+      return;
+    }
+
+    final refreshToken = tokenStorage.refreshToken;
+    if (refreshToken == null) {
+      await tokenStorage.clear();
+      if (mounted) context.go('/login');
+      return;
+    }
+
+    try {
+      final refreshUseCase = ref.read(refreshTokenUseCaseProvider);
+      final newToken = await refreshUseCase(refreshToken: refreshToken);
+      await tokenStorage.saveTokens(
+        accessToken: newToken.accessToken,
+        refreshToken: newToken.refreshToken,
+      );
+      if (mounted) {
+        ref.read(fcmServiceProvider).connectApi(ref.read(dioProvider));
+        context.go(tokenStorage.isGuardian ? '/guardian/home' : '/user/home');
+      }
+    } catch (_) {
+      await tokenStorage.clear();
+      if (mounted) context.go('/login');
+    }
   }
 
   @override
@@ -66,7 +90,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
               ),
               const SizedBox(height: 20),
               Text(
-                '모스',
+                '오늘안부',
                 style: context.appTextStyles.heading1.copyWith(
                   color: context.appColors.primary,
                   letterSpacing: 2,

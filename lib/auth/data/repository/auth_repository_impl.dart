@@ -98,4 +98,15 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> checkPhone({required String phone}) {
     return _remoteDataSource.checkPhone(phone: phone);
   }
+
+  @override
+  Future<void> resetPassword({
+    required String phone,
+    required String newPassword,
+  }) {
+    return _remoteDataSource.resetPassword(
+      phone: phone,
+      newPassword: newPassword,
+    );
+  }
 }

@@ -7,6 +7,7 @@ import 'package:duty_checker/auth/data/model/register_req_model.dart';
 import 'package:duty_checker/auth/data/model/register_resp_model.dart';
 import 'package:duty_checker/auth/data/model/send_code_req_model.dart';
 import 'package:duty_checker/auth/data/model/send_code_resp_model.dart';
+import 'package:duty_checker/auth/data/model/reset_password_req_model.dart';
 import 'package:duty_checker/auth/data/model/verify_code_req_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duty_checker/core/network/dio_provider.dart';
@@ -59,5 +60,14 @@ class AuthRemoteDataSource {
   Future<bool> checkPhone({required String phone}) async {
     final resp = await _api.checkPhone(phone);
     return resp.exists;
+  }
+
+  Future<void> resetPassword({
+    required String phone,
+    required String newPassword,
+  }) {
+    return _api.resetPassword(
+      ResetPasswordReqModel(phone: phone, newPassword: newPassword),
+    );
   }
 }

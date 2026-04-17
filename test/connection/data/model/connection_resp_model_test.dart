@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:duty_checker/connection/data/model/connection_resp_model.dart';
 import 'package:duty_checker/connection/domain/entity/connection.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -63,6 +64,31 @@ void main() {
         expect(entity.status, ConnectionStatus.connected);
         expect(entity.latestCheckedAt, isNull);
         expect(entity.isTodayChecked, false);
+        expect(entity.requesterRole, isNull);
+      });
+
+      test('requesterRole이 SUBJECT로 올바르게 변환된다', () {
+        final model = ConnectionRespModel.fromJson({
+          ...json,
+          'requesterRole': 'SUBJECT',
+        });
+        final entity = model.toDomain();
+        expect(entity.requesterRole, UserRole.subject);
+      });
+
+      test('requesterRole이 GUARDIAN으로 올바르게 변환된다', () {
+        final model = ConnectionRespModel.fromJson({
+          ...json,
+          'requesterRole': 'GUARDIAN',
+        });
+        final entity = model.toDomain();
+        expect(entity.requesterRole, UserRole.guardian);
+      });
+
+      test('requesterRole이 null이면 null로 변환된다', () {
+        final model = ConnectionRespModel.fromJson(json);
+        final entity = model.toDomain();
+        expect(entity.requesterRole, isNull);
       });
     });
   });

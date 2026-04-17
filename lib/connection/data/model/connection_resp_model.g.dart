@@ -15,6 +15,7 @@ _$ConnectionRespModelImpl _$$ConnectionRespModelImplFromJson(
   status: json['status'] as String?,
   latestCheckedAt: json['latestCheckedAt'] as String?,
   isTodayChecked: json['isTodayChecked'] as bool?,
+  requesterRole: json['requesterRole'] as String?,
 );
 
 Map<String, dynamic> _$$ConnectionRespModelImplToJson(
@@ -26,4 +27,5 @@ Map<String, dynamic> _$$ConnectionRespModelImplToJson(
   'status': instance.status,
   'latestCheckedAt': instance.latestCheckedAt,
   'isTodayChecked': instance.isTodayChecked,
+  'requesterRole': instance.requesterRole,
 };

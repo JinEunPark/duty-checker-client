@@ -217,24 +217,24 @@
 ### E. 백엔드 API 대기 후 구현
 
 #### E-1. 연결 요청 방향 구분 — [duty-checker#76](https://github.com/JinEunPark/duty-checker/issues/76)
-- [ ] 백엔드: `ConnectionItemDto`에 `isRequester` 필드 추가
-- [ ] 클라이언트: `ConnectionRespModel` / `Connection` 엔티티에 `isRequester` 필드 추가
-- [ ] `PendingConnectionCard`에서 `showActions: !connection.isRequester`로 분기
-- [ ] 내가 보낸 요청 → "수락 대기 중" 표시만, 상대가 보낸 요청 → 수락/거절 버튼
-- [ ] 단위 테스트 추가
+- [x] 백엔드: `ConnectionItemDto`에 `requesterRole` 필드 추가 (SUBJECT/GUARDIAN enum)
+- [x] 클라이언트: `ConnectionRespModel` / `Connection` 엔티티에 `requesterRole` 필드 추가
+- [x] `PendingConnectionCard`에서 `requesterRole`로 분기 (내 역할 == requesterRole → showActions: false)
+- [x] 내가 보낸 요청 → "수락 대기 중" 표시만, 상대가 보낸 요청 → 수락/거절 버튼
+- [x] 단위 테스트 추가
 
 #### E-2. 비밀번호 재설정 — [duty-checker#77](https://github.com/JinEunPark/duty-checker/issues/77)
-- [ ] 백엔드: `POST /v1/auth/reset-password` API 추가
-- [ ] `reset_password_req_model.dart` — `{ phone, newPassword }`
-- [ ] `auth_api.dart`에 `@POST('/v1/auth/reset-password')` 추가
-- [ ] `auth_remote_datasource.dart` / `auth_repository.dart` / `auth_repository_impl.dart`에 `resetPassword()` 추가
-- [ ] `ResetPasswordUseCase` + provider
-- [ ] `ResetPasswordState` (freezed) — 단계별 상태 관리
-- [ ] `ResetPasswordViewModel` — checkPhone → sendCode → verifyCode → resetPassword
-- [ ] `reset_password_page.dart` — UI 구현
-- [ ] `go_router`에 `/reset-password` 경로 추가
-- [ ] 로그인 화면에 "비밀번호를 잊으셨나요?" 링크 추가
-- [ ] 단위 테스트 추가
+- [x] 백엔드: `PATCH /v1/auth/password` API 사용 (실제 스펙 기준)
+- [x] `reset_password_req_model.dart` — `{ phone, newPassword }`
+- [x] `auth_api.dart`에 `@PATCH('/v1/auth/password')` 추가
+- [x] `auth_remote_datasource.dart` / `auth_repository.dart` / `auth_repository_impl.dart`에 `resetPassword()` 추가
+- [x] `ResetPasswordUseCase` + provider
+- [x] `ResetPasswordState` (freezed) — 단계별 상태 관리
+- [x] `ResetPasswordViewModel` — checkPhone → sendCode → verifyCode → resetPassword
+- [x] `reset_password_page.dart` — UI 구현
+- [x] `go_router`에 `/reset-password` 경로 추가
+- [x] 로그인 화면에 "비밀번호를 잊으셨나요?" 링크 추가
+- [x] 단위 테스트 추가
 
 ---
 
@@ -302,8 +302,10 @@
 7. [ ] 런치 스크린 실제 이미지 교체 (C-4)
 8. [ ] 마케팅 아이콘 alpha 채널 확인 (C-5)
 
+### 완료 (추가)
+9. [x] 연결 요청 방향 구분 — requesterRole 필드 (E-1, [duty-checker#76](https://github.com/JinEunPark/duty-checker/issues/76))
+
 ### 백엔드 API 대기 후 구현
-9. [ ] 연결 요청 방향 구분 — isRequester 필드 (E-1, [duty-checker#76](https://github.com/JinEunPark/duty-checker/issues/76))
 10. [ ] 비밀번호 재설정 기능 (E-2, [duty-checker#77](https://github.com/JinEunPark/duty-checker/issues/77))
 
 ### 권장 (심사 통과 후 개선)

@@ -1,6 +1,8 @@
 import 'package:duty_checker/core/date_time_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:duty_checker/auth/domain/entity/user.dart';
+
 import '../../domain/entity/connection.dart';
 
 part 'connection_resp_model.freezed.dart';
@@ -15,6 +17,7 @@ class ConnectionRespModel with _$ConnectionRespModel {
     String? status,
     String? latestCheckedAt,
     bool? isTodayChecked,
+    String? requesterRole,
   }) = _ConnectionRespModel;
 
   factory ConnectionRespModel.fromJson(Map<String, dynamic> json) =>
@@ -29,5 +32,8 @@ extension ConnectionRespModelMapper on ConnectionRespModel {
         status: ConnectionStatusMapper.fromString(status),
         latestCheckedAt: parseServerDateTime(latestCheckedAt),
         isTodayChecked: isTodayChecked ?? false,
+        requesterRole: requesterRole != null
+            ? UserRoleMapper.fromString(requesterRole)
+            : null,
       );
 }

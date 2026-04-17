@@ -27,6 +27,7 @@ mixin _$ConnectionRespModel {
   String? get status => throw _privateConstructorUsedError;
   String? get latestCheckedAt => throw _privateConstructorUsedError;
   bool? get isTodayChecked => throw _privateConstructorUsedError;
+  String? get requesterRole => throw _privateConstructorUsedError;
 
   /// Serializes this ConnectionRespModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +53,7 @@ abstract class $ConnectionRespModelCopyWith<$Res> {
     String? status,
     String? latestCheckedAt,
     bool? isTodayChecked,
+    String? requesterRole,
   });
 }
 
@@ -76,6 +78,7 @@ class _$ConnectionRespModelCopyWithImpl<$Res, $Val extends ConnectionRespModel>
     Object? status = freezed,
     Object? latestCheckedAt = freezed,
     Object? isTodayChecked = freezed,
+    Object? requesterRole = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +106,10 @@ class _$ConnectionRespModelCopyWithImpl<$Res, $Val extends ConnectionRespModel>
                 ? _value.isTodayChecked
                 : isTodayChecked // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            requesterRole: freezed == requesterRole
+                ? _value.requesterRole
+                : requesterRole // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -125,6 +132,7 @@ abstract class _$$ConnectionRespModelImplCopyWith<$Res>
     String? status,
     String? latestCheckedAt,
     bool? isTodayChecked,
+    String? requesterRole,
   });
 }
 
@@ -148,6 +156,7 @@ class __$$ConnectionRespModelImplCopyWithImpl<$Res>
     Object? status = freezed,
     Object? latestCheckedAt = freezed,
     Object? isTodayChecked = freezed,
+    Object? requesterRole = freezed,
   }) {
     return _then(
       _$ConnectionRespModelImpl(
@@ -175,6 +184,10 @@ class __$$ConnectionRespModelImplCopyWithImpl<$Res>
             ? _value.isTodayChecked
             : isTodayChecked // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        requesterRole: freezed == requesterRole
+            ? _value.requesterRole
+            : requesterRole // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -190,6 +203,7 @@ class _$ConnectionRespModelImpl implements _ConnectionRespModel {
     this.status,
     this.latestCheckedAt,
     this.isTodayChecked,
+    this.requesterRole,
   });
 
   factory _$ConnectionRespModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -207,10 +221,12 @@ class _$ConnectionRespModelImpl implements _ConnectionRespModel {
   final String? latestCheckedAt;
   @override
   final bool? isTodayChecked;
+  @override
+  final String? requesterRole;
 
   @override
   String toString() {
-    return 'ConnectionRespModel(id: $id, phone: $phone, name: $name, status: $status, latestCheckedAt: $latestCheckedAt, isTodayChecked: $isTodayChecked)';
+    return 'ConnectionRespModel(id: $id, phone: $phone, name: $name, status: $status, latestCheckedAt: $latestCheckedAt, isTodayChecked: $isTodayChecked, requesterRole: $requesterRole)';
   }
 
   @override
@@ -225,7 +241,9 @@ class _$ConnectionRespModelImpl implements _ConnectionRespModel {
             (identical(other.latestCheckedAt, latestCheckedAt) ||
                 other.latestCheckedAt == latestCheckedAt) &&
             (identical(other.isTodayChecked, isTodayChecked) ||
-                other.isTodayChecked == isTodayChecked));
+                other.isTodayChecked == isTodayChecked) &&
+            (identical(other.requesterRole, requesterRole) ||
+                other.requesterRole == requesterRole));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -238,6 +256,7 @@ class _$ConnectionRespModelImpl implements _ConnectionRespModel {
     status,
     latestCheckedAt,
     isTodayChecked,
+    requesterRole,
   );
 
   /// Create a copy of ConnectionRespModel
@@ -265,6 +284,7 @@ abstract class _ConnectionRespModel implements ConnectionRespModel {
     final String? status,
     final String? latestCheckedAt,
     final bool? isTodayChecked,
+    final String? requesterRole,
   }) = _$ConnectionRespModelImpl;
 
   factory _ConnectionRespModel.fromJson(Map<String, dynamic> json) =
@@ -282,6 +302,8 @@ abstract class _ConnectionRespModel implements ConnectionRespModel {
   String? get latestCheckedAt;
   @override
   bool? get isTodayChecked;
+  @override
+  String? get requesterRole;
 
   /// Create a copy of ConnectionRespModel
   /// with the given fields replaced by the non-null parameter values.

@@ -60,9 +60,8 @@ class ResetPasswordViewModel extends _$ResetPasswordViewModel {
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      // TODO: 백엔드 API 추가 후 연동 (POST /v1/auth/reset-password)
-      // final useCase = ref.read(resetPasswordUseCaseProvider);
-      // await useCase(phone: phone, newPassword: newPassword);
+      final useCase = ref.read(resetPasswordUseCaseProvider);
+      await useCase(phone: phone, newPassword: newPassword);
       state = state.copyWith(isLoading: false, passwordReset: true);
     } catch (e) {
       final appError = AppError.from(e);
