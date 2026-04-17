@@ -328,21 +328,23 @@ class ConnectionEmptyState extends StatelessWidget {
 // ─────────────────────────────────────────────
 class AppToast extends StatelessWidget {
   final String message;
-  const AppToast({super.key, required this.message});
+  final bool isError;
+  const AppToast({super.key, required this.message, this.isError = false});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final bgColor = isError ? colors.error : colors.gray900;
 
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: colors.gray900,
+          color: bgColor,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: colors.gray900.withValues(alpha: 0.2),
+              color: bgColor.withValues(alpha: 0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -352,18 +354,22 @@ class AppToast extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              CupertinoIcons.checkmark_circle_fill,
+              isError
+                  ? CupertinoIcons.exclamationmark_circle_fill
+                  : CupertinoIcons.checkmark_circle_fill,
               size: 16,
               color: colors.surface,
             ),
             const Gap(8),
-            Text(
-              message,
-              style: TextStyle(
-                fontFamily: 'Pretendard',
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: colors.surface,
+            Flexible(
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontFamily: 'Pretendard',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: colors.surface,
+                ),
               ),
             ),
           ],
@@ -378,11 +384,15 @@ class AppToast extends StatelessWidget {
 // ─────────────────────────────────────────────
 mixin ToastMixin<T extends StatefulWidget> on State<T> {
   String? toastMessage;
+  bool toastIsError = false;
   Timer? _toastTimer;
 
-  void showToast(String message) {
+  void showToast(String message, {bool isError = false}) {
     _toastTimer?.cancel();
-    setState(() => toastMessage = message);
+    setState(() {
+      toastMessage = message;
+      toastIsError = isError;
+    });
     _toastTimer = Timer(const Duration(seconds: 3), () {
       if (mounted) setState(() => toastMessage = null);
     });

@@ -25,14 +25,20 @@ class _GuardianManagementPageState
     super.dispose();
   }
 
-  void _addGuardian() {
+  Future<void> _addGuardian() async {
     final digits = _phoneController.text.replaceAll('-', '');
     if (digits.length < 10) return;
-    ref.read(connectionViewModelProvider.notifier).addConnection(
+    await ref.read(connectionViewModelProvider.notifier).addConnection(
           targetPhone: digits,
         );
-    _phoneController.clear();
-    showToast('보호자 등록 요청을 보냈습니다');
+    if (!mounted) return;
+    final error = ref.read(connectionViewModelProvider).error;
+    if (error != null) {
+      showToast(error, isError: true);
+    } else {
+      _phoneController.clear();
+      showToast('보호자 등록 요청을 보냈습니다');
+    }
   }
 
   void _editNickname(Connection guardian) {
@@ -240,7 +246,7 @@ class _GuardianManagementPageState
               bottom: MediaQuery.of(context).padding.bottom + 24,
               left: 0,
               right: 0,
-              child: AppToast(message: toastMessage!),
+              child: AppToast(message: toastMessage!, isError: toastIsError),
             ),
         ],
       ),

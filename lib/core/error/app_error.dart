@@ -146,6 +146,7 @@ class AppError implements Exception {
 
     // 연결
     'SAME_ROLE_CONNECTION': (AppErrorType.badRequest, '같은 역할끼리는 연결할 수 없어요.'),
+    'INVALID_CONNECTION_ROLES': (AppErrorType.badRequest, '당사자와 보호자 간에만 연결이 가능해요.'),
     'USER_NOT_FOUND': (AppErrorType.notFound, '해당 사용자를 찾을 수 없어요.'),
     'CONNECTION_ALREADY_EXISTS': (AppErrorType.conflict, '이미 연결 요청을 보냈어요.'),
     'INVALID_CONNECTION_STATUS': (AppErrorType.badRequest, '유효하지 않은 연결 상태예요.'),
