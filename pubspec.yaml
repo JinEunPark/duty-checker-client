@@ -2,7 +2,7 @@ name: duty_checker
 description: "당직 및 근무 일정 관리 Flutter 애플리케이션"
 publish_to: 'none'
 
-version: 1.0.4+6
+version: 1.0.4+7
 
 environment:
   sdk: ^3.11.0
