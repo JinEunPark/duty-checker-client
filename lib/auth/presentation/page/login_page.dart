@@ -133,7 +133,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const Gap(16),
                         Center(
                           child: Text(
-                            '모스',
+                            '오늘안부',
                             style: context.appTextStyles.heading1.copyWith(
                               color: context.appColors.primary,
                               letterSpacing: 2,

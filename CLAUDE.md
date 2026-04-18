@@ -9,6 +9,7 @@
 - **아키텍처 문서**: `docs/CLEAN_ARCHITECTURE.md`
 - **컨벤션 문서**: `docs/CONVENTION.md`
 - **남은 작업**: `docs/TODO.md`
+- **배포 가이드**: `docs/RELEASE.md` (버전 규칙, 배포 절차, 이력)
 
 ## 기술 스택
 

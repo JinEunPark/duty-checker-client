@@ -51,7 +51,8 @@ class MyApp extends ConsumerWidget {
       isDark: isDark,
       child: CupertinoApp.router(
         routerConfig: router,
-        title: 'Duty Checker',
+        title: '오늘안부',
+        debugShowCheckedModeBanner: false,
         theme: buildAppTheme(colors),
       ),
     );
