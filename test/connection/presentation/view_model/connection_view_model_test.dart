@@ -1,3 +1,4 @@
+import 'package:duty_checker/auth/domain/entity/user.dart';
 import 'package:duty_checker/connection/domain/entity/connection.dart';
 import 'package:duty_checker/connection/domain/use_case/connection_use_case_providers.dart';
 import 'package:duty_checker/connection/presentation/view_model/connection_view_model.dart';
@@ -75,13 +76,29 @@ void main() {
       });
     });
 
-    test('addConnection 성공 시 리스트에 추가된다', () {
-      when(() => mockGetConnections())
-          .thenAnswer((_) async => testConnectionList);
+    test('addConnection 성공 시 목록을 새로고침한다', () {
+      final newConnection = const Connection(
+        id: 3,
+        phone: '01099998888',
+        name: '동생',
+        status: ConnectionStatus.pending,
+        latestCheckedAt: null,
+        isTodayChecked: false,
+      );
+      final updatedList = ConnectionList(
+        role: UserRole.subject,
+        connections: [...testConnectionList.connections, newConnection],
+      );
+
+      var callCount = 0;
+      when(() => mockGetConnections()).thenAnswer((_) async {
+        callCount++;
+        return callCount <= 1 ? testConnectionList : updatedList;
+      });
       when(() => mockAddConnection(
             targetPhone: any(named: 'targetPhone'),
             name: any(named: 'name'),
-          )).thenAnswer((_) async => testPendingConnection);
+          )).thenAnswer((_) async => newConnection);
 
       fakeAsync((async) {
         final container = createContainer();
@@ -90,13 +107,14 @@ void main() {
         final notifier = container.read(connectionViewModelProvider.notifier);
         async.flushMicrotasks();
 
-        notifier.addConnection(targetPhone: '01087654321');
+        notifier.addConnection(targetPhone: '01099998888');
         async.flushMicrotasks();
 
         final state = container.read(connectionViewModelProvider);
         expect(state.isLoading, false);
         expect(state.connections, hasLength(3));
         expect(state.error, isNull);
+        verify(() => mockGetConnections()).called(2);
       });
     });
 

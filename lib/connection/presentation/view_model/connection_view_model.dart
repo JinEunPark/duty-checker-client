@@ -36,11 +36,8 @@ class ConnectionViewModel extends _$ConnectionViewModel {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final useCase = ref.read(addConnectionUseCaseProvider);
-      final newConnection =
-          await useCase(targetPhone: targetPhone, name: name);
-      state = ConnectionState(
-        connections: [...state.connections, newConnection],
-      );
+      await useCase(targetPhone: targetPhone, name: name);
+      await _loadConnections();
     } catch (e) {
       final appError = AppError.from(e);
       state = state.copyWith(isLoading: false, error: appError.message);

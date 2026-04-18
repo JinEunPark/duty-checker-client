@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'connection.freezed.dart';
 
-enum ConnectionStatus { pending, connected }
+enum ConnectionStatus { pending, connected, rejected }
 
 @freezed
 class Connection with _$Connection {
@@ -21,6 +21,7 @@ class Connection with _$Connection {
 
   bool get isPending => status == ConnectionStatus.pending;
   bool get isConnected => status == ConnectionStatus.connected;
+  bool get isRejected => status == ConnectionStatus.rejected;
 }
 
 @freezed
@@ -33,8 +34,13 @@ class ConnectionList with _$ConnectionList {
 
 extension ConnectionStatusMapper on ConnectionStatus {
   static ConnectionStatus fromString(String? value) {
-    return value?.toUpperCase() == 'PENDING'
-        ? ConnectionStatus.pending
-        : ConnectionStatus.connected;
+    switch (value?.toUpperCase()) {
+      case 'PENDING':
+        return ConnectionStatus.pending;
+      case 'REJECTED':
+        return ConnectionStatus.rejected;
+      default:
+        return ConnectionStatus.connected;
+    }
   }
 }
