@@ -183,61 +183,70 @@ class _GuardianManagementPageState
           SafeArea(
             child: connectionState.isLoading
                 ? const Center(child: CupertinoActivityIndicator())
-                : ListView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 20),
-                    children: [
-                      AddConnectionCard(
-                        controller: _phoneController,
-                        connectionCount: totalCount,
-                        onAdd: _addGuardian,
+                : CustomScrollView(
+                    slivers: [
+                      CupertinoSliverRefreshControl(
+                        onRefresh: () => ref.read(connectionViewModelProvider.notifier).refresh(),
                       ),
-                      const Gap(16),
-                      if (pendingGuardians.isNotEmpty) ...[
-                        ConnectionSectionHeader(
-                          title: '대기 중인 연결',
-                          count: pendingGuardians.length,
-                        ),
-                        const Gap(10),
-                        ...pendingGuardians.map((guardian) {
-                          final isMine =
-                              guardian.requesterRole == UserRole.subject;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: PendingConnectionCard(
-                              connection: guardian,
-                              showActions: !isMine,
-                              onAccept: () => _acceptConnection(guardian),
-                              onReject: () => _rejectConnection(guardian),
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            AddConnectionCard(
+                              controller: _phoneController,
+                              connectionCount: totalCount,
+                              onAdd: _addGuardian,
                             ),
-                          );
-                        }),
-                        const Gap(8),
-                      ],
-                      if (connectedGuardians.isNotEmpty) ...[
-                        ConnectionSectionHeader(
-                          title: '연결된 보호자',
-                          count: connectedGuardians.length,
+                            const Gap(16),
+                            if (pendingGuardians.isNotEmpty) ...[
+                              ConnectionSectionHeader(
+                                title: '대기 중인 연결',
+                                count: pendingGuardians.length,
+                              ),
+                              const Gap(10),
+                              ...pendingGuardians.map((guardian) {
+                                final isMine =
+                                    guardian.requesterRole == UserRole.subject;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: PendingConnectionCard(
+                                    connection: guardian,
+                                    showActions: !isMine,
+                                    onAccept: () => _acceptConnection(guardian),
+                                    onReject: () => _rejectConnection(guardian),
+                                  ),
+                                );
+                              }),
+                              const Gap(8),
+                            ],
+                            if (connectedGuardians.isNotEmpty) ...[
+                              ConnectionSectionHeader(
+                                title: '연결된 보호자',
+                                count: connectedGuardians.length,
+                              ),
+                              const Gap(10),
+                              ...connectedGuardians.map((guardian) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _GuardianCard(
+                                    guardian: guardian,
+                                    onEditNickname: () => _editNickname(guardian),
+                                    onDelete: () =>
+                                        _confirmRemoveGuardian(guardian),
+                                  ),
+                                );
+                              }),
+                            ],
+                            if (connectedGuardians.isEmpty &&
+                                pendingGuardians.isEmpty)
+                              const ConnectionEmptyState(
+                                title: '아직 보호자가 없어요',
+                                subtitle: '보호자를 등록하면 안부를 전달받을 수 있어요',
+                              ),
+                          ]),
                         ),
-                        const Gap(10),
-                        ...connectedGuardians.map((guardian) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _GuardianCard(
-                              guardian: guardian,
-                              onEditNickname: () => _editNickname(guardian),
-                              onDelete: () =>
-                                  _confirmRemoveGuardian(guardian),
-                            ),
-                          );
-                        }),
-                      ],
-                      if (connectedGuardians.isEmpty &&
-                          pendingGuardians.isEmpty)
-                        const ConnectionEmptyState(
-                          title: '아직 보호자가 없어요',
-                          subtitle: '보호자를 등록하면 안부를 전달받을 수 있어요',
-                        ),
+                      ),
                     ],
                   ),
           ),

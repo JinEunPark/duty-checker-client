@@ -100,6 +100,19 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
     );
   }
 
+  Future<void> _onRefresh() async {
+    await Future.wait([
+      ref.read(connectionViewModelProvider.notifier).refresh(),
+      ref.read(checkInViewModelProvider.notifier).refresh(),
+    ]);
+  }
+
+  Future<void> _navigateToGuardianManagement() async {
+    await context.push('/user/guardian-management');
+    if (mounted) {
+      ref.read(connectionViewModelProvider.notifier).refresh();
+    }
+  }
 
   String _getConnectionStatusText(List<Connection> connections) {
     final pending = connections.where((c) => c.isPending).length;
@@ -128,182 +141,196 @@ class _UserHomePageState extends ConsumerState<UserHomePage>
     return CupertinoPageScaffold(
       backgroundColor: colors.background,
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              const Gap(24),
+        child: CustomScrollView(
+          slivers: [
+            CupertinoSliverRefreshControl(
+              onRefresh: _onRefresh,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  const Gap(24),
 
-              // 타이틀 + 설정
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('안부 전달', style: textStyles.heading1),
-                  SettingButton(),
-                ],
-              ),
-              const Gap(4),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '보호자에게 안부를 전달할 수 있어요',
-                  style: textStyles.body2,
-                ),
-              ),
-              const Gap(24),
+                  // 타이틀 + 설정
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('안부 전달', style: textStyles.heading1),
+                      SettingButton(),
+                    ],
+                  ),
+                  const Gap(4),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '보호자에게 안부를 전달할 수 있어요',
+                      style: textStyles.body2,
+                    ),
+                  ),
+                  const Gap(24),
 
-              // 보호자 관리 카드
-              _GuardianManagementCard(
-                statusText: _getConnectionStatusText(connectionState.connections),
-                onTap: () => context.push('/user/guardian-management'),
+                  // 보호자 관리 카드
+                  _GuardianManagementCard(
+                    statusText: _getConnectionStatusText(connectionState.connections),
+                    onTap: _navigateToGuardianManagement,
+                  ),
+                ]),
               ),
-
-              // 안부 확인 영역
-              Expanded(
-                child: Align(
-                alignment: const Alignment(0, -0.25),
-                child: SingleChildScrollView(
-                  child: Column(
-                  mainAxisSize: MainAxisSize.min,
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
                   children: [
-                    // 펄스 링 + 체크인 버튼
-                    GestureDetector(
-                      onTapDown: (_) => _tapCtrl.forward(),
-                      onTapUp: (_) {
-                        _tapCtrl.reverse();
-                        _onCheckIn();
-                      },
-                      onTapCancel: () => _tapCtrl.reverse(),
-                      child: ScaleTransition(
-                        scale: _scaleAnim,
-                        child: SizedBox(
-                          width: 220,
-                          height: 220,
-                          child: AnimatedBuilder(
-                            animation: _pulseAnim,
-                            builder: (context, child) {
-                              return Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // 펄스 링
-                                  if (!_justChecked)
-                                    Transform.scale(
-                                      scale:
-                                          1.0 + (0.03 * _pulseAnim.value),
-                                      child: Container(
-                                        width: 210,
-                                        height: 210,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: colors.primary
-                                                .withValues(
-                                              alpha: 0.06 +
-                                                  (0.1 *
-                                                      _pulseAnim.value),
+                    // 안부 확인 영역
+                    Expanded(
+                      child: Align(
+                        alignment: const Alignment(0, -0.25),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // 펄스 링 + 체크인 버튼
+                            GestureDetector(
+                              onTapDown: (_) => _tapCtrl.forward(),
+                              onTapUp: (_) {
+                                _tapCtrl.reverse();
+                                _onCheckIn();
+                              },
+                              onTapCancel: () => _tapCtrl.reverse(),
+                              child: ScaleTransition(
+                                scale: _scaleAnim,
+                                child: SizedBox(
+                                  width: 220,
+                                  height: 220,
+                                  child: AnimatedBuilder(
+                                    animation: _pulseAnim,
+                                    builder: (context, child) {
+                                      return Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          // 펄스 링
+                                          if (!_justChecked)
+                                            Transform.scale(
+                                              scale:
+                                                  1.0 + (0.03 * _pulseAnim.value),
+                                              child: Container(
+                                                width: 210,
+                                                height: 210,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: colors.primary
+                                                        .withValues(
+                                                      alpha: 0.06 +
+                                                          (0.1 *
+                                                              _pulseAnim.value),
+                                                    ),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                            width: 1.5,
+                                          // 메인 원형 버튼
+                                          child!,
+                                        ],
+                                      );
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 350),
+                                      curve: Curves.easeOut,
+                                      width: 170,
+                                      height: 170,
+                                      decoration: BoxDecoration(
+                                        color: _justChecked
+                                            ? colors.primary
+                                            : colors.surface,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: _justChecked
+                                                ? colors.primary
+                                                    .withValues(alpha: 0.25)
+                                                : colors.gray900
+                                                    .withValues(alpha: 0.06),
+                                            blurRadius: _justChecked ? 24 : 20,
+                                            offset: const Offset(0, 4),
                                           ),
+                                        ],
+                                      ),
+                                      child: AnimatedSwitcher(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        child: Icon(
+                                          _justChecked
+                                              ? CupertinoIcons.checkmark
+                                              : CupertinoIcons.heart_fill,
+                                          key: ValueKey(_justChecked),
+                                          size: 52,
+                                          color: _justChecked
+                                              ? colors.surface
+                                              : colors.primary,
                                         ),
                                       ),
                                     ),
-                                  // 메인 원형 버튼
-                                  child!,
-                                ],
-                              );
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 350),
-                              curve: Curves.easeOut,
-                              width: 170,
-                              height: 170,
-                              decoration: BoxDecoration(
-                                color: _justChecked
-                                    ? colors.primary
-                                    : colors.surface,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _justChecked
-                                        ? colors.primary
-                                            .withValues(alpha: 0.25)
-                                        : colors.gray900
-                                            .withValues(alpha: 0.06),
-                                    blurRadius: _justChecked ? 24 : 20,
-                                    offset: const Offset(0, 4),
                                   ),
-                                ],
-                              ),
-                              child: AnimatedSwitcher(
-                                duration:
-                                    const Duration(milliseconds: 200),
-                                child: Icon(
-                                  _justChecked
-                                      ? CupertinoIcons.checkmark
-                                      : CupertinoIcons.heart_fill,
-                                  key: ValueKey(_justChecked),
-                                  size: 52,
-                                  color: _justChecked
-                                      ? colors.surface
-                                      : colors.primary,
                                 ),
                               ),
                             ),
-                          ),
+                            const Gap(28),
+
+                            // 타이틀
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 250),
+                              child: Text(
+                                _justChecked ? '안부가 전달되었어요' : '안부 확인',
+                                key: ValueKey('title_$_justChecked'),
+                                style: textStyles.heading2,
+                              ),
+                            ),
+                            const Gap(10),
+
+                            // 상태 텍스트 또는 마지막 안부 칩
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 250),
+                              child: _justChecked
+                                  ? Text(
+                                      '보호자에게 안부가 전달됩니다',
+                                      key: const ValueKey('sent'),
+                                      style: textStyles.body2,
+                                    )
+                                  : lastCheckTime != null
+                                      ? _LastCheckChip(
+                                          key: const ValueKey('chip'),
+                                          text: lastCheckTime.formatRelative(),
+                                        )
+                                      : Text(
+                                          '눌러서 안부를 전달해주세요',
+                                          key: const ValueKey('guide'),
+                                          style: textStyles.body2,
+                                        ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const Gap(28),
 
-                    // 타이틀
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
+                    // 하단 안내
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
                       child: Text(
-                        _justChecked ? '안부가 전달되었어요' : '안부 확인',
-                        key: ValueKey('title_$_justChecked'),
-                        style: textStyles.heading2,
+                        '안부는 하루 기준으로 보호자에게 전달돼요',
+                        style: textStyles.caption.copyWith(
+                          color: colors.gray400,
+                        ),
                       ),
-                    ),
-                    const Gap(10),
-
-                    // 상태 텍스트 또는 마지막 안부 칩
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
-                      child: _justChecked
-                          ? Text(
-                              '보호자에게 안부가 전달됩니다',
-                              key: const ValueKey('sent'),
-                              style: textStyles.body2,
-                            )
-                          : lastCheckTime != null
-                              ? _LastCheckChip(
-                                  key: const ValueKey('chip'),
-                                  text: lastCheckTime.formatRelative(),
-                                )
-                              : Text(
-                                  '눌러서 안부를 전달해주세요',
-                                  key: const ValueKey('guide'),
-                                  style: textStyles.body2,
-                                ),
                     ),
                   ],
                 ),
-                ),
               ),
-              ),
-
-              // 하단 안내
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Text(
-                  '안부는 하루 기준으로 보호자에게 전달돼요',
-                  style: textStyles.caption.copyWith(
-                    color: colors.gray400,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

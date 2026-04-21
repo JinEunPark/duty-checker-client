@@ -13,6 +13,11 @@ class CheckInViewModel extends _$CheckInViewModel {
     return const CheckInState(isLoading: true);
   }
 
+  Future<void> refresh() async {
+    state = state.copyWith(isLoading: true, error: null);
+    await _loadLatestCheckIn();
+  }
+
   Future<void> _loadLatestCheckIn() async {
     try {
       final useCase = ref.read(getLatestCheckInUseCaseProvider);

@@ -178,62 +178,71 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage>
           SafeArea(
             child: connectionState.isLoading
                 ? const Center(child: CupertinoActivityIndicator())
-                : ListView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 20),
-                    children: [
-                      AddConnectionCard(
-                        controller: _phoneController,
-                        connectionCount: totalCount,
-                        onAdd: _addSubject,
-                        placeholder: '당사자 전화번호 입력',
+                : CustomScrollView(
+                    slivers: [
+                      CupertinoSliverRefreshControl(
+                        onRefresh: () => ref.read(connectionViewModelProvider.notifier).refresh(),
                       ),
-                      const Gap(20),
-                      if (connectedUsers.isNotEmpty) ...[
-                        ConnectionSectionHeader(
-                          title: '연결된 분',
-                          count: connectedUsers.length,
-                        ),
-                        const Gap(10),
-                        ...connectedUsers.map(
-                          (user) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _ConnectedUserCard(
-                              user: user,
-                              onEditNickname: () => _editNickname(user),
-                              onDelete: () => _confirmRemoveUser(user),
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            AddConnectionCard(
+                              controller: _phoneController,
+                              connectionCount: totalCount,
+                              onAdd: _addSubject,
+                              placeholder: '당사자 전화번호 입력',
                             ),
-                          ),
-                        ),
-                        const Gap(8),
-                      ],
-                      if (pendingUsers.isNotEmpty) ...[
-                        ConnectionSectionHeader(
-                          title: '대기 중인 연결',
-                          count: pendingUsers.length,
-                        ),
-                        const Gap(10),
-                        ...pendingUsers.map(
-                          (user) {
-                            final isMine =
-                                user.requesterRole == UserRole.guardian;
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: PendingConnectionCard(
-                                connection: user,
-                                showActions: !isMine,
-                                onAccept: () => _acceptConnection(user),
-                                onReject: () => _rejectConnection(user),
+                            const Gap(20),
+                            if (connectedUsers.isNotEmpty) ...[
+                              ConnectionSectionHeader(
+                                title: '연결된 분',
+                                count: connectedUsers.length,
                               ),
-                            );
-                          },
+                              const Gap(10),
+                              ...connectedUsers.map(
+                                (user) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _ConnectedUserCard(
+                                    user: user,
+                                    onEditNickname: () => _editNickname(user),
+                                    onDelete: () => _confirmRemoveUser(user),
+                                  ),
+                                ),
+                              ),
+                              const Gap(8),
+                            ],
+                            if (pendingUsers.isNotEmpty) ...[
+                              ConnectionSectionHeader(
+                                title: '대기 중인 연결',
+                                count: pendingUsers.length,
+                              ),
+                              const Gap(10),
+                              ...pendingUsers.map(
+                                (user) {
+                                  final isMine =
+                                      user.requesterRole == UserRole.guardian;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: PendingConnectionCard(
+                                      connection: user,
+                                      showActions: !isMine,
+                                      onAccept: () => _acceptConnection(user),
+                                      onReject: () => _rejectConnection(user),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                            if (connectedUsers.isEmpty && pendingUsers.isEmpty)
+                              const ConnectionEmptyState(
+                                title: '아직 연결된 당사자가 없어요',
+                                subtitle: '전화번호를 입력하여 당사자를 등록해 보세요',
+                              ),
+                          ]),
                         ),
-                      ],
-                      if (connectedUsers.isEmpty && pendingUsers.isEmpty)
-                        const ConnectionEmptyState(
-                          title: '아직 연결된 당사자가 없어요',
-                          subtitle: '전화번호를 입력하여 당사자를 등록해 보세요',
-                        ),
+                      ),
                     ],
                   ),
           ),

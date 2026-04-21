@@ -57,6 +57,17 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    await ref.read(connectionViewModelProvider.notifier).refresh();
+  }
+
+  Future<void> _navigateToManagement() async {
+    await context.push('/guardian/management');
+    if (mounted) {
+      ref.read(connectionViewModelProvider.notifier).refresh();
+    }
+  }
+
   void _checkCriticalAlert() {
     final state = ref.read(connectionViewModelProvider);
     final connectedUsers =
@@ -108,43 +119,52 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
   Widget _buildMainContent(List<Connection> connectedUsers) {
     final textStyles = context.appTextStyles;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-      children: [
-        // 인사말 + 설정
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('보호자 홈', style: textStyles.heading1),
-            const SettingButton(),
-          ],
+    return CustomScrollView(
+      slivers: [
+        CupertinoSliverRefreshControl(
+          onRefresh: _onRefresh,
         ),
-        const Gap(4),
-        Text(
-          '연결된 분의 안부를 확인해보세요',
-          style: textStyles.body2,
-        ),
-        const Gap(24),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              // 인사말 + 설정
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('보호자 홈', style: textStyles.heading1),
+                  const SettingButton(),
+                ],
+              ),
+              const Gap(4),
+              Text(
+                '연결된 분의 안부를 확인해보세요',
+                style: textStyles.body2,
+              ),
+              const Gap(24),
 
-        // 당사자 관리 카드
-        _ManagementCard(
-          userCount: connectedUsers.length,
-          onTap: () => context.push('/guardian/management'),
-        ),
-        const Gap(20),
+              // 당사자 관리 카드
+              _ManagementCard(
+                userCount: connectedUsers.length,
+                onTap: _navigateToManagement,
+              ),
+              const Gap(20),
 
-        // 당사자 상태 카드 목록
-        ...connectedUsers.map((user) {
-          final status = _getUserStatus(user);
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _UserStatusCard(
-              user: user,
-              status: status,
-              lastCheckTimeText: user.latestCheckedAt?.formatRelative() ?? '기록 없음',
-            ),
-          );
-        }),
+              // 당사자 상태 카드 목록
+              ...connectedUsers.map((user) {
+                final status = _getUserStatus(user);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _UserStatusCard(
+                    user: user,
+                    status: status,
+                    lastCheckTimeText: user.latestCheckedAt?.formatRelative() ?? '기록 없음',
+                  ),
+                );
+              }),
+            ]),
+          ),
+        ),
       ],
     );
   }
@@ -153,73 +173,83 @@ class _GuardianHomePageState extends ConsumerState<GuardianHomePage> {
     final colors = context.appColors;
     final textStyles = context.appTextStyles;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const Gap(24),
-          Align(
-            alignment: Alignment.centerRight,
-            child: const SettingButton(),
-          ),
-          const Spacer(flex: 2),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: colors.surface,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.gray900.withValues(alpha: 0.06),
-                    blurRadius: 12,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(
-                CupertinoIcons.person_2_fill,
-                size: 32,
-                color: colors.gray400,
-              ),
-            ),
-            const Gap(20),
-            Text(
-              '아직 연결된 당사자가 없어요',
-              style: textStyles.heading2,
-              textAlign: TextAlign.center,
-            ),
-            const Gap(10),
-            Text(
-              '당사자에게 연결 요청을 보내거나,\n당사자의 요청을 수락하면 연결돼요',
-              style: textStyles.body2,
-              textAlign: TextAlign.center,
-            ),
-            const Gap(24),
-            CupertinoButton(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 24, vertical: 12),
-              color: colors.primary,
-              borderRadius: BorderRadius.circular(12),
-              onPressed: () => context.push('/guardian/management'),
-              child: Text(
-                '연결 요청하러 가기',
-                style: TextStyle(
-                  fontFamily: 'Pretendard',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: colors.surface,
-                ),
-              ),
-            ),
-          ],
+    return CustomScrollView(
+      slivers: [
+        CupertinoSliverRefreshControl(
+          onRefresh: _onRefresh,
         ),
-          const Spacer(flex: 3),
-        ],
-      ),
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                const Gap(24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: const SettingButton(),
+                ),
+                const Spacer(flex: 2),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.gray900.withValues(alpha: 0.06),
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        CupertinoIcons.person_2_fill,
+                        size: 32,
+                        color: colors.gray400,
+                      ),
+                    ),
+                    const Gap(20),
+                    Text(
+                      '아직 연결된 당사자가 없어요',
+                      style: textStyles.heading2,
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(10),
+                    Text(
+                      '당사자에게 연결 요청을 보내거나,\n당사자의 요청을 수락하면 연결돼요',
+                      style: textStyles.body2,
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(24),
+                    CupertinoButton(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      color: colors.primary,
+                      borderRadius: BorderRadius.circular(12),
+                      onPressed: _navigateToManagement,
+                      child: Text(
+                        '연결 요청하러 가기',
+                        style: TextStyle(
+                          fontFamily: 'Pretendard',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: colors.surface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(flex: 3),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
