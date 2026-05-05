@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:duty_checker/core/fcm/device_token_api.dart';
 import 'package:duty_checker/core/fcm/update_device_token_req_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// 백그라운드 메시지 핸들러 (top-level 함수 필수)
@@ -20,12 +21,26 @@ class FcmService {
 
   final FirebaseMessaging _messaging;
   DeviceTokenApi? _deviceTokenApi;
+  String? _pendingToken;
 
-  /// 로그인 성공 후 호출 — API 설정 및 현재 토큰 즉시 전송
+  @visibleForTesting
+  DeviceTokenApi? get deviceTokenApiForTest => _deviceTokenApi;
+  @visibleForTesting
+  set deviceTokenApiForTest(DeviceTokenApi? api) => _deviceTokenApi = api;
+
+  @visibleForTesting
+  String? get pendingToken => _pendingToken;
+  @visibleForTesting
+  set pendingToken(String? value) => _pendingToken = value;
+
+  @visibleForTesting
+  Future<void> sendTokenToServer(String token) => _sendTokenToServer(token);
+
+  /// 로그인 성공 후 호출 — API 설정 및 캐싱된 토큰 즉시 전송
   Future<void> connectApi(Dio dio) async {
     _deviceTokenApi = DeviceTokenApi(dio);
     try {
-      final token = await _messaging.getToken();
+      final token = _pendingToken ?? await _messaging.getToken();
       if (token != null) await _sendTokenToServer(token);
     } catch (e) {
       log('❌ [FCM] 토큰 전송 실패: $e');
@@ -34,13 +49,19 @@ class FcmService {
 
   Future<void> _sendTokenToServer(String token) async {
     final api = _deviceTokenApi;
-    if (api == null) return;
+    if (api == null) {
+      _pendingToken = token;
+      log('🔑 [FCM] API 미연결 — 토큰 캐싱');
+      return;
+    }
 
     try {
       await api.updateDeviceToken(UpdateDeviceTokenReqModel(fcmToken: token));
-      log('fcm 서버 갱신');
+      _pendingToken = null;
+      log('✅ [FCM] 서버 토큰 갱신 완료');
     } catch (e) {
-      log('fcm token 서버 갱신 실패');
+      _pendingToken = token;
+      log('❌ [FCM] 서버 토큰 갱신 실패: $e');
     }
   }
 
@@ -51,7 +72,7 @@ class FcmService {
     _handleInitialMessage();
     _handleMessageOpenedApp();
     await _setForegroundNotificationOptions();
-    _getToken();
+    await _getToken();
   }
 
   /// 알림 권한 요청 (iOS 시스템 다이얼로그 / Android 13+)
@@ -64,7 +85,7 @@ class FcmService {
     log('🔔 [FCM] 알림 권한 상태: ${settings.authorizationStatus}');
   }
 
-  /// FCM 토큰 발급 및 로그 출력
+  /// FCM 토큰 발급 및 캐싱 (API 연결 전이면 캐싱만)
   Future<void> _getToken() async {
     if (Platform.isIOS) {
       String? apnsToken;
@@ -81,7 +102,7 @@ class FcmService {
     }
     try {
       final token = await _messaging.getToken();
-      if (token != null) _sendTokenToServer(token);
+      if (token != null) await _sendTokenToServer(token);
 
       log('🔑 [FCM] 토큰: $token');
     } catch (e) {
@@ -91,8 +112,8 @@ class FcmService {
 
   /// 토큰 갱신 리스닝
   void _listenTokenRefresh() {
-    _messaging.onTokenRefresh.listen((token) {
-      _sendTokenToServer(token);
+    _messaging.onTokenRefresh.listen((token) async {
+      await _sendTokenToServer(token);
     });
   }
 
