@@ -68,3 +68,5 @@ firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.ap
 | 2026-04-18 | 1.0.3+5 | iOS | Firebase App Distribution |
 | 2026-04-18 | 1.0.3+5 | Android | Firebase App Distribution — ConnectionStatus rejected 추가, AGP/Kotlin 업데이트 |
 | 2026-04-18 | 1.0.4+6 | iOS | Firebase App Distribution |
+| 2026-05-05 | 1.0.5+8 | iOS | Firebase App Distribution — FCM 토큰 서버 전송 버그 수정 |
+| 2026-05-05 | 1.0.5+8 | Android | Firebase App Distribution — FCM 토큰 서버 전송 버그 수정 |
